@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>GeoLog TMS & JCIOT Hub Enterprise</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0614;
+      --panel-dark: #0f0a1f;
+      --card-purple: #180d30;
+      --purple-main: #a855f7;
+      --purple-dark: #6b21a8;
+      --cyan: #38bdf8;
+      --gold: #fde047;
+      --success: #34d399;
+      --danger: #ef4444;
+      --text: #ffffff;
+      --text-muted: #d8b4fe;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
+    html, body { width: 100%; height: 100%; background: var(--bg-dark); color: var(--text); overflow: hidden; display: flex; flex-direction: column; }
+
+    header {
+      height: 56px;
+      min-height: 56px;
+      background: linear-gradient(90deg, #180d30 0%, #26134b 50%, #180d30 100%);
+      border-bottom: 2px solid #581c87;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1000;
+      flex-shrink: 0;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .logo-icon {
+      width: 34px; height: 34px; border-radius: 8px; background: rgba(168, 85, 247, 0.2);
+      border: 1px solid rgba(192, 132, 252, 0.5); display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .main-nav-tabs { display: flex; gap: 8px; }
+    .main-tab-btn {
+      background: #120824; border: 1.5px solid #6b21a8; color: var(--text-muted);
+      padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; transition: 0.2s;
+    }
+    .main-tab-btn.active {
+      background: #9333ea; color: #fff; border-color: #c084fc; box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+    }
+
+    .app-section { display: none; width: 100%; height: calc(100vh - 56px); position: relative; }
+    .app-section.active { display: flex; }
+
+    /* Aba 1: Frete */
+    .frete-container { display: flex; width: 100%; height: 100%; position: relative; }
+    aside {
+      width: 430px; min-width: 430px; height: 100%; background: var(--panel-dark);
+      border-right: 2px solid #3b0764; padding: 14px; display: flex; flex-direction: column;
+      gap: 10px; overflow-y: auto; z-index: 500;
+    }
+    .status-box {
+      background: linear-gradient(145deg, #1f113d 0%, #150a2b 100%);
+      border: 1px solid #7e22ce; border-radius: 12px; padding: 12px; text-align: center;
+    }
+    .toll-box {
+      background: #1b1306; border: 1.5px solid #eab308; border-radius: 12px; padding: 12px;
+      display: none; flex-direction: column; gap: 6px; box-shadow: 0 4px 14px rgba(234, 179, 8, 0.25);
+    }
+    .antt-panel {
+      background: var(--card-purple); border: 1.5px solid var(--purple-main); border-radius: 12px; padding: 14px;
+      display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 16px rgba(168, 85, 247, 0.2);
+    }
+    .card-city {
+      background: rgba(30, 16, 61, 0.85); border: 1px solid #581c87; border-radius: 10px; padding: 10px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .btn-toggle {
+      background: var(--danger); color: #fff; border: none; padding: 3px 12px; border-radius: 4px;
+      font-size: 11px; font-weight: 800; cursor: pointer; min-width: 48px;
+    }
+    .btn-toggle.sim { background: #10b981; }
+    .btn-calc {
+      background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+      color: #fff; border: 1px solid #c084fc; padding: 6px 16px; font-size: 13px; font-weight: 800;
+      border-radius: 6px; cursor: pointer;
+    }
+
+    #map-wrapper {
+      flex: 1;
+      height: 100%;
+      position: relative;
+      background: #080410;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+    }
+    .leaflet-tile { filter: brightness(0.7) invert(1) contrast(3) hue-rotate(240deg) saturate(0.4) brightness(0.85); }
+    .leaflet-container { background: #080410 !important; }
+
+    /* Modal de Homónimos */
+    #modalHomonimos {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.85); z-index: 999999; display: none; align-items: center; justify-content: center;
+    }
+    .modal-card-homonimos {
+      background: #190c33; border: 2px solid #a855f7; border-radius: 16px;
+      width: 90%; max-width: 420px; padding: 20px; box-shadow: 0 0 35px rgba(168, 85, 247, 0.6);
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .modal-list { max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .btn-option {
+      background: #231247; border: 1px solid #7e22ce; color: #ffffff; padding: 12px 14px;
+      border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+      transition: background 0.2s;
+    }
+    .btn-option:hover { background: #9333ea; }
+    .uf-badge { background: #581c87; color: #e9d5ff; padding: 2px 8px; border-radius: 20px; font-size: 11px; }
+
+    /* Aba 2: JCIOT */
+    .jciot-container { width: 100%; height: 100%; overflow-y: auto; padding: 20px; background: #070b12; }
+    .jciot-content { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+    .glass-box {
+      background: rgba(14, 22, 36, 0.9); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 12px; padding: 18px;
+    }
+    .jciot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    @media(max-width: 900px) { .jciot-grid { grid-template-columns: 1fr; } }
+    .input-cyber {
+      width: 100%; background: #060a12; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff;
+      padding: 8px 10px; border-radius: 6px; font-size: 12.5px; outline: none;
+    }
+    .input-cyber:focus { border-color: #00f0ff; box-shadow: 0 0 8px rgba(0, 240, 255, 0.35); }
+    .btn-cyber {
+      background: linear-gradient(90deg, #0099ff 0%, #00f0ff 100%); color: #050b14;
+      font-weight: 800; padding: 10px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 13px;
+    }
+    .code-box {
+      font-family: 'JetBrains Mono', monospace; font-size: 11.5px; height: 180px; resize: vertical; white-space: pre-wrap;
+    }
+
+    /* Modal de Impressão */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-card {
+      background: #0d1524; border: 1px solid #00f0ff; border-radius: 10px; width: 100%; max-width: 800px;
+      max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: 0 0 30px rgba(0, 240, 255, 0.25);
+    }
+    .doc-section { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; margin-bottom: 10px; }
+    .doc-section-title { font-weight: 700; color: #00f0ff; margin-bottom: 6px; font-size: 11px; text-transform: uppercase; }
+    .doc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
+    .doc-grid div span { display: block; font-size: 9.5px; color: #8b949e; text-transform: uppercase; }
+    .doc-grid div strong { font-size: 11.5px; color: #fff; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="logo-icon">🚛</div>
+      <div>
+        <div style="font-weight: 800; font-size: 14px; font-family: 'Orbitron', sans-serif;">GEOLOG <span style="color: #c084fc;">TMS & JCIOT</span></div>
+        <div style="font-size: 10px; color: #d8b4fe; font-family: monospace;">CENTRAL LOGÍSTICA INTEGRADA</div>
+      </div>
+    </div>
+
+    <div class="main-nav-tabs">
+      <button class="main-tab-btn active" id="btnTabFrete" onclick="trocarAbaPrincipal('aba-frete')">🚛 1. Roteirizador & Pedágios</button>
+      <button class="main-tab-btn" id="btnTabCiot" onclick="trocarAbaPrincipal('aba-ciot')">⚡ 2. Emissor CIOT (e-Frete)</button>
+    </div>
+  </header>
+
+  <!-- ABA 1: ROTEIRIZADOR & PEDÁGIOS -->
+  <section id="aba-frete" class="app-section active">
+    <div class="frete-container">
+      <aside id="painelLateral">
+        
+        <div style="display: flex; gap: 6px;">
+          <input id="cid1" type="text" value="Pereiras" placeholder="Origem" style="width: 45%; background: #140b29; border: 1.5px solid #6b21a8; border-radius: 6px; padding: 6px 8px; color: #fff; font-size: 12px;">
+          <input id="cid2" type="text" value="Petropolis" placeholder="Destino" style="width: 45%; background: #140b29; border: 1.5px solid #6b21a8; border-radius: 6px; padding: 6px 8px; color: #fff; font-size: 12px;">
+          <button id="btnCalcular" onclick="executarPesquisa()" class="btn-calc">Ir</button>
+        </div>
+
+        <div class="status-box">
+          <div style="font-size: 10px; font-weight: 800; color: #c084fc; text-transform: uppercase;">Distância Rodoviária Real</div>
+          <div id="distTxt" style="font-size: 24px; font-weight: 900; color: #ffffff; margin-top: 2px;">-- km</div>
+          <div id="tempoTxt" style="font-size: 11px; color: #d8b4fe;">Aguardando cálculo...</div>
+        </div>
+
+        <div id="boxPedagios" class="toll-box">
+          <div style="display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 800; color: #fde047;">
+            <span>🪙 Praças de Pedágio Oficiais</span>
+            <span id="qtdPedagios" style="background: #eab308; color: #000; padding: 1px 6px; border-radius: 10px; font-size: 10px;">0</span>
+          </div>
+          <div style="font-size: 19px; font-weight: 900; color: #fde047;" id="txtTotalPedagio">R$ 0,00</div>
+          <div style="font-size: 10px; color: #fef08a;" id="txtDetalhePedagio">Tarifas Concessionárias</div>
+          <div id="listaPedagios" style="font-size: 10px; color: #fef08a; line-height: 1.4; max-height: 100px; overflow-y: auto; border-top: 1px dashed rgba(234, 179, 8, 0.4); padding-top: 4px;"></div>
+        </div>
+
+        <div class="antt-panel">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 13px; font-weight: 800; color: #38bdf8;">Calculadora de Frete</span>
+            <button onclick="exportarParaCiot()" style="background: #00f0ff; color: #000; border: none; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; cursor: pointer;">
+              🚀 EXPORTAR P/ CIOT
+            </button>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 3px;">
+            <label style="font-size: 10.5px; color: #d8b4fe; font-weight: 700;">Tipo de Carga</label>
+            <select id="anttTipoCarga" style="background: #120824; border: 1.5px solid #7e22ce; border-radius: 6px; padding: 5px; color: #fff; font-size: 11.5px;">
+              <option value="geral" selected>Carga Geral</option>
+              <option value="granel_solido">Granel Sólido</option>
+              <option value="granel_liquido">Granel Líquido</option>
+              <option value="frigorificada">Frigorificada</option>
+              <option value="perigosa">Carga Perigosa</option>
+              <option value="neogranel">Neogranel</option>
+            </select>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 3px;">
+              <label style="font-size: 10.5px; color: #d8b4fe; font-weight: 700;">Número de Eixos*</label>
+              <select id="anttNumEixos" onchange="executarPesquisa()" style="background: #120824; border: 1.5px solid #7e22ce; border-radius: 6px; padding: 5px; color: #fff; font-size: 11.5px;">
+                <option value="2">2 Eixos</option>
+                <option value="3" selected>3 Eixos</option>
+                <option value="4">4 Eixos</option>
+                <option value="5">5 Eixos</option>
+                <option value="6">6 Eixos</option>
+                <option value="7">7 Eixos</option>
+                <option value="9">9 Eixos</option>
+              </select>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 3px;">
+              <label style="font-size: 10.5px; color: #d8b4fe; font-weight: 700;">Distância</label>
+              <input id="anttDistancia" type="text" readonly style="background: #090414; border: 1.5px solid #7e22ce; border-radius: 6px; padding: 5px; color: #a855f7; font-weight: 800; font-size: 11.5px;">
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 10.5px;">Composição veicular?</span>
+            <button id="togComposicao" class="btn-toggle sim" onclick="alternarToggle(this)">Sim</button>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 10.5px;">Alto Desempenho?</span>
+            <button id="togDesempenho" class="btn-toggle" onclick="alternarToggle(this)">Não</button>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 10.5px;">Retorno Vazio?</span>
+            <button id="togRetorno" class="btn-toggle" onclick="alternarToggle(this)">Não</button>
+          </div>
+
+          <button onclick="calcularFreteOficial()" style="background: #06b6d4; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 800; font-size: 12px; cursor: pointer;">
+            Calcular Piso ANTT
+          </button>
+
+          <div id="resultadoAnttBox" style="display: none; background: #0c051a; border: 1px solid #10b981; border-radius: 8px; padding: 8px;">
+            <div style="font-size: 8.5px; color: #94a3b8; text-align: center; text-transform: uppercase;">RES. ANTT Nº 5.867/2020 (ATUALIZADA 2026)</div>
+            <div id="txtValorAntt" style="font-size: 22px; font-weight: 900; color: #38bdf8; text-align: center; margin: 3px 0;">R$ 0,00</div>
+            <div style="font-size: 9.5px; color: #d8b4fe; border-top: 1px dashed #7e22ce; padding-top: 4px; line-height: 1.4;">
+              <div><strong>Operação:</strong> <span id="txtOperacao"></span></div>
+              <div><strong>Valor de Ida:</strong> <span id="txtValorIda" style="color: #4ade80;"></span></div>
+              <div><strong>Retorno Vazio:</strong> <span id="txtValorRetorno" style="color: #facc15;"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="cardC1" class="card-city" style="display: none;">
+          <div style="display: flex; justify-content: space-between;"><strong id="nomeC1" style="color: #fff; font-size: 12px;"></strong><span id="ibgeC1" style="font-size: 9.5px; color: #d8b4fe;"></span></div>
+          <div style="font-size: 10.5px; color: #d8b4fe;">CEP: <span id="cepC1" style="color: #c084fc; font-weight: bold;"></span></div>
+        </div>
+        <div id="cardC2" class="card-city" style="display: none;">
+          <div style="display: flex; justify-content: space-between;"><strong id="nomeC2" style="color: #fff; font-size: 12px;"></strong><span id="ibgeC2" style="font-size: 9.5px; color: #d8b4fe;"></span></div>
+          <div style="font-size: 10.5px; color: #d8b4fe;">CEP: <span id="cepC2" style="color: #c084fc; font-weight: bold;"></span></div>
+        </div>
+
+        <a id="gmapsLink" target="_blank" style="display: none; background: #fff; color: #3b0764; text-align: center; padding: 8px; border-radius: 6px; font-weight: 800; font-size: 11px; text-decoration: none;">
+          🚗 ABRIR NO GOOGLE MAPS GPS
+        </a>
+      </aside>
+
+      <div id="map-wrapper">
+        <div id="map"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL DE HOMÓNIMOS -->
+  <div id="modalHomonimos">
+    <div class="modal-card-homonimos">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #6b21a8; padding-bottom: 8px;">
+        <h3 id="modalTitulo" style="font-size: 15px; font-weight: 800; color: #ffffff;">Selecione o Município</h3>
+        <span style="font-size: 10.5px; background: #581c87; padding: 2px 8px; border-radius: 12px; color: #e9d5ff;">Homónimos</span>
+      </div>
+      <p style="font-size: 11.5px; color: #d8b4fe;">Foram encontrados vários municípios. Escolha o estado correto:</p>
+      <div id="modalLista" class="modal-list"></div>
+    </div>
+  </div>
+
+  <!-- ABA 2: TRANSMISSOR JCIOT -->
+  <section id="aba-ciot" class="app-section">
+    <div class="jciot-container">
+      <div class="jciot-content">
+
+        <div class="glass-box" style="display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00f0ff; padding: 12px 18px;">
+          <div>
+            <h2 style="font-size: 13px; font-family: 'Orbitron', sans-serif; color: #00f0ff;">TRANSMISSOR e-FRETE & CIOT ANTT (V8)</h2>
+            <p style="font-size: 11px; color: #8b949e;">Envio direto mTLS com Certificado Digital A1</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button onclick="trocarSubAbaCiot('ciot-sub-transmissor')" class="main-tab-btn active" id="btnSubTransmissor">⚡ Transmissor XML</button>
+            <button onclick="trocarSubAbaCiot('ciot-sub-construtor')" class="main-tab-btn" id="btnSubConstrutor">📝 Construtor CIOT</button>
+          </div>
+        </div>
+
+        <div id="ciot-sub-transmissor">
+          <div class="jciot-grid">
+            <div class="glass-box">
+              <h3 style="font-size: 12.5px; color: #00f0ff; margin-bottom: 12px;">1. Autenticação A1 & Endpoint</h3>
+              
+              <div style="margin-bottom: 10px;">
+                <label style="font-size: 10.5px; color: #8b949e; display: block; margin-bottom: 3px;">Ambiente</label>
+                <select id="ciotAmbiente" class="input-cyber">
+                  <option value="PRODUCAO">🟢 PRODUÇÃO (sistema.efrete.com.br)</option>
+                  <option value="HOMOLOGACAO">🟡 HOMOLOGAÇÃO</option>
+                </select>
+              </div>
+
+              <div style="margin-bottom: 10px;">
+                <label style="font-size: 10.5px; color: #8b949e; display: block; margin-bottom: 3px;">Certificado Digital (.PFX A1) *</label>
+                <input type="file" id="ciotPfxInput" class="input-cyber" accept=".pfx,.p12">
+              </div>
+
+              <div style="margin-bottom: 10px;">
+                <label style="font-size: 10.5px; color: #8b949e; display: block; margin-bottom: 3px;">Senha do Certificado *</label>
+                <input type="password" id="ciotPfxPassword" class="input-cyber" placeholder="Senha do arquivo .pfx">
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 10.5px; color: #8b949e; display: block; margin-bottom: 3px;">URL Webservice</label>
+                <input type="text" id="ciotUrl" class="input-cyber" value="https://sistema.efrete.com.br/Services/PefServiceV2.asmx">
+              </div>
+
+              <button onclick="dispararTransmissaoCiot()" class="btn-cyber">TRANSMITIR CIOT e-FRETE</button>
+            </div>
+
+            <div class="glass-box">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="font-size: 12.5px; color: #00f0ff;">2. Envelope XML SOAP (Versão 8)</h3>
+                <button onclick="abrirModalImpressaoCiot()" style="background: transparent; border: 1px solid #ffd700; color: #ffd700; padding: 3px 8px; border-radius: 4px; font-size: 10.5px; cursor: pointer;">
+                  🖨️ Imprimir DOT / PDF
+                </button>
+              </div>
+
+              <textarea id="ciotXmlPayload" class="input-cyber code-box" placeholder="Envelope SOAP e-Frete..."></textarea>
+
+              <div style="margin-top: 8px;">
+                <label style="font-size: 10.5px; color: #8b949e; display: block; margin-bottom: 3px;">Retorno Oficial da IPEF:</label>
+                <div id="ciotRetornoArea" style="background: #04070d; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px; font-family: monospace; font-size: 10.5px; color: #38bdf8; min-height: 90px; max-height: 140px; overflow-y: auto; white-space: pre-wrap;">
+                  Aguardando envio...
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="ciot-sub-construtor" style="display: none;">
+          
+      <!-- FORMULÁRIO ERP COMPLETO (GEOLOG CIOT V8) -->
+      
+      <!-- FORMULÁRIO ERP COMPLETO EM GRELHA (GEOLOG CIOT V8) -->
+      <style>
+        .g-section { background: #0b1120; border: 1px solid #1e293b; border-radius: 8px; margin-bottom: 14px; padding: 14px; }
+        .g-title { font-size: 0.85rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        .g-grid { display: grid; gap: 10px; }
+        .g-grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .g-grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .g-grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .g-grid-6 { grid-template-columns: repeat(6, 1fr); }
+        .g-field { display: flex; flex-direction: column; gap: 3px; }
+        .g-label { font-size: 0.76rem; font-weight: 600; color: #94a3b8; }
+        .g-input { background: #1e293b; border: 1px solid #334155; color: #f8fafc; border-radius: 5px; padding: 5px 8px; font-size: 0.82rem; }
+        .g-input:focus { border-color: #38bdf8; outline: none; }
+        .g-subtitle { font-size: 0.74rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; grid-column: 1 / -1; margin-top: 6px; }
+      </style>
+
+      <div class="card p-3 my-2" style="background:#060a12; border:1px solid #1e293b; border-radius:8px;">
+        
+        <!-- BARRA DE IMPORTAÇÃO E AÇÕES -->
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom:1px solid #1e293b;">
+          <h5 class="m-0 fw-bold" style="color:#00d2ff; font-size:1.05rem;">Construtor Passo a Passo de Operação de Transporte (e-Frete V8)</h5>
+          <div class="d-flex align-items-center gap-2">
+            <span class="small text-muted">Carregar XML NF-e:</span>
+            <input type="file" id="cXmlNfe" accept=".xml" class="g-input" style="max-width:240px; padding:3px 6px;">
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="limparCamposConstrutor()">🗑️ Limpar</button>
+          </div>
+        </div>
+
+        <!-- 1. CONFIGURAÇÃO EMISSOR -->
+        <div class="g-section">
+          <div class="g-title">🏢 1. Configuração do Emissor e Integração</div>
+          <div class="g-grid g-grid-3">
+            <div class="g-field">
+              <label class="g-label">Hash Integrador:*</label>
+              <input type="text" id="cHashIntegrador" class="g-input" value="58e47cd2-8b54-4542-ba22-6941810dd7fa" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">CNPJ Matriz / Filial:*</label>
+              <input type="text" id="cCnpjMatriz" class="g-input" placeholder="00000000000000" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">ID Operação no ERP:*</label>
+              <input type="text" id="cIdOperacaoCliente" class="g-input" placeholder="Ex: 560000000001" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. CONTRATANTE E TRANSPORTADOR -->
+        <div class="g-section">
+          <div class="g-title">🤝 2. Contratante e Transportador Contratado</div>
+          <div class="g-grid g-grid-4">
+            <div class="g-subtitle">Contratante (Responsável pelo Pagamento)</div>
+            <div class="g-field">
+              <label class="g-label">CNPJ/CPF Contratante:*</label>
+              <input type="text" id="cCnpjContratante" class="g-input" placeholder="00000000000000" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">RNTRC Contratante:*</label>
+              <input type="text" id="cRntrcContratante" class="g-input" placeholder="00000000" required>
+            </div>
+            <div class="g-field" style="grid-column: span 2;">
+              <label class="g-label">Razão Social Contratante:*</label>
+              <input type="text" id="cRazaoContratante" class="g-input" placeholder="Nome empresarial" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">CEP:*</label>
+              <input type="text" id="cCepContratante" class="g-input" placeholder="00000000" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Cód. IBGE Município:*</label>
+              <input type="text" id="cMunContratante" class="g-input" placeholder="7 dígitos" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Número:*</label>
+              <input type="text" id="cNumContratante" class="g-input" placeholder="Ex: 100 ou SN" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Logradouro / Rua:*</label>
+              <input type="text" id="cRuaContratante" class="g-input" placeholder="Rua / Rodovia" required>
+            </div>
+
+            <div class="g-subtitle">Transportador Executor (Contratado)</div>
+            <div class="g-field" style="grid-column: span 2;">
+              <label class="g-label">CNPJ/CPF Contratado:*</label>
+              <input type="text" id="cCnpjContratado" class="g-input" placeholder="00000000000000" required>
+            </div>
+            <div class="g-field" style="grid-column: span 2;">
+              <label class="g-label">RNTRC Contratado:*</label>
+              <input type="text" id="cRntrcContratado" class="g-input" placeholder="00000000" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. MOTORISTA E VEÍCULOS -->
+        <div class="g-section">
+          <div class="g-title">🚚 3. Motorista Condutor & Frota</div>
+          <div class="g-grid g-grid-4">
+            <div class="g-subtitle">Dados do Motorista</div>
+            <div class="g-field">
+              <label class="g-label">CPF Motorista (11 dígitos):*</label>
+              <input type="text" id="cCpfMotorista" class="g-input" placeholder="00000000000" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">CNH do Motorista:*</label>
+              <input type="text" id="cCnhMotorista" class="g-input" placeholder="Número CNH" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">DDD:*</label>
+              <input type="text" id="cDddMotorista" class="g-input" placeholder="Ex: 11" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Telemóvel:*</label>
+              <input type="text" id="cTelMotorista" class="g-input" placeholder="Ex: 999999999" required>
+            </div>
+
+            <div class="g-subtitle">Veículos</div>
+            <div class="g-field">
+              <label class="g-label">Placa Cavalo (Trator):*</label>
+              <input type="text" id="cPlacaCavalo" class="g-input" placeholder="ABC1D23" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Placa Carreta (Reboque):</label>
+              <input type="text" id="cPlacaCarreta" class="g-input" placeholder="Opcional">
+            </div>
+            <div class="g-field" style="grid-column: span 2;">
+              <label class="g-label">Composição Veicular:*</label>
+              <select id="cCompVeicular" class="g-input">
+                <option value="false">Não (Veículo Único)</option>
+                <option value="true">Sim (Cavalo + Carreta)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. ROTA E NF-E -->
+        <div class="g-section">
+          <div class="g-title">📦 4. Viagem, Rota e Nota Fiscal Originária</div>
+          <div class="g-grid g-grid-4">
+            <div class="g-field">
+              <label class="g-label">Início Previsto Viagem:*</label>
+              <input type="datetime-local" id="cDataInicioViagem" class="g-input" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Fim Previsto Viagem:*</label>
+              <input type="datetime-local" id="cDataFimViagem" class="g-input" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Distância (Km):*</label>
+              <input type="number" id="cDistanciaKm" class="g-input" placeholder="Ex: 120" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Tipo Embalagem:*</label>
+              <select id="cTipoEmbalagem" class="g-input">
+                <option value="Caixa">Caixa</option>
+                <option value="Palete">Palete</option>
+                <option value="Granel">Granel</option>
+                <option value="Unitario">Unitário</option>
+              </select>
+            </div>
+
+            <div class="g-subtitle">Dados da NF-e</div>
+            <div class="g-field">
+              <label class="g-label">Número NF-e:*</label>
+              <input type="text" id="cNfeNumero" class="g-input" placeholder="Número" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Série:*</label>
+              <input type="text" id="cNfeSerie" class="g-input" placeholder="0" value="0" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">CNPJ Emissor da NF-e:*</label>
+              <input type="text" id="cNfeCnpjEmissor" class="g-input" placeholder="00000000000000" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Data Emissão NF-e:*</label>
+              <input type="datetime-local" id="cNfeDataEmissao" class="g-input" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">NCM Predominante:*</label>
+              <input type="text" id="cNcmCarga" class="g-input" placeholder="4 dígitos" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Peso Carga (Kg):*</label>
+              <input type="number" step="0.001" id="cPesoCarga" class="g-input" placeholder="Ex: 15000" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Valor Total NF-e (R$):*</label>
+              <input type="number" step="0.01" id="cNfeValorTotal" class="g-input" placeholder="Ex: 50000.00" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Descrição das Mercadorias:*</label>
+              <input type="text" id="cDescMercadoria" class="g-input" placeholder="Descrição resumida" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. DESTINATÁRIO -->
+        <div class="g-section">
+          <div class="g-title">📍 5. Destinatário da Carga (Endereço Completo Obrigatório)</div>
+          <div class="g-grid g-grid-4">
+            <div class="g-field">
+              <label class="g-label">CNPJ/CPF Destinatário:*</label>
+              <input type="text" id="cDestCnpj" class="g-input" placeholder="00000000000000" required>
+            </div>
+            <div class="g-field" style="grid-column: span 3;">
+              <label class="g-label">Razão Social Destinatário:*</label>
+              <input type="text" id="cDestRazao" class="g-input" placeholder="Razão social completa" required>
+            </div>
+            <div class="g-field" style="grid-column: span 2;">
+              <label class="g-label">Logradouro / Rua:*</label>
+              <input type="text" id="cDestRua" class="g-input" placeholder="Rua / Avenida / Rodovia" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Número:*</label>
+              <input type="text" id="cDestNumero" class="g-input" placeholder="Ex: 500 ou SN" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Bairro:*</label>
+              <input type="text" id="cDestBairro" class="g-input" placeholder="Bairro" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">CEP Destino:*</label>
+              <input type="text" id="cCepDestino" class="g-input" placeholder="00000000" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Cód. IBGE Destino:*</label>
+              <input type="text" id="cIbgeDestino" class="g-input" placeholder="7 dígitos" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">CEP Origem (Coleta):*</label>
+              <input type="text" id="cCepOrigem" class="g-input" placeholder="00000000" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Cód. IBGE Origem (Coleta):*</label>
+              <input type="text" id="cIbgeOrigem" class="g-input" placeholder="7 dígitos" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. VALORES, RETENÇÕES E PAGAMENTO -->
+        <div class="g-section">
+          <div class="g-title">💰 6. Valores do Frete, Retenções Tributárias e Dados Bancários</div>
+          <div class="g-grid g-grid-5" style="grid-template-columns: repeat(5, 1fr);">
+            <div class="g-field">
+              <label class="g-label">Valor Bruto Frete (R$):*</label>
+              <input type="number" step="0.01" id="cValorFreteBruto" class="g-input" placeholder="0.00" oninput="cCalcularLiquido()" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">IRRF Retido (R$):</label>
+              <input type="number" step="0.01" id="cImpostoIrrf" class="g-input" value="0.00" oninput="cCalcularLiquido()">
+            </div>
+            <div class="g-field">
+              <label class="g-label">INSS Retido (R$):</label>
+              <input type="number" step="0.01" id="cImpostoInss" class="g-input" value="0.00" oninput="cCalcularLiquido()">
+            </div>
+            <div class="g-field">
+              <label class="g-label">SEST/SENAT (R$):</label>
+              <input type="number" step="0.01" id="cImpostoSest" class="g-input" value="0.00" oninput="cCalcularLiquido()">
+            </div>
+            <div class="g-field">
+              <label class="g-label" style="color:#4ade80;">Valor Líquido (R$):*</label>
+              <input type="number" step="0.01" id="cValorFreteLiquido" class="g-input" style="color:#4ade80; font-weight:bold; background:#0f291e;" value="0.00" readonly>
+            </div>
+          </div>
+
+          <div class="g-grid g-grid-4 mt-2">
+            <div class="g-field">
+              <label class="g-label">Meio de Pagamento:*</label>
+              <select id="cTipoPagamento" class="g-input">
+                <option value="TransferenciaBancaria" selected>Transferência Bancária</option>
+                <option value="eFRETE">Saldo Conta e-Frete</option>
+              </select>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Cód. Banco (COMPE):*</label>
+              <input type="text" id="cBancoNum" class="g-input" placeholder="Ex: 237" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Agência (com dígito):*</label>
+              <input type="text" id="cBancoAgencia" class="g-input" placeholder="Ex: 0001-9" required>
+            </div>
+            <div class="g-field">
+              <label class="g-label">Conta (com dígito):*</label>
+              <input type="text" id="cBancoConta" class="g-input" placeholder="Ex: 12345-6" required>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-info w-100 py-2 fw-bold text-dark text-uppercase shadow-sm" style="background:#00d2ff; border:none; letter-spacing:0.5px;" onclick="compilarEEstruturarXml()">
+          COMPILAR XML E ENVIAR PARA O TRANSMISSOR
+        </button>
+      </div>
+
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL DE IMPRESSÃO -->
+  <div id="ciotPrintModal" class="modal-overlay">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #00f0ff; padding-bottom: 8px; margin-bottom: 12px;">
+        <h2 style="font-size: 12px; font-family: 'Orbitron', sans-serif; color: #00f0ff;">DECLARAÇÃO DE OPERAÇÃO DE TRANSPORTE (CIOT / e-Frete)</h2>
+        <div style="display: flex; gap: 8px;">
+          <button onclick="window.print()" style="background: #ffd700; color: #000; border: none; padding: 4px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">🖨️ IMPRIMIR</button>
+          <button onclick="fecharModalImpressao()" style="background: transparent; border: none; color: #fff; font-size: 15px; cursor: pointer;">✖</button>
+        </div>
+      </div>
+      <div id="ciotPrintDoc"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    let map = null;
+    let marker1 = null, marker2 = null, polyLayer1 = null, polyLayer2 = null, rotaPolyline = null;
+    let tollMarkers = [];
+    let kmAtual = 1;
+    let idOrigemAtual = "", idDestinoAtual = "";
+    let valorFreteCalculado = 0;
+    let dadosUltimaRota = {};
+
+    function initMap() {
+      if (map !== null) return;
+      const el = document.getElementById('map');
+      if (!el) return;
+
+      map = L.map('map', { preferCanvas: true }).setView([-22.75, -47.60], 10);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(map);
+
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 250);
+    }
+
+    function trocarAbaPrincipal(idAba) {
+      document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.remove('active'));
+      
+      const sec = document.getElementById(idAba);
+      if (sec) sec.classList.add('active');
+
+      if (idAba === 'aba-frete') {
+        document.getElementById('btnTabFrete').classList.add('active');
+        if (map) {
+          setTimeout(() => { map.invalidateSize(); }, 200);
+        }
+      } else {
+        document.getElementById('btnTabCiot').classList.add('active');
+      }
+    }
+
+    function trocarSubAbaCiot(idSub) {
+      document.getElementById('ciot-sub-transmissor').style.display = (idSub === 'ciot-sub-transmissor') ? 'block' : 'none';
+      document.getElementById('ciot-sub-construtor').style.display = (idSub === 'ciot-sub-construtor') ? 'block' : 'none';
+      document.getElementById('btnSubTransmissor').classList.toggle('active', idSub === 'ciot-sub-transmissor');
+      document.getElementById('btnSubConstrutor').classList.toggle('active', idSub === 'ciot-sub-construtor');
+    }
+
+    function alternarToggle(btn) {
+      if (btn.innerText === 'Não') {
+        btn.innerText = 'Sim';
+        btn.className = 'btn-toggle sim';
+      } else {
+        btn.innerText = 'Não';
+        btn.className = 'btn-toggle';
+      }
+    }
+
+    function abrirModalEscolha(candidatos, titulo) {
+      return new Promise((resolve) => {
+        const modal = document.getElementById('modalHomonimos');
+        const lista = document.getElementById('modalLista');
+        document.getElementById('modalTitulo').innerText = titulo;
+        lista.innerHTML = '';
+
+        candidatos.forEach(c => {
+          const btn = document.createElement('button');
+          btn.className = 'btn-option';
+          btn.innerHTML = `
+            <span>${c.nome} <span class="uf-badge">${c.uf}</span></span>
+            <span style="font-size: 11px; font-family: monospace; color: #d8b4fe;">IBGE: ${c.id}</span>
+          `;
+          btn.onclick = () => {
+            modal.style.display = 'none';
+            resolve(c);
+          };
+          lista.appendChild(btn);
+        });
+
+        modal.style.display = 'flex';
+      });
+    }
+
+    async function checarCidade(nome, label) {
+      const res = await fetch('/api/verificar_cidade?nome=' + encodeURIComponent(nome));
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || ('Município ' + nome + ' não encontrado'));
+      
+      if (data.total > 1) {
+        return await abrirModalEscolha(data.candidatos, 'Selecione: ' + label + ' (' + nome + ')');
+      }
+      return data.candidatos[0];
+    }
+
+    function renderizarPedagios(dadosPedagio) {
+      if (!map) return;
+      tollMarkers.forEach(m => map.removeLayer(m));
+      tollMarkers = [];
+
+      const box = document.getElementById('boxPedagios');
+      const qtd = document.getElementById('qtdPedagios');
+      const totalTxt = document.getElementById('txtTotalPedagio');
+      const detTxt = document.getElementById('txtDetalhePedagio');
+      const lista = document.getElementById('listaPedagios');
+
+      if (!dadosPedagio || !dadosPedagio.pedagios || dadosPedagio.pedagios.length === 0) {
+        box.style.display = 'none';
+        return;
+      }
+
+      box.style.display = 'flex';
+      qtd.innerText = dadosPedagio.quantidade;
+      totalTxt.innerText = 'R$ ' + dadosPedagio.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+      detTxt.innerText = `${dadosPedagio.origem_dados} (${dadosPedagio.quantidade} praças no percurso)`;
+
+      lista.innerHTML = dadosPedagio.pedagios.map((p) => {
+        const valFmt = p.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        const valTagFmt = p.valorTag.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        return `• <strong>${p.nome}</strong>: R$ ${valFmt} <span style="color:#34d399;">(TAG: R$ ${valTagFmt})</span>`;
+      }).join('<br>');
+
+      dadosPedagio.pedagios.forEach((p) => {
+        const tollIcon = L.divIcon({
+          className: 'toll-marker',
+          html: '<div style="background:#eab308; border:2px solid #fff; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; font-size:10px; box-shadow:0 0 8px #eab308; cursor:pointer;">🪙</div>',
+          iconSize: [20, 20],
+          iconAnchor: [10, 10]
+        });
+        const m = L.marker([p.lat, p.lon], { icon: tollIcon }).addTo(map)
+          .bindPopup(`<b>🪙 ${p.nome}</b><br>Tarifa: <strong>R$ ${p.valor.toFixed(2)}</strong><br>Com TAG: <strong>R$ ${p.valorTag.toFixed(2)}</strong><br><small style="color:#a855f7;">${p.rodovia}</small>`);
+        tollMarkers.push(m);
+      });
+    }
+
+    async function calcularFreteOficial() {
+      const distCalc = Math.max(1, Math.round(kmAtual));
+      const carga = document.getElementById('anttTipoCarga').value;
+      const eixos = document.getElementById('anttNumEixos').value;
+      const comp = document.getElementById('togComposicao').innerText === 'Sim';
+      const desp = document.getElementById('togDesempenho').innerText === 'Sim';
+      const ret = document.getElementById('togRetorno').innerText === 'Sim';
+
+      const url = `/api/calcular_antt?dist_km=${distCalc}&categoria=${carga}&eixos=${eixos}&composicao=${comp}&alto_desempenho=${desp}&retorno_vazio=${ret}`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      valorFreteCalculado = data.valor_total;
+      document.getElementById('resultadoAnttBox').style.display = 'block';
+      document.getElementById('txtValorAntt').innerText = 'R$ ' + data.valor_total.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+      document.getElementById('txtOperacao').innerText = data.operacao_transporte;
+      document.getElementById('txtValorIda').innerText = 'R$ ' + data.valor_ida.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+      document.getElementById('txtValorRetorno').innerText = 'R$ ' + data.valor_retorno.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    }
+
+    async function executarPesquisa() {
+      initMap();
+      const c1_raw = document.getElementById('cid1').value.trim();
+      const c2_raw = document.getElementById('cid2').value.trim();
+      const eixos = parseInt(document.getElementById('anttNumEixos').value) || 3;
+      const btn = document.getElementById('btnCalcular');
+
+      if (!c1_raw || !c2_raw) {
+        alert('Informe Origem e Destino!');
+        return;
+      }
+
+      btn.innerText = '...';
+      btn.disabled = true;
+
+      try {
+        const m1 = await checarCidade(c1_raw, 'Origem');
+        const m2 = await checarCidade(c2_raw, 'Destino');
+
+        idOrigemAtual = m1.id;
+        idDestinoAtual = m2.id;
+
+        const resCalc = await fetch(`/api/calcular?id_origem=${idOrigemAtual}&id_destino=${idDestinoAtual}&eixos=${eixos}`);
+        const dataCalc = await resCalc.json();
+        dadosUltimaRota = dataCalc;
+
+        if (polyLayer1) map.removeLayer(polyLayer1);
+        if (polyLayer2) map.removeLayer(polyLayer2);
+        if (marker1) map.removeLayer(marker1);
+        if (marker2) map.removeLayer(marker2);
+        if (rotaPolyline) map.removeLayer(rotaPolyline);
+
+        kmAtual = Math.max(1.0, dataCalc.distancia_rodoviaria_km);
+        document.getElementById('distTxt').innerText = kmAtual.toFixed(2) + ' km';
+        document.getElementById('tempoTxt').innerText = 'Tempo: ~' + dataCalc.tempo_estimado;
+        document.getElementById('anttDistancia').value = Math.max(1, Math.round(kmAtual));
+
+        document.getElementById('cardC1').style.display = 'flex';
+        document.getElementById('nomeC1').innerText = dataCalc.origem.municipio;
+        document.getElementById('ibgeC1').innerText = 'IBGE: ' + dataCalc.origem.ibge;
+        document.getElementById('cepC1').innerText = dataCalc.origem.cep;
+
+        document.getElementById('cardC2').style.display = 'flex';
+        document.getElementById('nomeC2').innerText = dataCalc.destino.municipio;
+        document.getElementById('ibgeC2').innerText = 'IBGE: ' + dataCalc.destino.ibge;
+        document.getElementById('cepC2').innerText = dataCalc.destino.cep;
+
+        const gmapsBtn = document.getElementById('gmapsLink');
+        gmapsBtn.style.display = 'block';
+        gmapsBtn.href = `https://www.google.com/maps/dir/?api=1&origin=${dataCalc.origem.lat},${dataCalc.origem.lon}&destination=${dataCalc.destino.lat},${dataCalc.destino.lon}&travelmode=driving`;
+
+        polyLayer1 = L.geoJSON(dataCalc.origem.geojson, { style: { color: '#c084fc', weight: 2.5, fillOpacity: 0.25, fillColor: '#9333ea' } }).addTo(map);
+        polyLayer2 = L.geoJSON(dataCalc.destino.geojson, { style: { color: '#f3e8ff', weight: 2.5, fillOpacity: 0.2, fillColor: '#7c3aed' } }).addTo(map);
+
+        marker1 = L.marker([dataCalc.origem.lat, dataCalc.origem.lon], { draggable: true }).addTo(map);
+        marker2 = L.marker([dataCalc.destino.lat, dataCalc.destino.lon], { draggable: true }).addTo(map);
+
+        rotaPolyline = L.polyline(dataCalc.coords_rota, { color: '#a855f7', weight: 5.5, opacity: 0.95 }).addTo(map);
+        renderizarPedagios(dataCalc.pedagios);
+
+        map.fitBounds(rotaPolyline.getBounds(), { padding: [40, 40] });
+        calcularFreteOficial();
+
+      } catch (err) {
+        alert('Erro ao calcular rota: ' + err.message);
+      } finally {
+        btn.innerText = 'Ir';
+        btn.disabled = false;
+      }
+    }
+
+    function exportarParaCiot() {
+      if (!dadosUltimaRota || !dadosUltimaRota.origem) {
+        alert('Calcule uma rota antes de exportar.');
+        return;
+      }
+
+      document.getElementById('f_distancia').value = Math.round(kmAtual);
+      document.getElementById('f_valorFrete').value = valorFreteCalculado > 0 ? valorFreteCalculado.toFixed(2) : "60000.00";
+      document.getElementById('f_ibgeOrigem').value = dadosUltimaRota.origem.ibge;
+      document.getElementById('f_cepOrigem').value = (dadosUltimaRota.origem.cep || '').replace(/\D/g, '');
+      document.getElementById('f_ibgeDestino').value = dadosUltimaRota.destino.ibge;
+      document.getElementById('f_cepDestino').value = (dadosUltimaRota.destino.cep || '').replace(/\D/g, '');
+
+      compilarFormularioParaXml();
+      trocarAbaPrincipal('aba-ciot');
+      alert('✅ Dados de rota e frete exportados para o CIOT e-Frete!');
+    }
+
+    
+    // Leitura dinamica do PFX
+    async function checarCertificadoDinamico() {
+      const fileInput = document.getElementById('ciotPfxInput');
+      const password = document.getElementById('ciotPfxPassword').value;
+      if (!fileInput.files || fileInput.files.length === 0 || !password) return;
+
+      const formData = new FormData();
+      formData.append('pfxFile', fileInput.files[0]);
+      formData.append('pfxPassword', password);
+
+      try {
+        const resp = await fetch('/api/inspecionar_pfx', { method: 'POST', body: formData });
+        const data = await resp.json();
+        if (data.sucesso) {
+          const badge = document.getElementById('badgeEmitenteDinamico');
+          if (badge) {
+            badge.innerText = `EMITENTE: ${data.razao_social} (${data.cnpj})`;
+            badge.style.color = '#34d399';
+          }
+          document.getElementById('f_cnpjContratante').value = data.cnpj;
+          compilarFormularioParaXml();
+        }
+      } catch (e) {
+        console.warn('Erro ao inspecionar PFX:', e);
+      }
+    }
+
+    document.getElementById('ciotPfxPassword').addEventListener('blur', checarCertificadoDinamico);
+    document.getElementById('ciotPfxInput').addEventListener('change', checarCertificadoDinamico);
+
+    function compilarFormularioParaXml() {
+      const d = {
+        cnpjContratante: document.getElementById('f_cnpjContratante').value.replace(/\D/g, ''),
+        cnpjContratado: document.getElementById('f_cnpjContratado').value.replace(/\D/g, ''),
+        rntrc: document.getElementById('f_rntrc').value.replace(/\D/g, ''),
+        idOperacao: document.getElementById('f_idOperacao').value.trim(),
+        valorFrete: parseFloat(document.getElementById('f_valorFrete').value || 0).toFixed(2),
+        distancia: document.getElementById('f_distancia').value,
+        ibgeOrigem: document.getElementById('f_ibgeOrigem').value,
+        cepOrigem: document.getElementById('f_cepOrigem').value,
+        ibgeDestino: document.getElementById('f_ibgeDestino').value,
+        cepDestino: document.getElementById('f_cepDestino').value,
+        placa: document.getElementById('f_placa').value.trim().toUpperCase()
+      };
+
+      const xml = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <AdicionarOperacaoTransporte xmlns="http://schemas.ipc.adm.br/efrete/pefV2">
+      <AdicionarOperacaoTransporteRequest xmlns="http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte">
+        <Versao xmlns="http://schemas.ipc.adm.br/efrete/objects">8</Versao>
+        <Integrador>58e47cd2-8b54-4542-ba22-6941810dd7fa</Integrador>
+        <TipoViagem xmlns="http://schemas.ipc.adm.br/efrete/pefV2/objects">Padrao</TipoViagem>
+        <TipoPagamento xmlns="http://schemas.ipc.adm.br/efrete/pefV2/objects">TransferenciaBancaria</TipoPagamento>
+        <MatrizCNPJ>${d.cnpjContratante}</MatrizCNPJ>
+        <FilialCNPJ>${d.cnpjContratante}</FilialCNPJ>
+        <IdOperacaoCliente>${d.idOperacao}</IdOperacaoCliente>
+        <DataInicioViagem>2026-09-24T08:00:00</DataInicioViagem>
+        <DataFimViagem>2026-09-25T18:00:00</DataFimViagem>
+        <CodigoNCMNaturezaCarga>2204</CodigoNCMNaturezaCarga>
+        <PesoCarga>5375.56</PesoCarga>
+        <CodigoTipoCarga>5</CodigoTipoCarga>
+        <AltoDesempenho>false</AltoDesempenho>
+        <Viagens>
+          <DocumentoViagem>${d.idOperacao}</DocumentoViagem>
+          <CodigoMunicipioOrigem>${d.ibgeOrigem}</CodigoMunicipioOrigem>
+          <CodigoMunicipioDestino>${d.ibgeDestino}</CodigoMunicipioDestino>
+          <CepOrigem>${d.cepOrigem}</CepOrigem>
+          <CepDestino>${d.cepDestino}</CepDestino>
+          <DistanciaPercorrida>${d.distancia}</DistanciaPercorrida>
+          <Valores xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">
+            <TotalOperacao>${d.valorFrete}</TotalOperacao>
+            <TotalViagem>${d.valorFrete}</TotalViagem>
+            <TotalDeAdiantamento>0.00</TotalDeAdiantamento>
+            <TotalDeQuitacao>${d.valorFrete}</TotalDeQuitacao>
+            <Combustivel>0.00</Combustivel>
+            <Pedagio>0.00</Pedagio>
+            <Seguro>0.00</Seguro>
+          </Valores>
+          <TipoPagamento xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">TransferenciaBancaria</TipoPagamento>
+          <InformacoesBancarias xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">
+            <InstituicaoBancaria>237</InstituicaoBancaria>
+            <Agencia>28258</Agencia>
+            <Conta>29856-8</Conta>
+            <TipoConta>ContaCorrente</TipoConta>
+          </InformacoesBancarias>
+        </Viagens>
+        <Pagamentos>
+          <IdPagamentoCliente>PAG-${d.idOperacao}-1</IdPagamentoCliente>
+          <DataDeLiberacao>2026-09-25T18:00:00</DataDeLiberacao>
+          <Valor>${d.valorFrete}</Valor>
+          <TipoPagamento xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">TransferenciaBancaria</TipoPagamento>
+          <Categoria xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">Quitacao</Categoria>
+          <InformacoesBancarias xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">
+            <InstituicaoBancaria>237</InstituicaoBancaria>
+            <Agencia>28258</Agencia>
+            <Conta>29856-8</Conta>
+            <TipoConta>ContaCorrente</TipoConta>
+          </InformacoesBancarias>
+          <CpfCnpjCreditado>${d.cnpjContratado}</CpfCnpjCreditado>
+          <IndicadorPagamento>AVista</IndicadorPagamento>
+          <NumeroParcela>1</NumeroParcela>
+        </Pagamentos>
+        <Contratado>
+          <CpfOuCnpj>${d.cnpjContratado}</CpfOuCnpj>
+          <RNTRC>${d.rntrc}</RNTRC>
+        </Contratado>
+        <Motorista>
+          <CpfOuCnpj>${d.cnpjContratado}</CpfOuCnpj>
+          <Nome>MOTORISTA CONDUTOR</Nome>
+        </Motorista>
+        <Destinatario xmlns="http://schemas.ipc.adm.br/efrete/pefV2/objects">
+          <CpfOuCnpj>${d.cnpjContratado}</CpfOuCnpj>
+        </Destinatario>
+        <Veiculos>
+          <Placa xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${d.placa}</Placa>
+        </Veiculos>
+        <ComposicaoVeicular>false</ComposicaoVeicular>
+        <RetornoVazio>false</RetornoVazio>
+      </AdicionarOperacaoTransporteRequest>
+    </AdicionarOperacaoTransporte>
+  </soap:Body>
+</soap:Envelope>`;
+
+      document.getElementById('ciotXmlPayload').value = xml.trim();
+      trocarSubAbaCiot('ciot-sub-transmissor');
+    }
+
+    async function dispararTransmissaoCiot() {
+      const fileInput = document.getElementById('ciotPfxInput');
+      const password = document.getElementById('ciotPfxPassword').value;
+      const xml = document.getElementById('ciotXmlPayload').value.trim();
+      const retBox = document.getElementById('ciotRetornoArea');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Selecione o arquivo .PFX do Certificado Digital.');
+        return;
+      }
+      if (!password) {
+        alert('Informe a senha do Certificado Digital.');
+        return;
+      }
+      if (!xml) {
+        alert('O XML SOAP está vazio.');
+        return;
+      }
+
+      retBox.innerHTML = '<span style="color: #ffd700;">[CONECTANDO] Negociando mTLS com a e-Frete em PRODUÇÃO...\n[TRANSMISSÃO] Enviando envelope SOAP Versão 8...</span>';
+
+      const formData = new FormData();
+      formData.append('pfxFile', fileInput.files[0]);
+      formData.append('pfxPassword', password);
+      formData.append('xmlPayload', xml);
+      formData.append('url', document.getElementById('ciotUrl').value.trim());
+
+      try {
+        const resp = await fetch('/api/transmitir', { method: 'POST', body: formData });
+        const data = await resp.json();
+
+        if (data.sucesso) {
+          retBox.innerHTML = `<span style="color: #34d399; font-weight: bold;">[HTTP ${data.status_code}] RESPOSTA RECEBIDA DA e-FRETE:</span>\n\n` + data.resposta.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          window.lastXmlCiotResponse = data.resposta;
+        } else {
+          retBox.innerHTML = `<span style="color: #ef4444; font-weight: bold;">[ERRO]:</span> ` + data.erro;
+        }
+      } catch (err) {
+        retBox.innerHTML = `<span style="color: #ef4444;">[ERRO]: Falha na requisição local: ${err.message}</span>`;
+      }
+    }
+
+    function abrirModalImpressaoCiot() {
+      let ciot = 'Aguardando Emissão', protocolo = 'Não registrado';
+      if (window.lastXmlCiotResponse) {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(window.lastXmlCiotResponse, 'text/xml');
+        ciot = xmlDoc.getElementsByTagName('NumeroCIOT')[0]?.textContent || ciot;
+        protocolo = xmlDoc.getElementsByTagName('Protocolo')[0]?.textContent || protocolo;
+      }
+
+      const doc = document.getElementById('ciotPrintDoc');
+      doc.innerHTML = `
+        <div style="text-align: center; margin-bottom: 14px;">
+          <h1 style="font-size: 14px; color: #00f0ff;">DECLARAÇÃO DE OPERAÇÃO DE TRANSPORTE (CIOT / e-Frete)</h1>
+          <p style="font-size: 10px; color: #8b949e;">Conforme Resolução ANTT nº 5.862/2019 e Lei nº 13.703/2018</p>
+        </div>
+        <div class="doc-section">
+          <div class="doc-section-title">Autorização</div>
+          <div class="doc-grid">
+            <div><span>Número CIOT:</span><strong>${ciot}</strong></div>
+            <div><span>Protocolo IPEF:</span><strong>${protocolo}</strong></div>
+            <div><span>Modalidade:</span><strong>Gratuita (Transferência Bancária)</strong></div>
+          </div>
+        </div>
+        <div class="doc-section">
+          <div class="doc-section-title">Operação & Valores</div>
+          <div class="doc-grid">
+            <div><span>Contratante:</span><strong>${document.getElementById('f_cnpjContratante').value}</strong></div>
+            <div><span>Contratado:</span><strong>${document.getElementById('f_cnpjContratado').value}</strong></div>
+            <div><span>RNTRC:</span><strong>${document.getElementById('f_rntrc').value}</strong></div>
+            <div><span>Valor Frete:</span><strong>R$ ${parseFloat(document.getElementById('f_valorFrete').value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong></div>
+            <div><span>Distância:</span><strong>${document.getElementById('f_distancia').value} km</strong></div>
+            <div><span>Veículo:</span><strong>${document.getElementById('f_placa').value}</strong></div>
+          </div>
+        </div>
+      `;
+      document.getElementById('ciotPrintModal').classList.add('active');
+    }
+
+    function fecharModalImpressao() {
+      document.getElementById('ciotPrintModal').classList.remove('active');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initMap();
+      compilarFormularioParaXml();
+      executarPesquisa();
+    });
+  </script>
+</body>
+</html>
