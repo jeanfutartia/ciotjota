@@ -64,21 +64,20 @@
     .tab-btn:hover { color: #fff; border-color: var(--rino-cyan); }
     .tab-btn.active { background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue)); color: #fff; border-color: var(--rino-cyan); box-shadow: 0 0 15px rgba(0, 210, 255, 0.35); }
 
-    /* BARRA DE BUSCA */
+    /* CAMPOS E INPUTS */
     .search-bar { display: flex; gap: 6px; }
     .input-dark { background: #050a18; border: 1px solid var(--border-rino); color: #fff; border-radius: 8px; padding: 8px 12px; font-size: 0.85rem; width: 100%; }
     .input-dark:focus { border-color: var(--rino-cyan); outline: none; background: #050a18; color: #fff; box-shadow: 0 0 10px rgba(0, 210, 255, 0.2); }
     .btn-go { background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue)); color: #fff; border: none; border-radius: 8px; padding: 0 20px; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
     .btn-go:hover { opacity: 0.9; }
 
-    /* CARDS ESCUROS RINO */
+    /* CARDS */
     .card-box { background: var(--bg-card); border: 1px solid var(--border-rino); border-radius: 12px; padding: 14px; }
     .card-distancia { text-align: center; border-color: var(--border-glow); background: linear-gradient(180deg, rgba(0, 210, 255, 0.05), var(--bg-card)); }
     .card-distancia .title { font-size: 0.68rem; font-weight: 900; letter-spacing: 1.2px; color: var(--rino-cyan); text-transform: uppercase; margin-bottom: 2px; }
     .card-distancia .km { font-size: 2.3rem; font-weight: 900; color: #fff; line-height: 1.1; }
     .card-distancia .sub { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; margin-top: 4px; }
 
-    /* CARDS DE DIVISAS E CEPS */
     .card-cidade { margin-bottom: 8px; }
     .card-cidade-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
     .card-cidade-nome { font-size: 1rem; font-weight: 800; color: #fff; }
@@ -88,12 +87,11 @@
     .cidade-cep { font-size: 0.88rem; font-weight: 800; color: var(--rino-cyan); }
     .box-coords { border: 1px dashed var(--border-rino); background: rgba(0, 210, 255, 0.02); border-radius: 8px; padding: 6px 12px; font-size: 0.76rem; font-weight: 800; color: #94a3b8; display: flex; justify-content: space-between; margin-top: 8px; }
 
-    /* CALCULADORA DE FRETE RINO */
+    /* CALCULADORA DE FRETE */
     .calc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .calc-title { font-size: 0.88rem; font-weight: 900; color: var(--rino-cyan); text-transform: uppercase; letter-spacing: 0.5px; }
     .btn-export-ciot { background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue)); color: #fff; font-size: 0.7rem; font-weight: 800; border: none; border-radius: 6px; padding: 5px 12px; cursor: pointer; text-decoration: none; transition: 0.2s; }
-    .btn-export-ciot:hover { opacity: 0.9; }
-
+    
     .field-group { margin-bottom: 10px; }
     .field-label { font-size: 0.74rem; font-weight: 700; color: #cbd5e1; margin-bottom: 4px; display: block; }
     .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
@@ -102,14 +100,10 @@
     .btn-toggle.sim { background: var(--green); color: #fff; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
     .btn-toggle.nao { background: var(--red); color: #fff; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
 
-    .btn-calc-piso { background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue)); color: #fff; border: none; border-radius: 8px; width: 100%; padding: 11px; font-weight: 900; font-size: 0.86rem; cursor: pointer; margin-top: 6px; transition: 0.2s; }
-    .btn-calc-piso:hover { opacity: 0.9; box-shadow: 0 0 15px rgba(0, 210, 255, 0.4); }
+    .btn-calc-piso { background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue)); color: #fff; border: none; border-radius: 8px; width: 100%; padding: 11px; font-weight: 900; font-size: 0.86rem; cursor: pointer; margin-top: 6px; }
+    .btn-gps { background: #fff; color: #000; border: none; border-radius: 8px; width: 100%; padding: 10px; font-weight: 900; font-size: 0.82rem; cursor: pointer; margin-top: 8px; text-align: center; text-decoration: none; display: block; }
 
-    .btn-gps { background: #fff; color: #000; border: none; border-radius: 8px; width: 100%; padding: 10px; font-weight: 900; font-size: 0.82rem; cursor: pointer; margin-top: 8px; text-align: center; text-decoration: none; display: block; transition: 0.2s; }
-    .btn-gps:hover { background: #f1f5f9; color: #000; }
-
-    /* SEÇÃO EMISSOR CIOT ERP (ABA 2) */
-    #aba-ciot { display: none; width: 100%; height: 100%; padding: 25px 2rem; overflow-y: auto; background: var(--bg-dark); }
+    /* SEÇÕES DE FORMULÁRIO CIOT */
     .g-section { background: var(--bg-card); border: 1px solid var(--border-rino); border-radius: 10px; margin-bottom: 14px; padding: 16px; }
     .g-title { font-size: 0.84rem; font-weight: 800; color: var(--rino-cyan); text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
     .g-grid { display: grid; gap: 10px; }
@@ -119,32 +113,11 @@
     .g-grid-5 { grid-template-columns: repeat(5, 1fr); }
     .g-subtitle { font-size: 0.74rem; font-weight: 800; color: #38bdf8; text-transform: uppercase; grid-column: 1 / -1; margin-top: 6px; }
 
-    /* MODAL NATIVO */
-    .ciot-modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(4, 8, 20, 0.85); backdrop-filter: blur(8px); z-index: 99999; align-items: center; justify-content: center; }
+    /* MODAIS */
+    .ciot-modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(4, 8, 20, 0.85); backdrop-filter: blur(8px); z-index: 999999; align-items: center; justify-content: center; }
     .ciot-modal-box { background: var(--bg-card); border: 1px solid var(--border-rino); border-radius: 16px; padding: 28px; width: 90%; max-width: 440px; box-shadow: 0 10px 40px rgba(0, 210, 255, 0.25); position: relative; }
     .ciot-modal-close { position: absolute; top: 14px; right: 18px; background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
-    .ciot-modal-close:hover { color: #fff; }
-    .city-select-btn { background: #070f26; border: 1px solid var(--border-rino); color: #fff; text-align: left; padding: 12px 14px; border-radius: 8px; margin-bottom: 8px; width: 100%; cursor: pointer; transition: 0.2s; }
-    .city-select-btn:hover { border-color: var(--rino-cyan); background: #0c1b40; }
-  
-    /* FORÇAR VISIBILIDADE DO MODAL LOGIN */
-    #loginModalCustom {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(4, 8, 20, 0.88);
-      backdrop-filter: blur(8px);
-      z-index: 999999 !important;
-      align-items: center;
-      justify-content: center;
-    }
-    #loginModalCustom .ciot-modal-box {
-      z-index: 1000000 !important;
-    }
-
+    .city-select-btn { background: #070f26; border: 1px solid var(--border-rino); color: #fff; text-align: left; padding: 12px 14px; border-radius: 8px; margin-bottom: 8px; width: 100%; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -176,7 +149,6 @@
         <button class="tab-btn active" id="btn-tab-1" onclick="mudarAbaPrincipal('roteirizador')">🚛 1. Roteirizador & Pedágios</button>
         <button class="tab-btn" id="btn-tab-2" onclick="mudarAbaPrincipal('ciot')">⚡ 2. Construtor & Emissor CIOT</button>
         <button class="tab-btn" id="btn-tab-3" onclick="mudarAbaPrincipal('historico')">📋 3. Painel de CIOTs Emitidos</button>
-        <button class="tab-btn" id="btn-tab-3" onclick="mudarAbaPrincipal('historico')">📋 3. Painel de CIOTs Emitidos</button>
       </div>
       
       <span class="small text-muted d-none d-lg-inline">Operador: <strong class="text-info" id="userEmailSpan"></strong></span>
@@ -191,7 +163,7 @@
       <h1 class="hero-title">Roteirização Inteligente & <span>Emissão de CIOT ANTT</span></h1>
       <p class="hero-desc">Desambiguação automática de cidades homônimas com base no IBGE, cálculo de pedágios por eixo, piso mínimo regulatório e transmissão de CIOT direto via mTLS.</p>
       <div class="d-flex gap-3 justify-content-center">
-        <button type="button" class="btn-rino px-4 py-2" id="heroBtnEntrar" onclick="abrirModalLogin()">Entrar no Sistema</button>
+        <button type="button" class="btn-rino px-4 py-2" onclick="abrirModalLogin()">Entrar no Sistema</button>
         <a href="#planos" class="btn btn-outline-secondary px-4 py-2" style="border-color: var(--border-rino); color: #cbd5e1;">Ver Tabela de Planos</a>
       </div>
     </section>
@@ -204,8 +176,6 @@
         <p class="text-muted" style="max-width: 600px; margin: 0 auto;">Sem taxas ocultas ou mensalidades pesadas. Ative a plataforma e pague centavos por documento emitido.</p>
       </div>
       <div class="row g-4 justify-content-center">
-        
-        <!-- PLANO 1: BASE PAY-PER-DOC -->
         <div class="col-lg-4 col-md-6">
           <div class="pricing-card pricing-featured h-100">
             <span class="badge position-absolute top-0 end-0 m-3" style="background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue));">Mais Popular</span>
@@ -225,44 +195,39 @@
           </div>
         </div>
 
-        <!-- PLANO 2: PRO FLEET -->
         <div class="col-lg-4 col-md-6">
           <div class="pricing-card h-100">
             <h5 class="fw-bold text-info">Pro Fleet</h5>
-            <p class="small text-muted mb-3">Para pequenas transportadoras com emissões semanais regulares.</p>
+            <p class="small text-muted mb-3">Para pequenas transportadoras com emissões regulares.</p>
             <div class="price-val">R$ 79,90<small>/mês</small></div>
             <div class="small fw-bold text-success mb-3">Inclui 50 docs (R$ 0,60 excedente)</div>
             <ul class="price-features">
               <li>Tudo do Plano Essencial</li>
-              <li>50 documentos/CIOTs já inclusos</li>
+              <li>50 documentos/CIOTs inclusos</li>
               <li>R$ 0,60 por documento extra</li>
-              <li>Módulo de retenções fiscais (IR/INSS/SEST)</li>
-              <li>Exportação XML direta para MDF-e</li>
-              <li>Suporte prioritário via WhatsApp</li>
+              <li>Módulo de retenções (IR/INSS/SEST)</li>
+              <li>Recibo oficial para impressão em PDF</li>
             </ul>
             <button type="button" class="btn btn-outline-info w-100 mt-auto py-2" onclick="abrirModalLogin()">Escolher Pro Fleet</button>
           </div>
         </div>
 
-        <!-- PLANO 3: UNLIMITED -->
         <div class="col-lg-4 col-md-6">
           <div class="pricing-card h-100">
             <h5 class="fw-bold text-info">Transportador Top</h5>
-            <p class="small text-muted mb-3">Para médias e grandes transportadoras com alta volumetria.</p>
+            <p class="small text-muted mb-3">Para médias e grandes transportadoras com alta demanda.</p>
             <div class="price-val">R$ 149,90<small>/mês</small></div>
             <div class="small fw-bold text-warning mb-3">Emissões Ilimitadas (Zero por doc)</div>
             <ul class="price-features">
               <li>Emissões CIOT 100% ilimitadas</li>
               <li>Sem custo adicional por documento</li>
               <li>Multi-usuários e filiais</li>
-              <li>Integração Webhook / API ERP</li>
-              <li>Relatórios gerenciais consolidados</li>
-              <li>Consultoria de homologação ANTT</li>
+              <li>Histórico gerencial completo</li>
+              <li>Suporte prioritário via WhatsApp</li>
             </ul>
             <button type="button" class="btn btn-outline-info w-100 mt-auto py-2" onclick="abrirModalLogin()">Escolher Ilimitado</button>
           </div>
         </div>
-
       </div>
     </section>
   </main>
@@ -275,8 +240,6 @@
       
       <!-- SIDEBAR LATERAL (440px) -->
       <div class="sidebar-left">
-        
-        <!-- BARRA DE BUSCA -->
         <div class="search-bar">
           <input type="text" id="inputOrigem" class="input-dark" placeholder="Origem (Ex: Cascavel)" value="Cascavel">
           <input type="text" id="inputDestino" class="input-dark" placeholder="Destino (Ex: Rio das Pedras)" value="Rio das Pedras">
@@ -292,7 +255,6 @@
 
         <!-- CARDS DE ORIGEM E DESTINO (DIVISA E CEPS) -->
         <div id="containerCardsDivisas" style="display:none;">
-          <!-- Card Origem -->
           <div class="card-box card-cidade">
             <div class="card-cidade-header">
               <span class="card-cidade-nome" id="cardOriNome">Cascavel/PR</span>
@@ -306,7 +268,6 @@
             </div>
           </div>
 
-          <!-- Card Destino -->
           <div class="card-box card-cidade">
             <div class="card-cidade-header">
               <span class="card-cidade-nome" id="cardDestNome">Rio das Pedras/SP</span>
@@ -387,8 +348,8 @@
       </div>
     </div>
 
-    <!-- ABA 2: CONSTRUTOR ERP CIOT V8 E TRANSMISSÃO MTLS COMPLETO -->
-    <div id="aba-ciot">
+    <!-- ABA 2: CONSTRUTOR ERP CIOT V8 E TRANSMISSÃO MTLS -->
+    <div id="aba-ciot" style="display:none; width: 100%; height: 100%; padding: 25px 2rem; overflow-y: auto; background: var(--bg-dark);">
       <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom:1px solid var(--border-rino);">
         <div>
           <h4 class="m-0 fw-bold" style="color:var(--rino-cyan);">Construtor & Emissor de CIOT (ANTT e-Frete V8)</h4>
@@ -447,7 +408,7 @@
           </div>
           <div>
             <label class="field-label">Número:*</label>
-            <input type="text" id="cNumContratante" class="input-dark" placeholder="Ex: SN" required>
+            <input type="text" id="cNumContratante" class="input-dark" placeholder="Ex: SN" value="SN" required>
           </div>
           <div>
             <label class="field-label">Logradouro / Rua Contratante:*</label>
@@ -658,7 +619,7 @@
         ⚡ COMPILAR XML SOAP V8 E PREPARAR TRANSMISSÃO
       </button>
 
-      <!-- TRANSMISSÃO COM CERTIFICADO A1 -->
+      <!-- SEÇÃO 7: TRANSMISSÃO COM CERTIFICADO A1 (.PFX) -->
       <div class="g-section">
         <div class="g-title">🔐 7. Transmissão com Certificado Digital A1 (.pfx)</div>
         <div class="row g-2 align-items-center">
@@ -678,19 +639,38 @@
         </div>
 
         <div class="mt-3">
-          <label class="field-label">XML SOAP Compilado:</label>
-          <textarea id="envelopeXmlArea" class="input-dark mb-2" style="height:180px; font-family:monospace; font-size:0.78rem; color:#38bdf8;" placeholder="O XML compilado aparecerá aqui..."></textarea>
-
           <div class="d-flex justify-content-between align-items-center mb-1">
-            <span class="small fw-bold text-info">📡 Protocolo e Retorno da ANTT / e-Frete</span>
-            <span class="badge bg-secondary" id="ciotStatusBadge">Aguardando Envio</span>
+            <label class="field-label m-0">XML SOAP Compilado para Envio:</label>
+            <button type="button" class="btn btn-sm btn-outline-info py-0 px-2" onclick="navigator.clipboard.writeText(document.getElementById('envelopeXmlArea').value); alert('XML copiado!');">📋 Copiar XML</button>
           </div>
-          <pre id="ciotResponseArea" style="background:#030712; color:#00ff88; padding:12px; border-radius:8px; font-size:0.8rem; max-height:200px; overflow:auto; margin:0;">// O resultado da autorização e número do CIOT será exibido aqui...</pre>
+          <textarea id="envelopeXmlArea" class="input-dark mb-3" style="height:150px; font-family:monospace; font-size:0.75rem; color:#38bdf8;" placeholder="O XML compilado aparecerá aqui..."></textarea>
+
+          <!-- CONSOLE DE LOG EMBUTIDO EM TEMPO REAL -->
+          <div style="background:#020617; border: 1px solid var(--border-rino); border-radius: 10px; overflow: hidden;">
+            <div class="d-flex justify-content-between align-items-center px-3 py-2" style="background: #09132b; border-bottom: 1px solid var(--border-rino);">
+              <div class="d-flex align-items-center gap-2">
+                <span style="font-size: 0.9rem;">📟</span>
+                <span class="small fw-bold text-white">Console de Diagnóstico & Retorno ANTT / e-Frete</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-secondary" id="ciotStatusBadge">Aguardando Envio</span>
+                <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 text-white" onclick="document.getElementById('ciotLogTerminal').innerHTML = ''; document.getElementById('ciotResponseArea').textContent = '';">Limpar Log</button>
+              </div>
+            </div>
+
+            <div id="ciotLogTerminal" style="padding: 10px 14px; font-family: 'Courier New', monospace; font-size: 0.78rem; color: #94a3b8; max-height: 140px; overflow-y: auto; border-bottom: 1px solid #1e293b;">
+              <div>[INFO] Sistema pronto para transmissão mTLS via e-Frete V8.</div>
+            </div>
+
+            <div class="p-2" style="background:#010409;">
+              <div class="small fw-bold px-2 py-1 text-info">Retorno Bruto da SEFAZ / e-Frete (Raw Response):</div>
+              <pre id="ciotResponseArea" style="background:#030712; color:#00ff88; padding:12px; border-radius:6px; font-size:0.78rem; min-height:120px; max-height:260px; overflow:auto; margin:0; white-space:pre-wrap; word-break:break-all;">// O retorno bruto aparecerá aqui...</pre>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-  
     <!-- ABA 3: PAINEL DE CONTROLE DE DOCUMENTOS EMITIDOS & HISTÓRICO -->
     <div id="aba-historico" style="display:none; width: 100%; height: 100%; padding: 25px 2rem; overflow-y: auto; background: var(--bg-dark);">
       <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom:1px solid var(--border-rino);">
@@ -704,7 +684,6 @@
         </div>
       </div>
 
-      <!-- CARDS DE RESUMO DO PAINEL -->
       <div class="row g-3 mb-4">
         <div class="col-md-3">
           <div class="card-box text-center p-3">
@@ -732,7 +711,6 @@
         </div>
       </div>
 
-      <!-- TABELA DE DOCUMENTOS -->
       <div class="g-section p-0" style="overflow:hidden; border-radius:10px;">
         <div class="table-responsive">
           <table class="table table-dark table-hover m-0 align-middle" style="font-size:0.83rem;">
@@ -755,318 +733,122 @@
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
-
-    <!-- MODAL DE VISUALIZAÇÃO E IMPRESSÃO DO RECIBO OFICIAL DE CIOT (PDF) -->
-    <div id="modalReciboPdf" class="ciot-modal-backdrop" onclick="fecharModalRecibo(event)">
-      <div class="ciot-modal-box" onclick="event.stopPropagation()" style="max-width: 820px; width: 95%; max-height: 92vh; overflow-y: auto; background: #fff; color: #1e293b; padding: 0;">
-        
-        <!-- BARRA DE FERRAMENTAS DO RECIBO -->
-        <div class="d-flex justify-content-between align-items-center p-3" style="background:#0a1329; border-bottom:1px solid var(--border-rino); color:#fff;">
-          <div class="d-flex align-items-center gap-2">
-            <span style="font-size:1.3rem;">📄</span>
-            <strong style="color:var(--rino-cyan);">RECIBO DE PROTOCOLO ANTT / e-Frete</strong>
-          </div>
-          <div class="d-flex gap-2">
-            <button type="button" class="btn btn-sm btn-primary fw-bold" onclick="imprimirReciboPdf()">🖨️ Imprimir / Salvar PDF</button>
-            <button type="button" class="btn btn-sm btn-outline-light" onclick="fecharModalReciboDirect()">&times; Fechar</button>
-          </div>
-        </div>
-
-        <!-- CORPO DO RECIBO (LAYOUT IMPRESSÃO A4) -->
-        <div id="areaImpressaoRecibo" style="padding: 30px; font-family: 'Arial', sans-serif; font-size: 11px; line-height: 1.4; color:#111;">
-          
-          <div style="border: 2px solid #000; padding: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <h4 style="margin:0; font-weight:900; font-size:16px;">COMPROVANTE DE OPERAÇÃO DE TRANSPORTE - CIOT</h4>
-              <div style="font-size:10px; color:#444;">AGÊNCIA NACIONAL DE TRANSPORTES TERRESTRES - ANTT • RESOLUÇÃO V8</div>
-            </div>
-            <div style="text-align:right;">
-              <div style="font-size:11px; font-weight:bold;">NÚMERO DO CIOT:</div>
-              <div style="font-size:18px; font-weight:900; color:#0284c7;" id="recCiotNumero">0000000000000000</div>
-            </div>
-          </div>
-
-          <!-- BLOCO 1: CONTRATANTE E CONTRATADO -->
-          <table style="width:100%; border-collapse:collapse; margin-bottom:10px; border:1px solid #999;">
-            <tr style="background:#f1f5f9;">
-              <td colspan="2" style="padding:4px 8px; font-weight:bold; border-bottom:1px solid #999;">1. DADOS DAS PARTES CONTRATUAIS</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 8px; width:50%; border-right:1px solid #ddd;">
-                <strong>CONTRATANTE:</strong> <span id="recContratanteNome">-</span><br>
-                <strong>CNPJ/CPF:</strong> <span id="recContratanteDoc">-</span><br>
-                <strong>RNTRC:</strong> <span id="recContratanteRntrc">-</span>
-              </td>
-              <td style="padding:6px 8px; width:50%;">
-                <strong>CONTRATADO:</strong> <span id="recContratadoNome">-</span><br>
-                <strong>CNPJ/CPF:</strong> <span id="recContratadoDoc">-</span><br>
-                <strong>RNTRC:</strong> <span id="recContratadoRntrc">-</span>
-              </td>
-            </tr>
-          </table>
-
-          <!-- BLOCO 2: MOTORISTA E VEÍCULO -->
-          <table style="width:100%; border-collapse:collapse; margin-bottom:10px; border:1px solid #999;">
-            <tr style="background:#f1f5f9;">
-              <td colspan="3" style="padding:4px 8px; font-weight:bold; border-bottom:1px solid #999;">2. CONDUTOR E VEÍCULOS</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 8px; width:34%; border-right:1px solid #ddd;">
-                <strong>MOTORISTA:</strong> <span id="recMotoristaCpf">-</span><br>
-                <strong>CNH:</strong> <span id="recMotoristaCnh">-</span>
-              </td>
-              <td style="padding:6px 8px; width:33%; border-right:1px solid #ddd;">
-                <strong>PLACA TRATOR:</strong> <span id="recPlacaCavalo">-</span><br>
-                <strong>REBOQUE:</strong> <span id="recPlacaCarreta">-</span>
-              </td>
-              <td style="padding:6px 8px; width:33%;">
-                <strong>COMPOSIÇÃO:</strong> <span id="recComposicao">-</span><br>
-                <strong>NÚMERO EIXOS:</strong> <span id="recEixos">-</span>
-              </td>
-            </tr>
-          </table>
-
-          <!-- BLOCO 3: ROTA, NF-E E CARGA -->
-          <table style="width:100%; border-collapse:collapse; margin-bottom:10px; border:1px solid #999;">
-            <tr style="background:#f1f5f9;">
-              <td colspan="2" style="padding:4px 8px; font-weight:bold; border-bottom:1px solid #999;">3. DADOS DO TRECHO E DA CARGA</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 8px; width:50%; border-right:1px solid #ddd;">
-                <strong>ORIGEM:</strong> <span id="recOrigemNome">-</span> (IBGE: <span id="recOrigemIbge">-</span>)<br>
-                <strong>CEP DIVISA ORIGEM:</strong> <span id="recOrigemCep">-</span><br>
-                <strong>DISTÂNCIA TOTAL:</strong> <span id="recDistanciaKm">-</span> Km
-              </td>
-              <td style="padding:6px 8px; width:50%;">
-                <strong>DESTINO:</strong> <span id="recDestinoNome">-</span> (IBGE: <span id="recDestinoIbge">-</span>)<br>
-                <strong>CEP DESTINO:</strong> <span id="recDestinoCep">-</span><br>
-                <strong>NF-e:</strong> <span id="recNfeNumero">-</span> • <strong>PESO:</strong> <span id="recPesoCarga">-</span> Kg
-              </td>
-            </tr>
-          </table>
-
-          <!-- BLOCO 4: VALORES, RETENÇÕES E PAGAMENTO -->
-          <table style="width:100%; border-collapse:collapse; margin-bottom:14px; border:1px solid #999;">
-            <tr style="background:#f1f5f9;">
-              <td colspan="4" style="padding:4px 8px; font-weight:bold; border-bottom:1px solid #999;">4. DISCRIMINAÇÃO DE VALORES E PAGAMENTO</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 8px; border-right:1px solid #ddd;"><strong>VALOR BRUTO:</strong><br><span id="recValorBruto" style="font-size:13px; font-weight:bold;">R$ 0,00</span></td>
-              <td style="padding:6px 8px; border-right:1px solid #ddd;"><strong>PEDÁGIOS VALE:</strong><br><span id="recPedagio" style="font-size:13px; font-weight:bold;">R$ 0,00</span></td>
-              <td style="padding:6px 8px; border-right:1px solid #ddd;"><strong>RETENÇÕES TRIB.:</strong><br><span id="recRetencoes" style="font-size:11px;">IR: R$ 0,00 | INSS: R$ 0,00</span></td>
-              <td style="padding:6px 8px; background:#f0fdf4;"><strong>LÍQUIDO A PAGAR:</strong><br><span id="recValorLiquido" style="font-size:14px; font-weight:900; color:#15803d;">R$ 0,00</span></td>
-            </tr>
-            <tr>
-              <td colspan="4" style="padding:6px 8px; border-top:1px solid #ddd; background:#fafafa;">
-                <strong>MEIO DE PAGAMENTO:</strong> <span id="recTipoPagamento">-</span> • 
-                <strong>BANCO:</strong> <span id="recBanco">-</span> • 
-                <strong>AGÊNCIA:</strong> <span id="recAgencia">-</span> • 
-                <strong>CONTA:</strong> <span id="recConta">-</span>
-              </td>
-            </tr>
-          </table>
-
-          <div style="border-top: 1px dashed #666; padding-top: 8px; font-size: 10px; color: #555; display:flex; justify-content:space-between;">
-            <div>Emitido via <strong>CIOTFY Logística Integrada</strong> • Protocolo IPC/e-Frete V8</div>
-            <div id="recDataHoraEmissao">-</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  
-    <!-- ABA 3: PAINEL DE CONTROLE DE DOCUMENTOS EMITIDOS & HISTÓRICO -->
-     style="display:none; width: 100%; height: 100%; padding: 25px 2rem; overflow-y: auto; background: var(--bg-dark);">
-      <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom:1px solid var(--border-rino);">
-        <div>
-          <h4 class="m-0 fw-bold" style="color:var(--rino-cyan);">Painel de Gestão de Documentos Emitidos</h4>
-          <small class="text-muted">Acompanhamento consolidado de CIOTs autorizados, controle por empresa e emissão de recibos regulamentares da ANTT.</small>
-        </div>
-        <div class="d-flex gap-2">
-          <input type="text" id="filtroCiotInput" class="input-dark" style="max-width:260px;" placeholder="🔍 Buscar por CIOT, Empresa ou Placa..." oninput="filtrarHistoricoCiot()">
-          <button type="button" class="btn-rino py-1 px-3" onclick="carregarHistoricoCiot()">🔄 Atualizar</button>
-        </div>
-      </div>
-
-      <!-- CARDS DE RESUMO DO PAINEL -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-3">
-          <div class="card-box text-center p-3">
-            <div class="small text-muted fw-bold text-uppercase">Total Emitidos</div>
-            <div class="fs-3 fw-bold text-white" id="statTotalDocs">0</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card-box text-center p-3">
-            <div class="small text-muted fw-bold text-uppercase">CIOTs Autorizados</div>
-            <div class="fs-3 fw-bold text-success" id="statTotalAutorizados">0</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card-box text-center p-3">
-            <div class="small text-muted fw-bold text-uppercase">Volume em Fretes</div>
-            <div class="fs-3 fw-bold" style="color:var(--rino-cyan);" id="statTotalFrete">R$ 0,00</div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card-box text-center p-3">
-            <div class="small text-muted fw-bold text-uppercase">Pedágios Regulamentados</div>
-            <div class="fs-3 fw-bold text-warning" id="statTotalPedagios">R$ 0,00</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TABELA DE DOCUMENTOS -->
-      <div class="g-section p-0" style="overflow:hidden; border-radius:10px;">
-        <div class="table-responsive">
-          <table class="table table-dark table-hover m-0 align-middle" style="font-size:0.83rem;">
-            <thead style="background:#091430; color:var(--rino-cyan); font-weight:800; border-bottom:1px solid var(--border-rino);">
-              <tr>
-                <th class="py-3 ps-3">Data / Hora</th>
-                <th>Número do CIOT</th>
-                <th>Empresa Contratante</th>
-                <th>Motorista & Placa</th>
-                <th>Trecho (Origem ➔ Destino)</th>
-                <th>Valor Frete</th>
-                <th>Status</th>
-                <th class="text-center pe-3">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="tabelaHistoricoCorpo">
-              <tr>
-                <td colspan="8" class="text-center py-4 text-muted">Nenhum CIOT emitido até o momento.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- MODAL DE VISUALIZAÇÃO E IMPRESSÃO DO RECIBO OFICIAL DE CIOT (PDF) -->
-    <div id="modalReciboPdf" class="ciot-modal-backdrop" onclick="fecharModalRecibo(event)">
-      <div class="ciot-modal-box" onclick="event.stopPropagation()" style="max-width: 820px; width: 95%; max-height: 92vh; overflow-y: auto; background: #fff; color: #1e293b; padding: 0;">
-        
-        <!-- BARRA DE FERRAMENTAS DO RECIBO -->
-        <div class="d-flex justify-content-between align-items-center p-3" style="background:#0a1329; border-bottom:1px solid var(--border-rino); color:#fff;">
-          <div class="d-flex align-items-center gap-2">
-            <span style="font-size:1.3rem;">📄</span>
-            <strong style="color:var(--rino-cyan);">RECIBO DE PROTOCOLO ANTT / e-Frete</strong>
-          </div>
-          <div class="d-flex gap-2">
-            <button type="button" class="btn btn-sm btn-primary fw-bold" onclick="imprimirReciboPdf()">🖨️ Imprimir / Salvar PDF</button>
-            <button type="button" class="btn btn-sm btn-outline-light" onclick="fecharModalReciboDirect()">&times; Fechar</button>
-          </div>
-        </div>
-
-        <!-- CORPO DO RECIBO (LAYOUT IMPRESSÃO A4) -->
-        <div id="areaImpressaoRecibo" style="padding: 30px; font-family: 'Arial', sans-serif; font-size: 11px; line-height: 1.4; color:#111;">
-          
-          <div style="border: 2px solid #000; padding: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <h4 style="margin:0; font-weight:900; font-size:16px;">COMPROVANTE DE OPERAÇÃO DE TRANSPORTE - CIOT</h4>
-              <div style="font-size:10px; color:#444;">AGÊNCIA NACIONAL DE TRANSPORTES TERRESTRES - ANTT • RESOLUÇÃO V8</div>
-            </div>
-            <div style="text-align:right;">
-              <div style="font-size:11px; font-weight:bold;">NÚMERO DO CIOT:</div>
-              <div style="font-size:18px; font-weight:900; color:#0284c7;" id="recCiotNumero">0000000000000000</div>
-            </div>
-          </div>
-
-          <!-- BLOCO 1: CONTRATANTE E CONTRATADO -->
-          <table style="width:100%; border-collapse:collapse; margin-bottom:10px; border:1px solid #999;">
-            <tr style="background:#f1f5f9;">
-              <td colspan="2" style="padding:4px 8px; font-weight:bold; border-bottom:1px solid #999;">1. DADOS DAS PARTES CONTRATUAIS</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 8px; width:50%; border-right:1px solid #ddd;">
-                <strong>CONTRATANTE:</strong> <span id="recContratanteNome">-</span><br>
-                <strong>CNPJ/CPF:</strong> <span id="recContratanteDoc">-</span><br>
-                <strong>RNTRC:</strong> <span id="recContratanteRntrc">-</span>
-              </td>
-              <td style="padding:6px 8px; width:50%;">
-                <strong>CONTRATADO:</strong> <span id="recContratadoNome">-</span><br>
-                <strong>CNPJ/CPF:</strong> <span id="recContratadoDoc">-</span><br>
-                <strong>RNTRC:</strong> <span id="recContratadoRntrc">-</span>
-              </td>
-            </tr>
-          </table>
-
-          <!-- BLOCO 2: MOTORISTA E VEÍCULO -->
-          <table style="width:100%; border-collapse:collapse; margin-bottom:10px; border:1px solid #999;">
-            <tr style="background:#f1f5f9;">
-              <td colspan="3" style="padding:4px 8px; font-weight:bold; border-bottom:1px solid #999;">2. CONDUTOR E VEÍCULOS</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 8px; width:34%; border-right:1px solid #ddd;">
-                <strong>MOTORISTA:</strong> <span id="recMotoristaCpf">-</span><br>
-                <strong>CNH:</strong> <span id="recMotoristaCnh">-</span>
-              </td>
-              <td style="padding:6px 8px; width:33%; border-right:1px solid #ddd;">
-                <strong>PLACA TRATOR:</strong> <span id="recPlacaCavalo">-</span><br>
-                <strong>REBOQUE:</strong> <span id="recPlacaCarreta">-</span>
-              </td>
-              <td style="padding:6px 8px; width:33%;">
-                <strong>COMPOSIÇÃO:</strong> <span id="recComposicao">-</span><br>
-                <strong>NÚMERO EIXOS:</strong> <span id="recEixos">-</span>
-              </td>
-            </tr>
-          </table>
-
-          <!-- BLOCO 3: ROTA, NF-E E CARGA -->
-          <table style="width:100%; border-collapse:collapse; margin-bottom:10px; border:1px solid #999;">
-            <tr style="background:#f1f5f9;">
-              <td colspan="2" style="padding:4px 8px; font-weight:bold; border-bottom:1px solid #999;">3. DADOS DO TRECHO E DA CARGA</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 8px; width:50%; border-right:1px solid #ddd;">
-                <strong>ORIGEM:</strong> <span id="recOrigemNome">-</span> (IBGE: <span id="recOrigemIbge">-</span>)<br>
-                <strong>CEP DIVISA ORIGEM:</strong> <span id="recOrigemCep">-</span><br>
-                <strong>DISTÂNCIA TOTAL:</strong> <span id="recDistanciaKm">-</span> Km
-              </td>
-              <td style="padding:6px 8px; width:50%;">
-                <strong>DESTINO:</strong> <span id="recDestinoNome">-</span> (IBGE: <span id="recDestinoIbge">-</span>)<br>
-                <strong>CEP DESTINO:</strong> <span id="recDestinoCep">-</span><br>
-                <strong>NF-e:</strong> <span id="recNfeNumero">-</span> • <strong>PESO:</strong> <span id="recPesoCarga">-</span> Kg
-              </td>
-            </tr>
-          </table>
-
-          <!-- BLOCO 4: VALORES, RETENÇÕES E PAGAMENTO -->
-          <table style="width:100%; border-collapse:collapse; margin-bottom:14px; border:1px solid #999;">
-            <tr style="background:#f1f5f9;">
-              <td colspan="4" style="padding:4px 8px; font-weight:bold; border-bottom:1px solid #999;">4. DISCRIMINAÇÃO DE VALORES E PAGAMENTO</td>
-            </tr>
-            <tr>
-              <td style="padding:6px 8px; border-right:1px solid #ddd;"><strong>VALOR BRUTO:</strong><br><span id="recValorBruto" style="font-size:13px; font-weight:bold;">R$ 0,00</span></td>
-              <td style="padding:6px 8px; border-right:1px solid #ddd;"><strong>PEDÁGIOS VALE:</strong><br><span id="recPedagio" style="font-size:13px; font-weight:bold;">R$ 0,00</span></td>
-              <td style="padding:6px 8px; border-right:1px solid #ddd;"><strong>RETENÇÕES TRIB.:</strong><br><span id="recRetencoes" style="font-size:11px;">IR: R$ 0,00 | INSS: R$ 0,00</span></td>
-              <td style="padding:6px 8px; background:#f0fdf4;"><strong>LÍQUIDO A PAGAR:</strong><br><span id="recValorLiquido" style="font-size:14px; font-weight:900; color:#15803d;">R$ 0,00</span></td>
-            </tr>
-            <tr>
-              <td colspan="4" style="padding:6px 8px; border-top:1px solid #ddd; background:#fafafa;">
-                <strong>MEIO DE PAGAMENTO:</strong> <span id="recTipoPagamento">-</span> • 
-                <strong>BANCO:</strong> <span id="recBanco">-</span> • 
-                <strong>AGÊNCIA:</strong> <span id="recAgencia">-</span> • 
-                <strong>CONTA:</strong> <span id="recConta">-</span>
-              </td>
-            </tr>
-          </table>
-
-          <div style="border-top: 1px dashed #666; padding-top: 8px; font-size: 10px; color: #555; display:flex; justify-content:space-between;">
-            <div>Emitido via <strong>CIOTFY Logística Integrada</strong> • Protocolo IPC/e-Frete V8</div>
-            <div id="recDataHoraEmissao">-</div>
-          </div>
-        </div>
-
       </div>
     </div>
 
   </section>
 
-  <!-- MODAL DE DESAMBIGUAÇÃO DE CIDADES (NATIVO RINO) -->
+  <!-- MODAL DE VISUALIZAÇÃO E IMPRESSÃO DO RECIBO OFICIAL DE CIOT (PDF) -->
+  <div id="modalReciboPdf" class="ciot-modal-backdrop" onclick="fecharModalRecibo(event)">
+    <div class="ciot-modal-box" onclick="event.stopPropagation()" style="max-width: 820px; width: 95%; max-height: 92vh; overflow-y: auto; background: #fff; color: #1e293b; padding: 0;">
+      <div class="d-flex justify-content-between align-items-center p-3" style="background:#0a1329; border-bottom:1px solid var(--border-rino); color:#fff;">
+        <div class="d-flex align-items-center gap-2">
+          <span style="font-size:1.3rem;">📄</span>
+          <strong style="color:var(--rino-cyan);">RECIBO DE PROTOCOLO ANTT / e-Frete</strong>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-sm btn-primary fw-bold" onclick="imprimirReciboPdf()">🖨️ Imprimir / Salvar PDF</button>
+          <button type="button" class="btn btn-sm btn-outline-light" onclick="fecharModalReciboDirect()">&times; Fechar</button>
+        </div>
+      </div>
+
+      <div id="areaImpressaoRecibo" style="padding: 30px; font-family: 'Arial', sans-serif; font-size: 11px; line-height: 1.4; color:#111;">
+        <div style="border: 2px solid #000; padding: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h4 style="margin:0; font-weight:900; font-size:16px;">COMPROVANTE DE OPERAÇÃO DE TRANSPORTE - CIOT</h4>
+            <div style="font-size:10px; color:#444;">AGÊNCIA NACIONAL DE TRANSPORTES TERRESTRES - ANTT • RESOLUÇÃO V8</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px; font-weight:bold;">NÚMERO DO CIOT:</div>
+            <div style="font-size:18px; font-weight:900; color:#0284c7;" id="recCiotNumero">0000000000000000</div>
+          </div>
+        </div>
+
+        <table style="width:100%; border-collapse:collapse; margin-bottom:10px; border:1px solid #999;">
+          <tr style="background:#f1f5f9;">
+            <td colspan="2" style="padding:4px 8px; font-weight:bold; border-bottom:1px solid #999;">1. DADOS DAS PARTES CONTRATUAIS</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 8px; width:50%; border-right:1px solid #ddd;">
+              <strong>CONTRATANTE:</strong> <span id="recContratanteNome">-</span><br>
+              <strong>CNPJ/CPF:</strong> <span id="recContratanteDoc">-</span><br>
+              <strong>RNTRC:</strong> <span id="recContratanteRntrc">-</span>
+            </td>
+            <td style="padding:6px 8px; width:50%;">
+              <strong>CONTRATADO:</strong> <span id="recContratadoNome">-</span><br>
+              <strong>CNPJ/CPF:</strong> <span id="recContratadoDoc">-</span><br>
+              <strong>RNTRC:</strong> <span id="recContratadoRntrc">-</span>
+            </td>
+          </tr>
+        </table>
+
+        <table style="width:100%; border-collapse:collapse; margin-bottom:10px; border:1px solid #999;">
+          <tr style="background:#f1f5f9;">
+            <td colspan="3" style="padding:4px 8px; font-weight:bold; border-bottom:1px solid #999;">2. CONDUTOR E VEÍCULOS</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 8px; width:34%; border-right:1px solid #ddd;">
+              <strong>MOTORISTA:</strong> <span id="recMotoristaCpf">-</span><br>
+              <strong>CNH:</strong> <span id="recMotoristaCnh">-</span>
+            </td>
+            <td style="padding:6px 8px; width:33%; border-right:1px solid #ddd;">
+              <strong>PLACA TRATOR:</strong> <span id="recPlacaCavalo">-</span><br>
+              <strong>REBOQUE:</strong> <span id="recPlacaCarreta">-</span>
+            </td>
+            <td style="padding:6px 8px; width:33%;">
+              <strong>COMPOSIÇÃO:</strong> <span id="recComposicao">-</span><br>
+              <strong>NÚMERO EIXOS:</strong> <span id="recEixos">-</span>
+            </td>
+          </tr>
+        </table>
+
+        <table style="width:100%; border-collapse:collapse; margin-bottom:10px; border:1px solid #999;">
+          <tr style="background:#f1f5f9;">
+            <td colspan="2" style="padding:4px 8px; font-weight:bold; border-bottom:1px solid #999;">3. DADOS DO TRECHO E DA CARGA</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 8px; width:50%; border-right:1px solid #ddd;">
+              <strong>ORIGEM:</strong> <span id="recOrigemNome">-</span> (IBGE: <span id="recOrigemIbge">-</span>)<br>
+              <strong>CEP DIVISA ORIGEM:</strong> <span id="recOrigemCep">-</span><br>
+              <strong>DISTÂNCIA TOTAL:</strong> <span id="recDistanciaKm">-</span> Km
+            </td>
+            <td style="padding:6px 8px; width:50%;">
+              <strong>DESTINO:</strong> <span id="recDestinoNome">-</span> (IBGE: <span id="recDestinoIbge">-</span>)<br>
+              <strong>CEP DESTINO:</strong> <span id="recDestinoCep">-</span><br>
+              <strong>NF-e:</strong> <span id="recNfeNumero">-</span> • <strong>PESO:</strong> <span id="recPesoCarga">-</span> Kg
+            </td>
+          </tr>
+        </table>
+
+        <table style="width:100%; border-collapse:collapse; margin-bottom:14px; border:1px solid #999;">
+          <tr style="background:#f1f5f9;">
+            <td colspan="4" style="padding:4px 8px; font-weight:bold; border-bottom:1px solid #999;">4. DISCRIMINAÇÃO DE VALORES E PAGAMENTO</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 8px; border-right:1px solid #ddd;"><strong>VALOR BRUTO:</strong><br><span id="recValorBruto" style="font-size:13px; font-weight:bold;">R$ 0,00</span></td>
+            <td style="padding:6px 8px; border-right:1px solid #ddd;"><strong>PEDÁGIOS VALE:</strong><br><span id="recPedagio" style="font-size:13px; font-weight:bold;">R$ 0,00</span></td>
+            <td style="padding:6px 8px; border-right:1px solid #ddd;"><strong>RETENÇÕES TRIB.:</strong><br><span id="recRetencoes" style="font-size:11px;">IR: R$ 0,00 | INSS: R$ 0,00</span></td>
+            <td style="padding:6px 8px; background:#f0fdf4;"><strong>LÍQUIDO A PAGAR:</strong><br><span id="recValorLiquido" style="font-size:14px; font-weight:900; color:#15803d;">R$ 0,00</span></td>
+          </tr>
+          <tr>
+            <td colspan="4" style="padding:6px 8px; border-top:1px solid #ddd; background:#fafafa;">
+              <strong>MEIO DE PAGAMENTO:</strong> <span id="recTipoPagamento">-</span> • 
+              <strong>BANCO:</strong> <span id="recBanco">-</span> • 
+              <strong>AGÊNCIA:</strong> <span id="recAgencia">-</span> • 
+              <strong>CONTA:</strong> <span id="recConta">-</span>
+            </td>
+          </tr>
+        </table>
+
+        <div style="border-top: 1px dashed #666; padding-top: 8px; font-size: 10px; color: #555; display:flex; justify-content:space-between;">
+          <div>Emitido via <strong>CIOTFY Logística Integrada</strong> • Protocolo IPC/e-Frete V8</div>
+          <div id="recDataHoraEmissao">-</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE DESAMBIGUAÇÃO DE CIDADES -->
   <div id="modalDesambiguacaoCustom" class="ciot-modal-backdrop">
     <div class="ciot-modal-box">
       <h5 class="fw-bold text-white mb-2">Selecione o Município Correto</h5>
@@ -1075,8 +857,26 @@
     </div>
   </div>
 
-  <!-- MODAL DE LOGIN MASTER (NATIVO RINO) -->
-  
+  <!-- MODAL DE LOGIN MASTER NATIVO -->
+  <div id="loginModalCustom" class="ciot-modal-backdrop" onclick="fecharModalLogin(event)">
+    <div class="ciot-modal-box" onclick="event.stopPropagation()">
+      <button type="button" class="ciot-modal-close" onclick="fecharModalLoginDirect()">&times;</button>
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span style="font-size: 1.5rem;">🦏</span>
+        <h5 class="fw-bold text-white m-0">Login <span style="color:var(--rino-cyan);">CIOTFY</span></h5>
+      </div>
+      <div id="loginAlert" class="alert alert-danger d-none py-2 small"></div>
+      <div class="mb-3">
+        <label class="field-label mb-1">E-mail corporativo:</label>
+        <input type="email" id="loginEmail" class="input-dark" placeholder="seu@email.com">
+      </div>
+      <div class="mb-3">
+        <label class="field-label mb-1">Senha de acesso:</label>
+        <input type="password" id="loginPass" class="input-dark" placeholder="••••••••">
+      </div>
+      <button type="button" class="btn-rino w-100 py-2 mt-2" onclick="validarLoginMaster()">Entrar no Sistema</button>
+    </div>
+  </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -1093,48 +893,25 @@
     let dadosOrigemEscolhida = null;
     let dadosDestinoEscolhido = null;
 
-    // CONTROLE DE NAVEGAÇÃO ENTRE LANDING PAGE E PAINEL
-    function mostrarTelaInicial() {
-      document.getElementById('publicArea').style.display = 'block';
-      document.getElementById('dashboardArea').style.display = 'none';
+    let historicoCiotsMemoria = JSON.parse(localStorage.getItem('ciotfy_historico_ciots') || '[]');
 
-      if (sessionStorage.getItem('ciotfy_auth') === 'true') {
-        document.getElementById('btnIrParaPainel').style.display = 'inline-block';
-        document.getElementById('topTabsArea').style.display = 'none';
-      }
-    }
-
-    function mostrarPainelLogado() {
-      document.getElementById('publicArea').style.display = 'none';
-      document.getElementById('dashboardArea').style.display = 'block';
-      document.getElementById('btnIrParaPainel').style.display = 'none';
-      document.getElementById('topTabsArea').style.display = 'flex';
-      setTimeout(() => { if (map) map.invalidateSize(); }, 200);
-    }
-
-    // CONTROLE DEFINITIVO DO MODAL LOGIN MASTER
-    function abrirModalLogin() {
+    // GARANTIA GLOBAL DE ABERTURA DO LOGIN
+    window.abrirModalLogin = function() {
       if (sessionStorage.getItem('ciotfy_auth') === 'true') {
         mostrarPainelLogado();
         return;
       }
       const m = document.getElementById('loginModalCustom');
-      if (m) {
-        m.style.setProperty('display', 'flex', 'important');
-      }
-    }
+      if (m) m.style.setProperty('display', 'flex', 'important');
+    };
 
     function fecharModalLoginDirect() {
       const m = document.getElementById('loginModalCustom');
-      if (m) {
-        m.style.setProperty('display', 'none', 'important');
-      }
+      if (m) m.style.setProperty('display', 'none', 'important');
     }
 
     function fecharModalLogin(event) {
-      if (event.target.id === 'loginModalCustom') {
-        fecharModalLoginDirect();
-      }
+      if (event.target.id === 'loginModalCustom') fecharModalLoginDirect();
     }
 
     function validarLoginMaster() {
@@ -1164,7 +941,23 @@
       window.location.reload();
     }
 
-    // INICIALIZAÇÃO DO MAPA LEAFLET
+    function mostrarTelaInicial() {
+      document.getElementById('publicArea').style.display = 'block';
+      document.getElementById('dashboardArea').style.display = 'none';
+      if (sessionStorage.getItem('ciotfy_auth') === 'true') {
+        document.getElementById('btnIrParaPainel').style.display = 'inline-block';
+        document.getElementById('topTabsArea').style.display = 'none';
+      }
+    }
+
+    function mostrarPainelLogado() {
+      document.getElementById('publicArea').style.display = 'none';
+      document.getElementById('dashboardArea').style.display = 'block';
+      document.getElementById('btnIrParaPainel').style.display = 'none';
+      document.getElementById('topTabsArea').style.display = 'flex';
+      setTimeout(() => { if (map) map.invalidateSize(); }, 200);
+    }
+
     function initMap() {
       if (map) {
         map.invalidateSize();
@@ -1186,26 +979,31 @@
         document.getElementById('navUserLogged').classList.remove('d-none');
         document.getElementById('navUserLogged').classList.add('d-flex');
         document.getElementById('userEmailSpan').textContent = MASTER_USER;
-
         mostrarPainelLogado();
         setTimeout(initMap, 200);
       }
     };
 
-    // ALTERNÂNCIA DE ABAS
     function mudarAbaPrincipal(aba) {
       document.getElementById('btn-tab-1').classList.remove('active');
       document.getElementById('btn-tab-2').classList.remove('active');
+      document.getElementById('btn-tab-3').classList.remove('active');
+
+      document.getElementById('aba-roteirizador').style.display = 'none';
+      document.getElementById('aba-ciot').style.display = 'none';
+      document.getElementById('aba-historico').style.display = 'none';
 
       if (aba === 'roteirizador') {
         document.getElementById('btn-tab-1').classList.add('active');
         document.getElementById('aba-roteirizador').style.display = 'flex';
-        document.getElementById('aba-ciot').style.display = 'none';
         setTimeout(() => { if (map) map.invalidateSize(); }, 200);
-      } else {
+      } else if (aba === 'ciot') {
         document.getElementById('btn-tab-2').classList.add('active');
-        document.getElementById('aba-roteirizador').style.display = 'none';
         document.getElementById('aba-ciot').style.display = 'block';
+      } else if (aba === 'historico') {
+        document.getElementById('btn-tab-3').classList.add('active');
+        document.getElementById('aba-historico').style.display = 'block';
+        carregarHistoricoCiot();
       }
     }
 
@@ -1221,7 +1019,6 @@
       }
     }
 
-    // DESAMBIGUAÇÃO OFICIAL VIA /api/verificar_cidade
     async function resolverCidade(termo, labelCampo) {
       const res = await fetch(`/api/verificar_cidade?nome=${encodeURIComponent(termo)}`);
       const data = await res.json();
@@ -1265,7 +1062,6 @@
       });
     }
 
-    // CÁLCULO DE ROTA, DIVISAS E PINTURA DO POLÍGONO DO MUNICÍPIO
     async function calcularRota() {
       const oTxt = document.getElementById('inputOrigem').value.trim();
       const dTxt = document.getElementById('inputDestino').value.trim();
@@ -1287,7 +1083,6 @@
         const data = await res.json();
         dadosUltimoCalculo = data;
 
-        // 1. Extração da Rota e Distância
         let coords = [];
         for (const k of Object.keys(data)) {
           if (Array.isArray(data[k]) && data[k].length > 0 && Array.isArray(data[k][0]) && typeof data[k][0][0] === 'number') {
@@ -1305,16 +1100,13 @@
           distKm = Math.round(mTotal / 1000);
         }
 
-        // 2. Pedágios
         const pedagioTotal = (data.pedagios && data.pedagios.total) ? parseFloat(data.pedagios.total) : 0;
         const qtdPedagios = (data.pedagios && data.pedagios.quantidade) ? data.pedagios.quantidade : (data.pedagios && data.pedagios.pedagios ? data.pedagios.pedagios.length : 0);
 
-        // 3. Atualização dos Cards Superiores
         document.getElementById('txtDistanciaKm').textContent = `${distKm} km`;
         document.getElementById('txtTempoPedagio').textContent = `${Math.floor(distKm/72)}h ${Math.round((distKm%72)*0.8)}m • ${qtdPedagios} Pedágios (R$ ${pedagioTotal.toFixed(2)})`;
         document.getElementById('calcDistanciaInput').value = `${distKm} km`;
 
-        // 4. Preenchimento dos Cards de Divisas
         const ori = data.origem || {};
         const dest = data.destino || {};
 
@@ -1334,55 +1126,37 @@
 
         document.getElementById('containerCardsDivisas').style.display = 'block';
 
-        // Link GPS Google Maps
         const latO = ori.lat || (coords[0] ? coords[0][0] : 0);
         const lonO = ori.lon || (coords[0] ? coords[0][1] : 0);
         const latD = dest.lat || (coords[coords.length-1] ? coords[coords.length-1][0] : 0);
         const lonD = dest.lon || (coords[coords.length-1] ? coords[coords.length-1][1] : 0);
         document.getElementById('btnGpsGoogle').href = `https://www.google.com/maps/dir/?api=1&origin=${latO},${lonO}&destination=${latD},${lonD}&travelmode=driving`;
 
-        // 5. RENDERIZAÇÃO NO LEAFLET (TRAÇADO + POLÍGONOS DOS MUNICÍPIOS)
         if (routeLayer) map.removeLayer(routeLayer);
         markersLayer.clearLayers();
         polygonsLayer.clearLayers();
 
-        // PINTA AS BORDAS E MALHA DOS MUNICÍPIOS
         if (ori.geojson) {
           L.geoJSON(ori.geojson, {
-            style: {
-              color: '#00d2ff',
-              weight: 3,
-              fillColor: '#00d2ff',
-              fillOpacity: 0.18,
-              dashArray: '4, 4'
-            }
+            style: { color: '#00d2ff', weight: 3, fillColor: '#00d2ff', fillOpacity: 0.18, dashArray: '4, 4' }
           }).addTo(polygonsLayer).bindPopup(`<b>Borda Territorial:</b> ${ori.municipio || dadosOrigemEscolhida.nome}`);
         }
         if (dest.geojson) {
           L.geoJSON(dest.geojson, {
-            style: {
-              color: '#10b981',
-              weight: 3,
-              fillColor: '#10b981',
-              fillOpacity: 0.18,
-              dashArray: '4, 4'
-            }
+            style: { color: '#10b981', weight: 3, fillColor: '#10b981', fillOpacity: 0.18, dashArray: '4, 4' }
           }).addTo(polygonsLayer).bindPopup(`<b>Borda Territorial:</b> ${dest.municipio || dadosDestinoEscolhido.nome}`);
         }
 
-        // PINTA A ROTA
         if (coords.length > 0) {
           routeLayer = L.polyline(coords, { color: '#00d2ff', weight: 5, opacity: 0.95 }).addTo(map);
           map.fitBounds(routeLayer.getBounds(), { padding: [40, 40] });
         }
 
-        // PONTOS DA DIVISA / COORDENADAS
         L.marker([latO, lonO]).addTo(markersLayer)
           .bindPopup(`<b>Divisa Origem:</b> ${ori.municipio || dadosOrigemEscolhida.nome}<br>CEP: ${ori.cep || ''}`).openPopup();
         L.marker([latD, lonD]).addTo(markersLayer)
           .bindPopup(`<b>Divisa Destino:</b> ${dest.municipio || dadosDestinoEscolhido.nome}<br>CEP: ${dest.cep || ''}`);
 
-        // PRAÇAS DE PEDÁGIO
         if (data.pedagios && Array.isArray(data.pedagios.pedagios)) {
           data.pedagios.pedagios.forEach(p => {
             if (p.lat && p.lon) {
@@ -1402,7 +1176,6 @@
       }
     }
 
-    // CÁLCULO DE PISO ANTT OFICIAL
     function calcularPisoAnttOficial() {
       const distStr = document.getElementById('calcDistanciaInput').value.replace(' km', '').trim();
       const distKm = parseFloat(distStr) || 0;
@@ -1434,7 +1207,6 @@
       calcularLiquidoCiot();
     }
 
-    // EXPORTAR DADOS DA ROTA PARA O CONSTRUTOR CIOT
     function exportarParaCiot() {
       if (!dadosUltimoCalculo) {
         alert('Calcule uma rota antes de exportar para o CIOT.');
@@ -1476,7 +1248,6 @@
       }
     }
 
-    // LEITOR DE NF-E XML
     document.getElementById('cXmlNfe')?.addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -1533,7 +1304,6 @@
       reader.readAsText(file);
     });
 
-    // COMPILAÇÃO DO XML OFICIAL V8
     function compilarXmlCiotOficial() {
       calcularLiquidoCiot();
       const peso = parseFloat(document.getElementById('cPesoCarga').value) || 1;
@@ -1682,7 +1452,7 @@
             <Rua xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cRuaContratante').value}</Rua>
             <Numero xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cNumContratante').value}</Numero>
             <Complemento xmlns="http://schemas.ipc.adm.br/efrete/objects"></Complemento>
-            <CEP xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cCepContratante').value}</CEP>
+            <CEP xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cCepOrigem').value}</CEP>
             <CodigoMunicipio xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cIbgeOrigem').value}</CodigoMunicipio>
           </Endereco>
           <ResponsavelPeloPagamento xmlns="http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte">true</ResponsavelPeloPagamento>
@@ -1704,7 +1474,6 @@
       alert('⚡ XML V8 compilado com sucesso! Role até a seção 7 para transmitir.');
     }
 
-    // TRANSMISSÃO SOAP MTLS
     async function transmitirCiotDireto() {
       const pfx = document.getElementById('pfxFile').files[0];
       const pass = document.getElementById('pfxPassword').value;
@@ -1753,9 +1522,9 @@
 
       try {
         addLog('INFO', 'Enviando requisição POST para endpoint /api/transmitir...');
+        
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 25000);
-        
         let res;
         try {
           res = await fetch('/api/transmitir', { method: 'POST', body: fd, signal: controller.signal });
@@ -1780,7 +1549,6 @@
         const corpoResposta = json.response || json.error || json.detalhe || json.mensagem || rawText;
         respBox.textContent = corpoResposta;
 
-        // Análise de Sucesso
         if (corpoResposta.includes('<Sucesso>true</Sucesso>')) {
           const ciotMatch = corpoResposta.match(/<CodigoIdentificacaoOperacao>(.*?)<\/CodigoIdentificacaoOperacao>/);
           const numCiot = ciotMatch ? ciotMatch[1] : 'GERADO';
@@ -1826,7 +1594,6 @@
             status: 'Autorizado'
           });
         } else {
-          // Extração de mensagens de erro específicas da ANTT/e-Frete
           badge.className = 'badge bg-danger';
           badge.textContent = 'Rejeição e-Frete';
 
@@ -1850,34 +1617,6 @@
       }
     }
 
-    // BANCO LOCAL DE HISTÓRICO DE CIOTS
-    let historicoCiotsMemoria = JSON.parse(localStorage.getItem('ciotfy_historico_ciots') || '[]');
-
-    function mudarAbaPrincipal(aba) {
-      document.getElementById('btn-tab-1').classList.remove('active');
-      document.getElementById('btn-tab-2').classList.remove('active');
-      const btn3 = document.getElementById('btn-tab-3');
-      if (btn3) btn3.classList.remove('active');
-
-      document.getElementById('aba-roteirizador').style.display = 'none';
-      document.getElementById('aba-ciot').style.display = 'none';
-      const abaHist = document.getElementById('aba-historico');
-      if (abaHist) abaHist.style.display = 'none';
-
-      if (aba === 'roteirizador') {
-        document.getElementById('btn-tab-1').classList.add('active');
-        document.getElementById('aba-roteirizador').style.display = 'flex';
-        setTimeout(() => { if (map) map.invalidateSize(); }, 200);
-      } else if (aba === 'ciot') {
-        document.getElementById('btn-tab-2').classList.add('active');
-        document.getElementById('aba-ciot').style.display = 'block';
-      } else if (aba === 'historico') {
-        if (btn3) btn3.classList.add('active');
-        if (abaHist) abaHist.style.display = 'block';
-        carregarHistoricoCiot();
-      }
-    }
-
     function salvarCiotNoHistorico(ciotItem) {
       historicoCiotsMemoria.unshift(ciotItem);
       localStorage.setItem('ciotfy_historico_ciots', JSON.stringify(historicoCiotsMemoria));
@@ -1942,7 +1681,6 @@
       });
     }
 
-    // ABERTURA E IMPRESSÃO DO RECIBO PDF
     function visualizarReciboCiotIndex(index) {
       const item = historicoCiotsMemoria[index];
       if (!item) return;
@@ -2007,311 +1745,18 @@
               @page { size: A4; margin: 15mm; }
               body { font-family: Arial, sans-serif; margin: 0; color: #000; }
               table { border-collapse: collapse; }
-            
-    /* FORÇAR VISIBILIDADE DO MODAL LOGIN */
-    #loginModalCustom {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(4, 8, 20, 0.88);
-      backdrop-filter: blur(8px);
-      z-index: 999999 !important;
-      align-items: center;
-      justify-content: center;
-    }
-    #loginModalCustom .ciot-modal-box {
-      z-index: 1000000 !important;
-    }
-
-  </style>
+            </style>
           </head>
           <body>
             ${conteudo}
             <script>
               window.onload = function() { window.print(); window.close(); }
             <\/script>
-          
-  <!-- MODAL DE LOGIN MASTER NATIVO -->
-  <div id="loginModalCustom" class="ciot-modal-backdrop" onclick="fecharModalLogin(event)">
-    <div class="ciot-modal-box" onclick="event.stopPropagation()">
-      <button type="button" class="ciot-modal-close" onclick="fecharModalLoginDirect()">&times;</button>
-      <div class="d-flex align-items-center gap-2 mb-3">
-        <span style="font-size: 1.5rem;">🦏</span>
-        <h5 class="fw-bold text-white m-0">Login <span style="color:var(--rino-cyan);">CIOTFY</span></h5>
-      </div>
-      <div id="loginAlert" class="alert alert-danger d-none py-2 small"></div>
-      <div class="mb-3">
-        <label class="field-label mb-1">E-mail corporativo:</label>
-        <input type="email" id="loginEmail" class="input-dark" placeholder="seu@email.com">
-      </div>
-      <div class="mb-3">
-        <label class="field-label mb-1">Senha de acesso:</label>
-        <input type="password" id="loginPass" class="input-dark" placeholder="••••••••">
-      </div>
-      <button type="button" class="btn-rino w-100 py-2 mt-2" onclick="validarLoginMaster()">Entrar no Sistema</button>
-    </div>
-  </div>
-
-</body>
+          </body>
         </html>
       `);
       janela.document.close();
     }
-
-  
-    // BANCO LOCAL DE HISTÓRICO DE CIOTS
-    historicoCiotsMemoria = JSON.parse(localStorage.getItem('ciotfy_historico_ciots') || '[]');
-
-    function mudarAbaPrincipal(aba) {
-      document.getElementById('btn-tab-1').classList.remove('active');
-      document.getElementById('btn-tab-2').classList.remove('active');
-      const btn3 = document.getElementById('btn-tab-3');
-      if (btn3) btn3.classList.remove('active');
-
-      document.getElementById('aba-roteirizador').style.display = 'none';
-      document.getElementById('aba-ciot').style.display = 'none';
-      const abaHist = document.getElementById('aba-historico');
-      if (abaHist) abaHist.style.display = 'none';
-
-      if (aba === 'roteirizador') {
-        document.getElementById('btn-tab-1').classList.add('active');
-        document.getElementById('aba-roteirizador').style.display = 'flex';
-        setTimeout(() => { if (map) map.invalidateSize(); }, 200);
-      } else if (aba === 'ciot') {
-        document.getElementById('btn-tab-2').classList.add('active');
-        document.getElementById('aba-ciot').style.display = 'block';
-      } else if (aba === 'historico') {
-        if (btn3) btn3.classList.add('active');
-        if (abaHist) abaHist.style.display = 'block';
-        carregarHistoricoCiot();
-      }
-    }
-
-    function salvarCiotNoHistorico(ciotItem) {
-      historicoCiotsMemoria.unshift(ciotItem);
-      localStorage.setItem('ciotfy_historico_ciots', JSON.stringify(historicoCiotsMemoria));
-      carregarHistoricoCiot();
-    }
-
-    function carregarHistoricoCiot() {
-      const tabela = document.getElementById('tabelaHistoricoCorpo');
-      if (!tabela) return;
-
-      const lista = historicoCiotsMemoria;
-      if (lista.length === 0) {
-        tabela.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">Nenhum CIOT emitido no sistema ainda. Transmita o primeiro na aba 2!</td></tr>';
-        document.getElementById('statTotalDocs').textContent = '0';
-        document.getElementById('statTotalAutorizados').textContent = '0';
-        document.getElementById('statTotalFrete').textContent = 'R$ 0,00';
-        document.getElementById('statTotalPedagios').textContent = 'R$ 0,00';
-        return;
-      }
-
-      let somaFrete = 0;
-      let somaPedagio = 0;
-      let autorizados = 0;
-      let htmlRows = '';
-
-      lista.forEach((item, index) => {
-        const vFrete = parseFloat(item.valorFreteBruto) || 0;
-        const vPed = parseFloat(item.valorPedagio) || 0;
-        somaFrete += vFrete;
-        somaPedagio += vPed;
-        if (item.status === 'Autorizado') autorizados++;
-
-        htmlRows += `
-          <tr>
-            <td class="ps-3"><small class="text-muted">${item.dataEmissao}</small></td>
-            <td><strong class="text-info">${item.numeroCiot}</strong><br><small class="text-muted">Prot: ${item.protocolo || '-'}</small></td>
-            <td><strong>${item.contratanteRazao || 'Não inf.'}</strong><br><small class="text-muted">CNPJ: ${item.contratanteDoc || '-'}</small></td>
-            <td>${item.motoristaCpf || '-'}<br><small class="text-warning">Placa: ${item.placaCavalo || '-'}</small></td>
-            <td>${item.origemNome || '-'} ➔ ${item.destinoNome || '-'}</td>
-            <td><strong class="text-success">R$ ${vFrete.toFixed(2)}</strong></td>
-            <td><span class="badge ${item.status === 'Autorizado' ? 'bg-success' : 'bg-danger'}">${item.status}</span></td>
-            <td class="text-center pe-3">
-              <button class="btn btn-sm btn-outline-info me-1 py-1 px-2" title="Imprimir Recibo PDF" onclick="visualizarReciboCiotIndex(${index})">📄 Recibo</button>
-            </td>
-          </tr>
-        `;
-      });
-
-      tabela.innerHTML = htmlRows;
-      document.getElementById('statTotalDocs').textContent = lista.length;
-      document.getElementById('statTotalAutorizados').textContent = autorizados;
-      document.getElementById('statTotalFrete').textContent = `R$ ${somaFrete.toFixed(2)}`;
-      document.getElementById('statTotalPedagios').textContent = `R$ ${somaPedagio.toFixed(2)}`;
-    }
-
-    function filtrarHistoricoCiot() {
-      const q = document.getElementById('filtroCiotInput').value.toLowerCase().trim();
-      const linhas = document.querySelectorAll('#tabelaHistoricoCorpo tr');
-      linhas.forEach(tr => {
-        const txt = tr.textContent.toLowerCase();
-        tr.style.display = txt.includes(q) ? '' : 'none';
-      });
-    }
-
-    // ABERTURA E IMPRESSÃO DO RECIBO PDF
-    function visualizarReciboCiotIndex(index) {
-      const item = historicoCiotsMemoria[index];
-      if (!item) return;
-
-      document.getElementById('recCiotNumero').textContent = item.numeroCiot || 'EMITIDO';
-      document.getElementById('recContratanteNome').textContent = item.contratanteRazao || '-';
-      document.getElementById('recContratanteDoc').textContent = item.contratanteDoc || '-';
-      document.getElementById('recContratanteRntrc').textContent = item.contratanteRntrc || '-';
-
-      document.getElementById('recContratadoNome').textContent = item.contratadoRazao || item.contratanteRazao || '-';
-      document.getElementById('recContratadoDoc').textContent = item.contratadoDoc || '-';
-      document.getElementById('recContratadoRntrc').textContent = item.contratadoRntrc || '-';
-
-      document.getElementById('recMotoristaCpf').textContent = item.motoristaCpf || '-';
-      document.getElementById('recMotoristaCnh').textContent = item.motoristaCnh || '-';
-      document.getElementById('recPlacaCavalo').textContent = item.placaCavalo || '-';
-      document.getElementById('recPlacaCarreta').textContent = item.placaCarreta || 'N/A';
-      document.getElementById('recComposicao').textContent = item.composicao ? 'Sim' : 'Não';
-      document.getElementById('recEixos').textContent = item.eixos || '5';
-
-      document.getElementById('recOrigemNome').textContent = item.origemNome || '-';
-      document.getElementById('recOrigemIbge').textContent = item.origemIbge || '-';
-      document.getElementById('recOrigemCep').textContent = item.origemCep || '-';
-      document.getElementById('recDestinoNome').textContent = item.destinoNome || '-';
-      document.getElementById('recDestinoIbge').textContent = item.destinoIbge || '-';
-      document.getElementById('recDestinoCep').textContent = item.destinoCep || '-';
-      document.getElementById('recDistanciaKm').textContent = item.distanciaKm || '-';
-
-      document.getElementById('recNfeNumero').textContent = item.nfeNumero || '-';
-      document.getElementById('recPesoCarga').textContent = item.pesoCarga || '-';
-
-      document.getElementById('recValorBruto').textContent = `R$ ${parseFloat(item.valorFreteBruto || 0).toFixed(2)}`;
-      document.getElementById('recPedagio').textContent = `R$ ${parseFloat(item.valorPedagio || 0).toFixed(2)}`;
-      document.getElementById('recRetencoes').textContent = `IR: R$ ${parseFloat(item.irrf || 0).toFixed(2)} | INSS: R$ ${parseFloat(item.inss || 0).toFixed(2)} | SEST: R$ ${parseFloat(item.sest || 0).toFixed(2)}`;
-      document.getElementById('recValorLiquido').textContent = `R$ ${parseFloat(item.valorFreteLiquido || 0).toFixed(2)}`;
-
-      document.getElementById('recTipoPagamento').textContent = item.tipoPagamento || 'Transferência Bancária';
-      document.getElementById('recBanco').textContent = item.banco || '-';
-      document.getElementById('recAgencia').textContent = item.agencia || '-';
-      document.getElementById('recConta').textContent = item.conta || '-';
-      document.getElementById('recDataHoraEmissao').textContent = `Emitido em: ${item.dataEmissao}`;
-
-      document.getElementById('modalReciboPdf').style.display = 'flex';
-    }
-
-    function fecharModalReciboDirect() {
-      document.getElementById('modalReciboPdf').style.display = 'none';
-    }
-
-    function fecharModalRecibo(event) {
-      if (event.target.id === 'modalReciboPdf') fecharModalReciboDirect();
-    }
-
-    function imprimirReciboPdf() {
-      const conteudo = document.getElementById('areaImpressaoRecibo').innerHTML;
-      const janela = window.open('', '_blank', 'width=850,height=900');
-      janela.document.write(`
-        <html>
-          <head>
-            <title>Recibo Oficial CIOT ANTT</title>
-            <style>
-              @page { size: A4; margin: 15mm; }
-              body { font-family: Arial, sans-serif; margin: 0; color: #000; }
-              table { border-collapse: collapse; }
-            
-    /* FORÇAR VISIBILIDADE DO MODAL LOGIN */
-    #loginModalCustom {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(4, 8, 20, 0.88);
-      backdrop-filter: blur(8px);
-      z-index: 999999 !important;
-      align-items: center;
-      justify-content: center;
-    }
-    #loginModalCustom .ciot-modal-box {
-      z-index: 1000000 !important;
-    }
-
-  </style>
-          </head>
-          <body>
-            ${conteudo}
-            <script>
-    // GARANTIA GLOBAL NO TOPO DO ESCOPO
-    window.abrirModalLogin = function() {
-      if (sessionStorage.getItem('ciotfy_auth') === 'true') {
-        if (typeof mostrarPainelLogado === 'function') {
-          mostrarPainelLogado();
-        } else {
-          document.getElementById('publicArea').style.display = 'none';
-          document.getElementById('dashboardArea').style.display = 'block';
-        }
-        return;
-      }
-      const m = document.getElementById('loginModalCustom');
-      if (m) {
-        m.style.setProperty('display', 'flex', 'important');
-      }
-    };
-
-              window.onload = function() { window.print(); window.close(); }
-            <\/script>
-          
-  <!-- MODAL DE LOGIN MASTER NATIVO -->
-  <div id="loginModalCustom" class="ciot-modal-backdrop" onclick="fecharModalLogin(event)">
-    <div class="ciot-modal-box" onclick="event.stopPropagation()">
-      <button type="button" class="ciot-modal-close" onclick="fecharModalLoginDirect()">&times;</button>
-      <div class="d-flex align-items-center gap-2 mb-3">
-        <span style="font-size: 1.5rem;">🦏</span>
-        <h5 class="fw-bold text-white m-0">Login <span style="color:var(--rino-cyan);">CIOTFY</span></h5>
-      </div>
-      <div id="loginAlert" class="alert alert-danger d-none py-2 small"></div>
-      <div class="mb-3">
-        <label class="field-label mb-1">E-mail corporativo:</label>
-        <input type="email" id="loginEmail" class="input-dark" placeholder="seu@email.com">
-      </div>
-      <div class="mb-3">
-        <label class="field-label mb-1">Senha de acesso:</label>
-        <input type="password" id="loginPass" class="input-dark" placeholder="••••••••">
-      </div>
-      <button type="button" class="btn-rino w-100 py-2 mt-2" onclick="validarLoginMaster()">Entrar no Sistema</button>
-    </div>
-  </div>
-
-</body>
-        </html>
-      `);
-      janela.document.close();
-    }
-
   </script>
-
-  <!-- MODAL DE LOGIN MASTER NATIVO -->
-  <div id="loginModalCustom" class="ciot-modal-backdrop" onclick="fecharModalLogin(event)">
-    <div class="ciot-modal-box" onclick="event.stopPropagation()">
-      <button type="button" class="ciot-modal-close" onclick="fecharModalLoginDirect()">&times;</button>
-      <div class="d-flex align-items-center gap-2 mb-3">
-        <span style="font-size: 1.5rem;">🦏</span>
-        <h5 class="fw-bold text-white m-0">Login <span style="color:var(--rino-cyan);">CIOTFY</span></h5>
-      </div>
-      <div id="loginAlert" class="alert alert-danger d-none py-2 small"></div>
-      <div class="mb-3">
-        <label class="field-label mb-1">E-mail corporativo:</label>
-        <input type="email" id="loginEmail" class="input-dark" placeholder="seu@email.com">
-      </div>
-      <div class="mb-3">
-        <label class="field-label mb-1">Senha de acesso:</label>
-        <input type="password" id="loginPass" class="input-dark" placeholder="••••••••">
-      </div>
-      <button type="button" class="btn-rino w-100 py-2 mt-2" onclick="validarLoginMaster()">Entrar no Sistema</button>
-    </div>
-  </div>
-
 </body>
 </html>
