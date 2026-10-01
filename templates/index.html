@@ -1960,7 +1960,7 @@
 
   
     // BANCO LOCAL DE HISTÓRICO DE CIOTS
-    let historicoCiotsMemoria = JSON.parse(localStorage.getItem('ciotfy_historico_ciots') || '[]');
+    historicoCiotsMemoria = JSON.parse(localStorage.getItem('ciotfy_historico_ciots') || '[]');
 
     function mudarAbaPrincipal(aba) {
       document.getElementById('btn-tab-1').classList.remove('active');
@@ -2140,6 +2140,23 @@
           <body>
             ${conteudo}
             <script>
+    // GARANTIA GLOBAL NO TOPO DO ESCOPO
+    window.abrirModalLogin = function() {
+      if (sessionStorage.getItem('ciotfy_auth') === 'true') {
+        if (typeof mostrarPainelLogado === 'function') {
+          mostrarPainelLogado();
+        } else {
+          document.getElementById('publicArea').style.display = 'none';
+          document.getElementById('dashboardArea').style.display = 'block';
+        }
+        return;
+      }
+      const m = document.getElementById('loginModalCustom');
+      if (m) {
+        m.style.setProperty('display', 'flex', 'important');
+      }
+    };
+
               window.onload = function() { window.print(); window.close(); }
             <\/script>
           
