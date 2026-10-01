@@ -1,7 +1,6 @@
-﻿requests
-fastapi
+﻿fastapi
 uvicorn
-httpx
+requests
+geopy
+shapely
 cryptography
-jinja2
-python-multipart
