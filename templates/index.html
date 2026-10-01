@@ -126,6 +126,25 @@
     .ciot-modal-close:hover { color: #fff; }
     .city-select-btn { background: #070f26; border: 1px solid var(--border-rino); color: #fff; text-align: left; padding: 12px 14px; border-radius: 8px; margin-bottom: 8px; width: 100%; cursor: pointer; transition: 0.2s; }
     .city-select-btn:hover { border-color: var(--rino-cyan); background: #0c1b40; }
+  
+    /* FORÇAR VISIBILIDADE DO MODAL LOGIN */
+    #loginModalCustom {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(4, 8, 20, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 999999 !important;
+      align-items: center;
+      justify-content: center;
+    }
+    #loginModalCustom .ciot-modal-box {
+      z-index: 1000000 !important;
+    }
+
   </style>
 </head>
 <body>
@@ -1057,25 +1076,7 @@
   </div>
 
   <!-- MODAL DE LOGIN MASTER (NATIVO RINO) -->
-  <div id="loginModalCustom" class="ciot-modal-backdrop" onclick="fecharModalLogin(event)">
-    <div class="ciot-modal-box" onclick="event.stopPropagation()">
-      <button type="button" class="ciot-modal-close" onclick="fecharModalLoginDirect()">&times;</button>
-      <div class="d-flex align-items-center gap-2 mb-3">
-        <span style="font-size: 1.5rem;">🦏</span>
-        <h5 class="fw-bold text-white m-0">Login <span style="color:var(--rino-cyan);">CIOTFY</span></h5>
-      </div>
-      <div id="loginAlert" class="alert alert-danger d-none py-2 small"></div>
-      <div class="mb-3">
-        <label class="field-label mb-1">E-mail corporativo:</label>
-        <input type="email" id="loginEmail" class="input-dark" placeholder="seu@email.com">
-      </div>
-      <div class="mb-3">
-        <label class="field-label mb-1">Senha de acesso:</label>
-        <input type="password" id="loginPass" class="input-dark" placeholder="••••••••">
-      </div>
-      <button type="button" class="btn-rino w-100 py-2 mt-2" onclick="validarLoginMaster()">Entrar no Sistema</button>
-    </div>
-  </div>
+  
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -1111,22 +1112,29 @@
       setTimeout(() => { if (map) map.invalidateSize(); }, 200);
     }
 
+    // CONTROLE DEFINITIVO DO MODAL LOGIN MASTER
     function abrirModalLogin() {
       if (sessionStorage.getItem('ciotfy_auth') === 'true') {
         mostrarPainelLogado();
         return;
       }
-      const modal = document.getElementById('loginModalCustom');
-      if (modal) modal.style.display = 'flex';
+      const m = document.getElementById('loginModalCustom');
+      if (m) {
+        m.style.setProperty('display', 'flex', 'important');
+      }
     }
 
     function fecharModalLoginDirect() {
-      const modal = document.getElementById('loginModalCustom');
-      if (modal) modal.style.display = 'none';
+      const m = document.getElementById('loginModalCustom');
+      if (m) {
+        m.style.setProperty('display', 'none', 'important');
+      }
     }
 
     function fecharModalLogin(event) {
-      if (event.target.id === 'loginModalCustom') fecharModalLoginDirect();
+      if (event.target.id === 'loginModalCustom') {
+        fecharModalLoginDirect();
+      }
     }
 
     function validarLoginMaster() {
@@ -1896,14 +1904,55 @@
               @page { size: A4; margin: 15mm; }
               body { font-family: Arial, sans-serif; margin: 0; color: #000; }
               table { border-collapse: collapse; }
-            </style>
+            
+    /* FORÇAR VISIBILIDADE DO MODAL LOGIN */
+    #loginModalCustom {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(4, 8, 20, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 999999 !important;
+      align-items: center;
+      justify-content: center;
+    }
+    #loginModalCustom .ciot-modal-box {
+      z-index: 1000000 !important;
+    }
+
+  </style>
           </head>
           <body>
             ${conteudo}
             <script>
               window.onload = function() { window.print(); window.close(); }
             <\/script>
-          </body>
+          
+  <!-- MODAL DE LOGIN MASTER NATIVO -->
+  <div id="loginModalCustom" class="ciot-modal-backdrop" onclick="fecharModalLogin(event)">
+    <div class="ciot-modal-box" onclick="event.stopPropagation()">
+      <button type="button" class="ciot-modal-close" onclick="fecharModalLoginDirect()">&times;</button>
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span style="font-size: 1.5rem;">🦏</span>
+        <h5 class="fw-bold text-white m-0">Login <span style="color:var(--rino-cyan);">CIOTFY</span></h5>
+      </div>
+      <div id="loginAlert" class="alert alert-danger d-none py-2 small"></div>
+      <div class="mb-3">
+        <label class="field-label mb-1">E-mail corporativo:</label>
+        <input type="email" id="loginEmail" class="input-dark" placeholder="seu@email.com">
+      </div>
+      <div class="mb-3">
+        <label class="field-label mb-1">Senha de acesso:</label>
+        <input type="password" id="loginPass" class="input-dark" placeholder="••••••••">
+      </div>
+      <button type="button" class="btn-rino w-100 py-2 mt-2" onclick="validarLoginMaster()">Entrar no Sistema</button>
+    </div>
+  </div>
+
+</body>
         </html>
       `);
       janela.document.close();
@@ -2067,19 +2116,82 @@
               @page { size: A4; margin: 15mm; }
               body { font-family: Arial, sans-serif; margin: 0; color: #000; }
               table { border-collapse: collapse; }
-            </style>
+            
+    /* FORÇAR VISIBILIDADE DO MODAL LOGIN */
+    #loginModalCustom {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(4, 8, 20, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 999999 !important;
+      align-items: center;
+      justify-content: center;
+    }
+    #loginModalCustom .ciot-modal-box {
+      z-index: 1000000 !important;
+    }
+
+  </style>
           </head>
           <body>
             ${conteudo}
             <script>
               window.onload = function() { window.print(); window.close(); }
             <\/script>
-          </body>
+          
+  <!-- MODAL DE LOGIN MASTER NATIVO -->
+  <div id="loginModalCustom" class="ciot-modal-backdrop" onclick="fecharModalLogin(event)">
+    <div class="ciot-modal-box" onclick="event.stopPropagation()">
+      <button type="button" class="ciot-modal-close" onclick="fecharModalLoginDirect()">&times;</button>
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span style="font-size: 1.5rem;">🦏</span>
+        <h5 class="fw-bold text-white m-0">Login <span style="color:var(--rino-cyan);">CIOTFY</span></h5>
+      </div>
+      <div id="loginAlert" class="alert alert-danger d-none py-2 small"></div>
+      <div class="mb-3">
+        <label class="field-label mb-1">E-mail corporativo:</label>
+        <input type="email" id="loginEmail" class="input-dark" placeholder="seu@email.com">
+      </div>
+      <div class="mb-3">
+        <label class="field-label mb-1">Senha de acesso:</label>
+        <input type="password" id="loginPass" class="input-dark" placeholder="••••••••">
+      </div>
+      <button type="button" class="btn-rino w-100 py-2 mt-2" onclick="validarLoginMaster()">Entrar no Sistema</button>
+    </div>
+  </div>
+
+</body>
         </html>
       `);
       janela.document.close();
     }
 
   </script>
+
+  <!-- MODAL DE LOGIN MASTER NATIVO -->
+  <div id="loginModalCustom" class="ciot-modal-backdrop" onclick="fecharModalLogin(event)">
+    <div class="ciot-modal-box" onclick="event.stopPropagation()">
+      <button type="button" class="ciot-modal-close" onclick="fecharModalLoginDirect()">&times;</button>
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span style="font-size: 1.5rem;">🦏</span>
+        <h5 class="fw-bold text-white m-0">Login <span style="color:var(--rino-cyan);">CIOTFY</span></h5>
+      </div>
+      <div id="loginAlert" class="alert alert-danger d-none py-2 small"></div>
+      <div class="mb-3">
+        <label class="field-label mb-1">E-mail corporativo:</label>
+        <input type="email" id="loginEmail" class="input-dark" placeholder="seu@email.com">
+      </div>
+      <div class="mb-3">
+        <label class="field-label mb-1">Senha de acesso:</label>
+        <input type="password" id="loginPass" class="input-dark" placeholder="••••••••">
+      </div>
+      <button type="button" class="btn-rino w-100 py-2 mt-2" onclick="validarLoginMaster()">Entrar no Sistema</button>
+    </div>
+  </div>
+
 </body>
 </html>
