@@ -879,7 +879,7 @@
 
   
     <!-- ABA 3: PAINEL DE CONTROLE DE DOCUMENTOS EMITIDOS & HISTÓRICO -->
-    <div id="aba-historico" style="display:none; width: 100%; height: 100%; padding: 25px 2rem; overflow-y: auto; background: var(--bg-dark);">
+     style="display:none; width: 100%; height: 100%; padding: 25px 2rem; overflow-y: auto; background: var(--bg-dark);">
       <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom:1px solid var(--border-rino);">
         <div>
           <h4 class="m-0 fw-bold" style="color:var(--rino-cyan);">Painel de Gestão de Documentos Emitidos</h4>
@@ -1753,7 +1753,20 @@
 
       try {
         addLog('INFO', 'Enviando requisição POST para endpoint /api/transmitir...');
-        const res = await fetch('/api/transmitir', { method: 'POST', body: fd });
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 25000);
+        
+        let res;
+        try {
+          res = await fetch('/api/transmitir', { method: 'POST', body: fd, signal: controller.signal });
+        } catch(fetchErr) {
+          clearTimeout(timeoutId);
+          if (fetchErr.name === 'AbortError') {
+            throw new Error('Tempo limite excedido (25s). O servidor e-Frete/SEFAZ não respondeu a tempo.');
+          }
+          throw fetchErr;
+        }
+        clearTimeout(timeoutId);
         
         let rawText = '';
         let json = null;

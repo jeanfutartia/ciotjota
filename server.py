@@ -561,30 +561,28 @@ async def api_inspecionar_pfx(
         return {"sucesso": False, "erro": str(e)}
 
 @app.post("/api/transmitir")
-async def transmitir_ciot(
+def transmitir_ciot(
     pfxFile: UploadFile = File(...),
     pfxPassword: str = Form(...),
     xmlPayload: str = Form(...)
 ):
     try:
-        pfx_bytes = await pfxFile.read()
+        pfx_bytes = pfxFile.file.read()
         
-        # Endpoint oficial de homologação / produção da e-Frete
         url_efrete = "https://hpef.ipcadm.com.br/pefws/adicionaroperacaotransporte.asmx"
-        
         headers = {
             "Content-Type": "text/xml; charset=utf-8",
             "SOAPAction": "http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte"
         }
 
-        # Transmissão SOAP com mTLS
+        # Execução síncrona com timeout estrito de 20s
         res = pkcs12_post(
             url_efrete,
             data=xmlPayload.encode("utf-8"),
             headers=headers,
             pkcs12_data=pfx_bytes,
             pkcs12_password=pfxPassword,
-            timeout=35
+            timeout=20
         )
 
         return {
@@ -599,6 +597,7 @@ async def transmitir_ciot(
             "error": str(e),
             "traceback": traceback.format_exc()
         }
+
 
 @app.get("/", response_class=HTMLResponse)
 def index():
