@@ -561,52 +561,43 @@ async def api_inspecionar_pfx(
         return {"sucesso": False, "erro": str(e)}
 
 @app.post("/api/transmitir")
-async def api_transmitir(
+async def transmitir_ciot(
     pfxFile: UploadFile = File(...),
-    pfxPassword: str = Form(""),
-    xmlPayload: str = Form(""),
-    url: str = Form("https://sistema.efrete.com.br/Services/PefServiceV2.asmx"),
-    soapAction: str = Form("http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte")
+    pfxPassword: str = Form(...),
+    xmlPayload: str = Form(...)
 ):
     try:
         pfx_bytes = await pfxFile.read()
+        
+        # Endpoint oficial de homologação / produção da e-Frete
+        url_efrete = "https://hpef.ipcadm.com.br/pefws/adicionaroperacaotransporte.asmx"
+        
         headers = {
             "Content-Type": "text/xml; charset=utf-8",
-            "SOAPAction": f'"{soapAction}"'
+            "SOAPAction": "http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte"
         }
 
-        # Auto-alinha o CNPJ do XML com o CNPJ titular do certificado PFX
-        cnpj_pfx, _ = extrair_dados_pfx(pfx_bytes, pfxPassword)
-        if cnpj_pfx:
-            xmlPayload = re.sub(r"<MatrizCNPJ>.*?</MatrizCNPJ>", f"<MatrizCNPJ>{cnpj_pfx}</MatrizCNPJ>", xmlPayload)
-            xmlPayload = re.sub(r"<FilialCNPJ>.*?</FilialCNPJ>", f"<FilialCNPJ>{cnpj_pfx}</FilialCNPJ>", xmlPayload)
-        if "<Integrador>" not in xmlPayload:
-            xmlPayload = xmlPayload.replace("<Versao xmlns=\"http://schemas.ipc.adm.br/efrete/objects\">8</Versao>", "<Versao xmlns=\"http://schemas.ipc.adm.br/efrete/objects\">8</Versao>\n        <Integrador>58e47cd2-8b54-4542-ba22-6941810dd7fa</Integrador>")
-        else:
-            xmlPayload = re.sub(r"<Integrador>.*?</Integrador>", "<Integrador>58e47cd2-8b54-4542-ba22-6941810dd7fa</Integrador>", xmlPayload)
-
-        response = pkcs12_post(
-            url,
-            headers=headers,
+        # Transmissão SOAP com mTLS
+        res = pkcs12_post(
+            url_efrete,
             data=xmlPayload.encode("utf-8"),
+            headers=headers,
             pkcs12_data=pfx_bytes,
             pkcs12_password=pfxPassword,
-            verify=False,
-            timeout=40
+            timeout=35
         )
 
         return {
-            "sucesso": True,
-            "status_code": response.status_code,
-            "resposta": response.text
+            "status": "OK" if res.status_code == 200 else "ERRO_HTTP",
+            "http_code": res.status_code,
+            "response": res.text
         }
     except Exception as e:
-        msg = str(e)
-        if "Invalid password" in msg or "mac verify" in msg.lower():
-            msg = "Senha incorreta informada para o certificado .PFX."
+        import traceback
         return {
-            "sucesso": False,
-            "erro": msg
+            "status": "EXCECAO",
+            "error": str(e),
+            "traceback": traceback.format_exc()
         }
 
 @app.get("/", response_class=HTMLResponse)
