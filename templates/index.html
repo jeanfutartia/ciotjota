@@ -178,55 +178,70 @@
     <!-- TABELA DE PLANOS E PREÇOS -->
     <section class="container py-5" id="planos">
       <div class="text-center mb-5">
-        <h2 class="fw-bold mb-2">Planos dimensionados para sua operação</h2>
-        <p class="text-muted">Sem fidelidade, cancele ou migre quando quiser.</p>
+        <div class="badge-tag" style="margin-bottom: 10px;">Preço Justo & Sob Demanda</div>
+        <h2 class="fw-bold mb-2">Planos acessíveis feitos para quem roda no trecho</h2>
+        <p class="text-muted" style="max-width: 600px; margin: 0 auto;">Sem taxas ocultas ou mensalidades pesadas. Ative a plataforma e pague centavos por documento emitido.</p>
       </div>
       <div class="row g-4 justify-content-center">
-        <div class="col-lg-3 col-md-6">
-          <div class="pricing-card h-100">
-            <h5 class="fw-bold text-info">Start</h5>
-            <p class="small text-muted mb-3">Para autônomos e transportadores locais.</p>
-            <div class="price-val">R$ 149<small>/mês</small></div>
-            <ul class="price-features">
-              <li>Até 50 CIOTs / mês</li>
-              <li>Calculadora de Pedágios</li>
-              <li>Desambiguação IBGE</li>
-              <li>Importador XML NF-e</li>
-            </ul>
-            <button type="button" class="btn btn-outline-info w-100 mt-auto py-2" onclick="abrirModalLogin()">Assinar Plano</button>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
+        
+        <!-- PLANO 1: BASE PAY-PER-DOC -->
+        <div class="col-lg-4 col-md-6">
           <div class="pricing-card pricing-featured h-100">
-            <span class="badge position-absolute top-0 end-0 m-3" style="background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue));">Mais Escolhido</span>
-            <h5 class="fw-bold text-info">Pro Fleet</h5>
-            <p class="small text-muted mb-3">Para médias transportadoras e operadores.</p>
-            <div class="price-val">R$ 389<small>/mês</small></div>
+            <span class="badge position-absolute top-0 end-0 m-3" style="background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue));">Mais Popular</span>
+            <h5 class="fw-bold text-info">Acesso Essencial</h5>
+            <p class="small text-muted mb-3">Ideal para autônomos, pequenos frotistas e operadores sob demanda.</p>
+            <div class="price-val">R$ 39,90<small>/mês</small></div>
+            <div class="small fw-bold text-info mb-3">+ R$ 0,80 por documento emitido</div>
             <ul class="price-features">
-              <li>Até 300 CIOTs / mês</li>
-              <li>Mapa Interativo com Divisas</li>
-              <li>Cálculo de Retenções (IR/INSS/SEST)</li>
-              <li>Exportação XML para MDF-e</li>
+              <li>Acesso completo à plataforma</li>
+              <li>Roteirizador & Divisas com CEP exato</li>
+              <li>Cálculo de Pedágios por Eixo</li>
+              <li>Piso Mínimo Regulatório ANTT</li>
+              <li>Transmissão e-Frete V8 via mTLS</li>
+              <li>Importador XML NF-e ilimitado</li>
             </ul>
-            <button type="button" class="btn-rino w-100 mt-auto py-2" onclick="abrirModalLogin()">Assinar Plano</button>
+            <button type="button" class="btn-rino w-100 mt-auto py-2" onclick="abrirModalLogin()">Ativar por R$ 39,90</button>
           </div>
         </div>
 
-        <div class="col-lg-3 col-md-6">
+        <!-- PLANO 2: PRO FLEET -->
+        <div class="col-lg-4 col-md-6">
           <div class="pricing-card h-100">
-            <h5 class="fw-bold text-info">Enterprise</h5>
-            <p class="small text-muted mb-3">Grandes embarcadores e alta escala.</p>
-            <div class="price-val">R$ 890<small>/mês</small></div>
+            <h5 class="fw-bold text-info">Pro Fleet</h5>
+            <p class="small text-muted mb-3">Para pequenas transportadoras com emissões semanais regulares.</p>
+            <div class="price-val">R$ 79,90<small>/mês</small></div>
+            <div class="small fw-bold text-success mb-3">Inclui 50 docs (R$ 0,60 excedente)</div>
             <ul class="price-features">
-              <li>Emissões Ilimitadas</li>
-              <li>Multi-empresas e Filiais</li>
-              <li>Integração API Webhook</li>
-              <li>Gerente de Conta Dedicado</li>
+              <li>Tudo do Plano Essencial</li>
+              <li>50 documentos/CIOTs já inclusos</li>
+              <li>R$ 0,60 por documento extra</li>
+              <li>Módulo de retenções fiscais (IR/INSS/SEST)</li>
+              <li>Exportação XML direta para MDF-e</li>
+              <li>Suporte prioritário via WhatsApp</li>
             </ul>
-            <button type="button" class="btn btn-outline-info w-100 mt-auto py-2" onclick="abrirModalLogin()">Falar com Consultor</button>
+            <button type="button" class="btn btn-outline-info w-100 mt-auto py-2" onclick="abrirModalLogin()">Escolher Pro Fleet</button>
           </div>
         </div>
+
+        <!-- PLANO 3: UNLIMITED -->
+        <div class="col-lg-4 col-md-6">
+          <div class="pricing-card h-100">
+            <h5 class="fw-bold text-info">Transportador Top</h5>
+            <p class="small text-muted mb-3">Para médias e grandes transportadoras com alta volumetria.</p>
+            <div class="price-val">R$ 149,90<small>/mês</small></div>
+            <div class="small fw-bold text-warning mb-3">Emissões Ilimitadas (Zero por doc)</div>
+            <ul class="price-features">
+              <li>Emissões CIOT 100% ilimitadas</li>
+              <li>Sem custo adicional por documento</li>
+              <li>Multi-usuários e filiais</li>
+              <li>Integração Webhook / API ERP</li>
+              <li>Relatórios gerenciais consolidados</li>
+              <li>Consultoria de homologação ANTT</li>
+            </ul>
+            <button type="button" class="btn btn-outline-info w-100 mt-auto py-2" onclick="abrirModalLogin()">Escolher Ilimitado</button>
+          </div>
+        </div>
+
       </div>
     </section>
   </main>
