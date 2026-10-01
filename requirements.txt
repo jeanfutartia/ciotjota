@@ -1,6 +1,8 @@
 ﻿fastapi
 uvicorn
 requests
+requests-pkcs12
 geopy
 shapely
 cryptography
+python-multipart
