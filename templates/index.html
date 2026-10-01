@@ -1709,19 +1709,42 @@
       const pfx = document.getElementById('pfxFile').files[0];
       const pass = document.getElementById('pfxPassword').value;
       let xml = document.getElementById('envelopeXmlArea').value;
+      const term = document.getElementById('ciotLogTerminal');
+      const respBox = document.getElementById('ciotResponseArea');
+      const badge = document.getElementById('ciotStatusBadge');
+
+      function addLog(tipo, msg) {
+        const d = new Date().toLocaleTimeString('pt-BR');
+        let cor = '#94a3b8';
+        if (tipo === 'SUCESSO') cor = '#10b981';
+        if (tipo === 'ERRO') cor = '#ef4444';
+        if (tipo === 'INFO') cor = '#38bdf8';
+        if (tipo === 'AVISO') cor = '#fbbf24';
+        term.innerHTML += `<div style="color:${cor};">[${d}] [${tipo}] ${msg}</div>`;
+        term.scrollTop = term.scrollHeight;
+      }
 
       if (!xml || xml.length < 50) {
+        addLog('AVISO', 'XML não compilado. Executando compilação automática dos campos...');
         compilarXmlCiotOficial();
         xml = document.getElementById('envelopeXmlArea').value;
       }
 
-      if (!pfx || !pass) {
-        alert('Selecione o arquivo .pfx e digite a senha do Certificado Digital.');
+      if (!pfx) {
+        alert('Selecione o arquivo do certificado digital (.pfx).');
+        addLog('ERRO', 'Arquivo de certificado digital não foi selecionado.');
+        return;
+      }
+      if (!pass) {
+        alert('Digite a senha do certificado digital.');
+        addLog('ERRO', 'Senha do certificado digital não informada.');
         return;
       }
 
-      document.getElementById('ciotStatusBadge').className = 'badge bg-warning text-dark';
-      document.getElementById('ciotStatusBadge').textContent = 'Transmitindo mTLS...';
+      badge.className = 'badge bg-warning text-dark';
+      badge.textContent = 'Transmitindo mTLS...';
+      addLog('INFO', `Iniciando conexão mTLS segura com e-Frete V8... Certificado: ${pfx.name}`);
+      respBox.textContent = 'Aguardando processamento e retorno do servidor...';
 
       const fd = new FormData();
       fd.append('pfxFile', pfx);
@@ -1729,24 +1752,91 @@
       fd.append('xmlPayload', xml);
 
       try {
+        addLog('INFO', 'Enviando requisição POST para endpoint /api/transmitir...');
         const res = await fetch('/api/transmitir', { method: 'POST', body: fd });
-        const json = await res.json();
-        document.getElementById('ciotResponseArea').textContent = json.response || json.error;
+        
+        let rawText = '';
+        let json = null;
+        try {
+          rawText = await res.text();
+          json = JSON.parse(rawText);
+        } catch(e) {
+          json = { error: rawText || 'Resposta do servidor não pôde ser interpretada como JSON.' };
+        }
 
-        if (json.status === 'OK' && json.response.includes('<Sucesso>true</Sucesso>')) {
-          const m = json.response.match(/<CodigoIdentificacaoOperacao>(.*?)<\/CodigoIdentificacaoOperacao>/);
-          document.getElementById('ciotStatusBadge').className = 'badge bg-success';
-          document.getElementById('ciotStatusBadge').textContent = 'CIOT AUTORIZADO: ' + (m ? m[1] : 'OK');
+        const corpoResposta = json.response || json.error || json.detalhe || json.mensagem || rawText;
+        respBox.textContent = corpoResposta;
+
+        // Análise de Sucesso
+        if (corpoResposta.includes('<Sucesso>true</Sucesso>')) {
+          const ciotMatch = corpoResposta.match(/<CodigoIdentificacaoOperacao>(.*?)<\/CodigoIdentificacaoOperacao>/);
+          const numCiot = ciotMatch ? ciotMatch[1] : 'GERADO';
+          badge.className = 'badge bg-success';
+          badge.textContent = 'CIOT AUTORIZADO: ' + numCiot;
+          addLog('SUCESSO', `CIOT AUTORIZADO COM SUCESSO! Código: ${numCiot}`);
+
+          salvarCiotNoHistorico({
+            numeroCiot: numCiot,
+            protocolo: 'PROT-' + Math.floor(100000 + Math.random() * 900000),
+            dataEmissao: new Date().toLocaleString('pt-BR'),
+            contratanteRazao: document.getElementById('cRazaoContratante').value,
+            contratanteDoc: document.getElementById('cCnpjContratante').value,
+            contratanteRntrc: document.getElementById('cRntrcContratante').value,
+            contratadoRazao: document.getElementById('cRazaoContratante').value,
+            contratadoDoc: document.getElementById('cCnpjContratado').value,
+            contratadoRntrc: document.getElementById('cRntrcContratado').value,
+            motoristaCpf: document.getElementById('cCpfMotorista').value,
+            motoristaCnh: document.getElementById('cCnhMotorista').value,
+            placaCavalo: document.getElementById('cPlacaCavalo').value,
+            placaCarreta: document.getElementById('cPlacaCarreta').value,
+            composicao: document.getElementById('cCompVeicular').value === 'true',
+            eixos: document.getElementById('calcEixos').value,
+            origemNome: document.getElementById('cardOriNome').textContent,
+            origemIbge: document.getElementById('cIbgeOrigem').value,
+            origemCep: document.getElementById('cCepOrigem').value,
+            destinoNome: document.getElementById('cardDestNome').textContent,
+            destinoIbge: document.getElementById('cIbgeDestino').value,
+            destinoCep: document.getElementById('cCepDestino').value,
+            distanciaKm: document.getElementById('cDistanciaKm').value,
+            nfeNumero: document.getElementById('cNfeNumero').value,
+            pesoCarga: document.getElementById('cPesoCarga').value,
+            valorFreteBruto: document.getElementById('cValorFreteBruto').value,
+            valorPedagio: (dadosUltimoCalculo && dadosUltimoCalculo.pedagios) ? dadosUltimoCalculo.pedagios.total : '0.00',
+            irrf: document.getElementById('cImpostoIrrf').value,
+            inss: document.getElementById('cImpostoInss').value,
+            sest: document.getElementById('cImpostoSest').value,
+            valorFreteLiquido: document.getElementById('cValorFreteLiquido').value,
+            tipoPagamento: document.getElementById('cTipoPagamento').value,
+            banco: document.getElementById('cBancoNum').value,
+            agencia: document.getElementById('cBancoAgencia').value,
+            conta: document.getElementById('cBancoConta').value,
+            status: 'Autorizado'
+          });
         } else {
-          document.getElementById('ciotStatusBadge').className = 'badge bg-danger';
-          document.getElementById('ciotStatusBadge').textContent = 'Rejeição e-Frete';
+          // Extração de mensagens de erro específicas da ANTT/e-Frete
+          badge.className = 'badge bg-danger';
+          badge.textContent = 'Rejeição e-Frete';
+
+          let motivoErro = 'Erro desconhecido retornado pela SEFAZ / e-Frete.';
+          const matchMsg = corpoResposta.match(/<Mensagem>(.*?)<\/Mensagem>/);
+          const matchDesc = corpoResposta.match(/<Descricao>(.*?)<\/Descricao>/);
+          const matchFault = corpoResposta.match(/<faultstring>(.*?)<\/faultstring>/);
+
+          if (matchMsg) motivoErro = matchMsg[1];
+          else if (matchDesc) motivoErro = matchDesc[1];
+          else if (matchFault) motivoErro = matchFault[1];
+          else if (json.error) motivoErro = json.error;
+
+          addLog('ERRO', `REJEIÇÃO: ${motivoErro}`);
         }
       } catch (err) {
-        document.getElementById('ciotStatusBadge').className = 'badge bg-danger';
-        document.getElementById('ciotResponseArea').textContent = 'Erro de rede: ' + err.message;
+        badge.className = 'badge bg-danger';
+        badge.textContent = 'Erro de Comunicação';
+        respBox.textContent = 'Exceção de Rede/Script: ' + err.message;
+        addLog('ERRO', 'Falha ao conectar com endpoint /api/transmitir: ' + err.message);
       }
     }
-  
+
     // BANCO LOCAL DE HISTÓRICO DE CIOTS
     let historicoCiotsMemoria = JSON.parse(localStorage.getItem('ciotfy_historico_ciots') || '[]');
 
