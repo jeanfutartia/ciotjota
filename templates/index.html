@@ -1,1154 +1,1352 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+﻿<!DOCTYPE html>
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>GeoLog TMS & JCIOT Hub Enterprise</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CIOTFY | Central Logística & Emissor CIOT ANTT e-Frete V8</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg-dark: #0a0614;
-      --panel-dark: #0f0a1f;
-      --card-purple: #180d30;
-      --purple-main: #a855f7;
-      --purple-dark: #6b21a8;
-      --cyan: #38bdf8;
-      --gold: #fde047;
-      --success: #34d399;
-      --danger: #ef4444;
-      --text: #ffffff;
-      --text-muted: #d8b4fe;
+      --bg-dark: #040814;
+      --bg-panel: #070e22;
+      --bg-card: #0c1633;
+      --border-rino: #162a56;
+      --border-glow: rgba(0, 210, 255, 0.35);
+      --rino-cyan: #00d2ff;
+      --rino-blue: #1d4ed8;
+      --rino-purple: #7928ca;
+      --green: #10b981;
+      --red: #ef4444;
+      --text-muted: #8395b8;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
-    html, body { width: 100%; height: 100%; background: var(--bg-dark); color: var(--text); overflow: hidden; display: flex; flex-direction: column; }
+    * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; }
+    body { background-color: var(--bg-dark); color: #f8fafc; min-height: 100vh; margin: 0; }
+    
+    /* NAVBAR */
+    .navbar-ciot { background: rgba(4, 8, 20, 0.95); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border-rino); position: sticky; top: 0; z-index: 1000; padding: 10px 1.8rem; }
+    .nav-brand-text { font-size: 1.35rem; font-weight: 900; letter-spacing: 1px; color: #fff; line-height: 1; cursor: pointer; }
+    .nav-brand-text span { background: linear-gradient(135deg, var(--rino-cyan), var(--rino-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .nav-brand-sub { font-size: 0.6rem; color: var(--text-muted); letter-spacing: 1.2px; font-weight: 800; text-transform: uppercase; margin-top: 3px; }
+    
+    .btn-rino { background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue)); color: #fff; font-weight: 800; border: none; border-radius: 8px; padding: 8px 20px; transition: all 0.3s; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+    .btn-rino:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(0, 210, 255, 0.45); color: #fff; }
 
-    header {
-      height: 56px;
-      min-height: 56px;
-      background: linear-gradient(90deg, #180d30 0%, #26134b 50%, #180d30 100%);
-      border-bottom: 2px solid #581c87;
-      padding: 0 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      z-index: 1000;
-      flex-shrink: 0;
-    }
-    .brand { display: flex; align-items: center; gap: 10px; }
-    .logo-icon {
-      width: 34px; height: 34px; border-radius: 8px; background: rgba(168, 85, 247, 0.2);
-      border: 1px solid rgba(192, 132, 252, 0.5); display: flex; align-items: center; justify-content: center; font-size: 16px;
-    }
-    .main-nav-tabs { display: flex; gap: 8px; }
-    .main-tab-btn {
-      background: #120824; border: 1.5px solid #6b21a8; color: var(--text-muted);
-      padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; transition: 0.2s;
-    }
-    .main-tab-btn.active {
-      background: #9333ea; color: #fff; border-color: #c084fc; box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
-    }
+    /* LANDING PAGE PÚBLICA */
+    .hero { padding: 75px 20px 50px; text-align: center; }
+    .badge-tag { background: rgba(0, 210, 255, 0.1); border: 1px solid rgba(0, 210, 255, 0.3); color: var(--rino-cyan); padding: 6px 16px; border-radius: 50px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 20px; }
+    .hero-title { font-size: 3.2rem; font-weight: 900; line-height: 1.2; max-width: 900px; margin: 0 auto 20px; }
+    .hero-title span { background: linear-gradient(135deg, var(--rino-cyan), #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-desc { color: var(--text-muted); font-size: 1.15rem; max-width: 720px; margin: 0 auto 35px; line-height: 1.6; }
 
-    .app-section { display: none; width: 100%; height: calc(100vh - 56px); position: relative; }
-    .app-section.active { display: flex; }
+    .pricing-card { background: var(--bg-card); border: 1px solid var(--border-rino); border-radius: 14px; padding: 32px 24px; text-align: left; transition: transform 0.3s, border-color 0.3s; position: relative; }
+    .pricing-card:hover { transform: translateY(-4px); border-color: var(--rino-cyan); }
+    .pricing-featured { border: 2px solid var(--rino-cyan); box-shadow: 0 0 35px rgba(0, 210, 255, 0.2); }
+    .price-val { font-size: 2.5rem; font-weight: 900; color: #fff; }
+    .price-val small { font-size: 0.9rem; color: var(--text-muted); font-weight: 400; }
+    .price-features { list-style: none; padding: 0; margin: 24px 0; font-size: 0.9rem; color: #cbd5e1; }
+    .price-features li { margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .price-features li::before { content: "✔"; color: var(--rino-cyan); font-weight: bold; }
 
-    /* Aba 1: Frete */
-    .frete-container { display: flex; width: 100%; height: 100%; position: relative; }
-    aside {
-      width: 430px; min-width: 430px; height: 100%; background: var(--panel-dark);
-      border-right: 2px solid #3b0764; padding: 14px; display: flex; flex-direction: column;
-      gap: 10px; overflow-y: auto; z-index: 500;
-    }
-    .status-box {
-      background: linear-gradient(145deg, #1f113d 0%, #150a2b 100%);
-      border: 1px solid #7e22ce; border-radius: 12px; padding: 12px; text-align: center;
-    }
-    .toll-box {
-      background: #1b1306; border: 1.5px solid #eab308; border-radius: 12px; padding: 12px;
-      display: none; flex-direction: column; gap: 6px; box-shadow: 0 4px 14px rgba(234, 179, 8, 0.25);
-    }
-    .antt-panel {
-      background: var(--card-purple); border: 1.5px solid var(--purple-main); border-radius: 12px; padding: 14px;
-      display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 16px rgba(168, 85, 247, 0.2);
-    }
-    .card-city {
-      background: rgba(30, 16, 61, 0.85); border: 1px solid #581c87; border-radius: 10px; padding: 10px;
-      display: flex; flex-direction: column; gap: 4px;
-    }
-    .btn-toggle {
-      background: var(--danger); color: #fff; border: none; padding: 3px 12px; border-radius: 4px;
-      font-size: 11px; font-weight: 800; cursor: pointer; min-width: 48px;
-    }
-    .btn-toggle.sim { background: #10b981; }
-    .btn-calc {
-      background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
-      color: #fff; border: 1px solid #c084fc; padding: 6px 16px; font-size: 13px; font-weight: 800;
-      border-radius: 6px; cursor: pointer;
-    }
+    /* LAYOUT OPERACIONAL AZUL RINO (PÓS-LOGIN) */
+    #dashboardArea { display: none; height: calc(100vh - 65px); }
+    .app-container { display: flex; height: 100%; width: 100%; }
+    .sidebar-left { width: 440px; min-width: 440px; background: var(--bg-panel); border-right: 1px solid var(--border-rino); padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    .map-container { flex: 1; height: 100%; position: relative; }
+    #mapa { width: 100%; height: 100%; }
 
-    #map-wrapper {
-      flex: 1;
-      height: 100%;
-      position: relative;
-      background: #080410;
-    }
-    #map {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-    }
-    .leaflet-tile { filter: brightness(0.7) invert(1) contrast(3) hue-rotate(240deg) saturate(0.4) brightness(0.85); }
-    .leaflet-container { background: #080410 !important; }
+    /* NAVEGAÇÃO DE ABAS NO PAINEL */
+    .nav-tabs-top { display: flex; gap: 8px; }
+    .tab-btn { background: #0b1531; border: 1px solid var(--border-rino); color: #cbd5e1; border-radius: 8px; padding: 8px 18px; font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
+    .tab-btn:hover { color: #fff; border-color: var(--rino-cyan); }
+    .tab-btn.active { background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue)); color: #fff; border-color: var(--rino-cyan); box-shadow: 0 0 15px rgba(0, 210, 255, 0.35); }
 
-    /* Modal de Homónimos */
-    #modalHomonimos {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.85); z-index: 999999; display: none; align-items: center; justify-content: center;
-    }
-    .modal-card-homonimos {
-      background: #190c33; border: 2px solid #a855f7; border-radius: 16px;
-      width: 90%; max-width: 420px; padding: 20px; box-shadow: 0 0 35px rgba(168, 85, 247, 0.6);
-      display: flex; flex-direction: column; gap: 12px;
-    }
-    .modal-list { max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-    .btn-option {
-      background: #231247; border: 1px solid #7e22ce; color: #ffffff; padding: 12px 14px;
-      border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-      transition: background 0.2s;
-    }
-    .btn-option:hover { background: #9333ea; }
-    .uf-badge { background: #581c87; color: #e9d5ff; padding: 2px 8px; border-radius: 20px; font-size: 11px; }
+    /* BARRA DE BUSCA */
+    .search-bar { display: flex; gap: 6px; }
+    .input-dark { background: #050a18; border: 1px solid var(--border-rino); color: #fff; border-radius: 8px; padding: 8px 12px; font-size: 0.85rem; width: 100%; }
+    .input-dark:focus { border-color: var(--rino-cyan); outline: none; background: #050a18; color: #fff; box-shadow: 0 0 10px rgba(0, 210, 255, 0.2); }
+    .btn-go { background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue)); color: #fff; border: none; border-radius: 8px; padding: 0 20px; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: 0.2s; }
+    .btn-go:hover { opacity: 0.9; }
 
-    /* Aba 2: JCIOT */
-    .jciot-container { width: 100%; height: 100%; overflow-y: auto; padding: 20px; background: #070b12; }
-    .jciot-content { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
-    .glass-box {
-      background: rgba(14, 22, 36, 0.9); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 12px; padding: 18px;
-    }
-    .jciot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    @media(max-width: 900px) { .jciot-grid { grid-template-columns: 1fr; } }
-    .input-cyber {
-      width: 100%; background: #060a12; border: 1px solid rgba(255, 255, 255, 0.15); color: #fff;
-      padding: 8px 10px; border-radius: 6px; font-size: 12.5px; outline: none;
-    }
-    .input-cyber:focus { border-color: #00f0ff; box-shadow: 0 0 8px rgba(0, 240, 255, 0.35); }
-    .btn-cyber {
-      background: linear-gradient(90deg, #0099ff 0%, #00f0ff 100%); color: #050b14;
-      font-weight: 800; padding: 10px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 13px;
-    }
-    .code-box {
-      font-family: 'JetBrains Mono', monospace; font-size: 11.5px; height: 180px; resize: vertical; white-space: pre-wrap;
-    }
+    /* CARDS ESCUROS RINO */
+    .card-box { background: var(--bg-card); border: 1px solid var(--border-rino); border-radius: 12px; padding: 14px; }
+    .card-distancia { text-align: center; border-color: var(--border-glow); background: linear-gradient(180deg, rgba(0, 210, 255, 0.05), var(--bg-card)); }
+    .card-distancia .title { font-size: 0.68rem; font-weight: 900; letter-spacing: 1.2px; color: var(--rino-cyan); text-transform: uppercase; margin-bottom: 2px; }
+    .card-distancia .km { font-size: 2.3rem; font-weight: 900; color: #fff; line-height: 1.1; }
+    .card-distancia .sub { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; margin-top: 4px; }
 
-    /* Modal de Impressão */
-    .modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; padding: 20px;
-    }
-    .modal-overlay.active { display: flex; }
-    .modal-card {
-      background: #0d1524; border: 1px solid #00f0ff; border-radius: 10px; width: 100%; max-width: 800px;
-      max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: 0 0 30px rgba(0, 240, 255, 0.25);
-    }
-    .doc-section { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; margin-bottom: 10px; }
-    .doc-section-title { font-weight: 700; color: #00f0ff; margin-bottom: 6px; font-size: 11px; text-transform: uppercase; }
-    .doc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
-    .doc-grid div span { display: block; font-size: 9.5px; color: #8b949e; text-transform: uppercase; }
-    .doc-grid div strong { font-size: 11.5px; color: #fff; }
+    /* CARDS DE DIVISAS E CEPS */
+    .card-cidade { margin-bottom: 8px; }
+    .card-cidade-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .card-cidade-nome { font-size: 1rem; font-weight: 800; color: #fff; }
+    .badge-ibge { background: #081a3d; color: var(--rino-cyan); border: 1px solid rgba(0, 210, 255, 0.3); font-size: 0.7rem; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
+    .cidade-info { font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px; }
+    .cidade-info strong { color: #fff; }
+    .cidade-cep { font-size: 0.88rem; font-weight: 800; color: var(--rino-cyan); }
+    .box-coords { border: 1px dashed var(--border-rino); background: rgba(0, 210, 255, 0.02); border-radius: 8px; padding: 6px 12px; font-size: 0.76rem; font-weight: 800; color: #94a3b8; display: flex; justify-content: space-between; margin-top: 8px; }
+
+    /* CALCULADORA DE FRETE RINO */
+    .calc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .calc-title { font-size: 0.88rem; font-weight: 900; color: var(--rino-cyan); text-transform: uppercase; letter-spacing: 0.5px; }
+    .btn-export-ciot { background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue)); color: #fff; font-size: 0.7rem; font-weight: 800; border: none; border-radius: 6px; padding: 5px 12px; cursor: pointer; text-decoration: none; transition: 0.2s; }
+    .btn-export-ciot:hover { opacity: 0.9; }
+
+    .field-group { margin-bottom: 10px; }
+    .field-label { font-size: 0.74rem; font-weight: 700; color: #cbd5e1; margin-bottom: 4px; display: block; }
+    .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .toggle-row span { font-size: 0.76rem; font-weight: 700; color: #cbd5e1; }
+    .btn-toggle { border: none; border-radius: 6px; padding: 4px 14px; font-size: 0.75rem; font-weight: 800; cursor: pointer; width: 62px; text-align: center; }
+    .btn-toggle.sim { background: var(--green); color: #fff; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
+    .btn-toggle.nao { background: var(--red); color: #fff; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+
+    .btn-calc-piso { background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue)); color: #fff; border: none; border-radius: 8px; width: 100%; padding: 11px; font-weight: 900; font-size: 0.86rem; cursor: pointer; margin-top: 6px; transition: 0.2s; }
+    .btn-calc-piso:hover { opacity: 0.9; box-shadow: 0 0 15px rgba(0, 210, 255, 0.4); }
+
+    .btn-gps { background: #fff; color: #000; border: none; border-radius: 8px; width: 100%; padding: 10px; font-weight: 900; font-size: 0.82rem; cursor: pointer; margin-top: 8px; text-align: center; text-decoration: none; display: block; transition: 0.2s; }
+    .btn-gps:hover { background: #f1f5f9; color: #000; }
+
+    /* SEÇÃO EMISSOR CIOT ERP (ABA 2) */
+    #aba-ciot { display: none; width: 100%; height: 100%; padding: 25px 2rem; overflow-y: auto; background: var(--bg-dark); }
+    .g-section { background: var(--bg-card); border: 1px solid var(--border-rino); border-radius: 10px; margin-bottom: 14px; padding: 16px; }
+    .g-title { font-size: 0.84rem; font-weight: 800; color: var(--rino-cyan); text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .g-grid { display: grid; gap: 10px; }
+    .g-grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .g-grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .g-grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .g-grid-5 { grid-template-columns: repeat(5, 1fr); }
+    .g-subtitle { font-size: 0.74rem; font-weight: 800; color: #38bdf8; text-transform: uppercase; grid-column: 1 / -1; margin-top: 6px; }
+
+    /* MODAL NATIVO */
+    .ciot-modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(4, 8, 20, 0.85); backdrop-filter: blur(8px); z-index: 99999; align-items: center; justify-content: center; }
+    .ciot-modal-box { background: var(--bg-card); border: 1px solid var(--border-rino); border-radius: 16px; padding: 28px; width: 90%; max-width: 440px; box-shadow: 0 10px 40px rgba(0, 210, 255, 0.25); position: relative; }
+    .ciot-modal-close { position: absolute; top: 14px; right: 18px; background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+    .ciot-modal-close:hover { color: #fff; }
+    .city-select-btn { background: #070f26; border: 1px solid var(--border-rino); color: #fff; text-align: left; padding: 12px 14px; border-radius: 8px; margin-bottom: 8px; width: 100%; cursor: pointer; transition: 0.2s; }
+    .city-select-btn:hover { border-color: var(--rino-cyan); background: #0c1b40; }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="brand">
-      <div class="logo-icon">🚛</div>
-      <div>
-        <div style="font-weight: 800; font-size: 14px; font-family: 'Orbitron', sans-serif;">GEOLOG <span style="color: #c084fc;">TMS & JCIOT</span></div>
-        <div style="font-size: 10px; color: #d8b4fe; font-family: monospace;">CENTRAL LOGÍSTICA INTEGRADA</div>
+  <!-- NAVBAR UNIFICADA -->
+  <header class="navbar-ciot d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-3">
+      <div style="width: 44px; height: 44px; background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #fff; box-shadow: 0 0 15px rgba(0, 210, 255, 0.4); cursor:pointer;" onclick="mostrarTelaInicial()">
+        🦏
+      </div>
+      <div onclick="mostrarTelaInicial()" style="cursor:pointer;">
+        <div class="nav-brand-text">CIOT<span>FY</span></div>
+        <div class="nav-brand-sub">Central Logística Integrada</div>
       </div>
     </div>
 
-    <div class="main-nav-tabs">
-      <button class="main-tab-btn active" id="btnTabFrete" onclick="trocarAbaPrincipal('aba-frete')">🚛 1. Roteirizador & Pedágios</button>
-      <button class="main-tab-btn" id="btnTabCiot" onclick="trocarAbaPrincipal('aba-ciot')">⚡ 2. Emissor CIOT (e-Frete)</button>
+    <!-- BOTÕES PÚBLICOS -->
+    <div class="d-flex align-items-center gap-3" id="navActions">
+      <a href="#planos" class="text-decoration-none text-light small fw-bold me-2">Planos e Preços</a>
+      <button type="button" class="btn-rino" onclick="abrirModalLogin()">Acessar Plataforma</button>
+    </div>
+
+    <!-- BOTÕES DO MODO LOGADO -->
+    <div class="d-none align-items-center gap-3" id="navUserLogged">
+      <button type="button" class="btn btn-sm btn-outline-info me-2" onclick="mostrarTelaInicial()">🏠 Início / Planos</button>
+      <button type="button" class="btn btn-sm btn-info fw-bold me-3 text-dark" id="btnIrParaPainel" onclick="mostrarPainelLogado()" style="display:none;">🚚 Ir ao Painel</button>
+      
+      <div class="nav-tabs-top me-3" id="topTabsArea">
+        <button class="tab-btn active" id="btn-tab-1" onclick="mudarAbaPrincipal('roteirizador')">🚛 1. Roteirizador & Pedágios</button>
+        <button class="tab-btn" id="btn-tab-2" onclick="mudarAbaPrincipal('ciot')">⚡ 2. Construtor & Emissor CIOT</button>
+      </div>
+      
+      <span class="small text-muted d-none d-lg-inline">Operador: <strong class="text-info" id="userEmailSpan"></strong></span>
+      <button class="btn btn-sm btn-outline-danger" onclick="fazerLogout()">Sair</button>
     </div>
   </header>
 
-  <!-- ABA 1: ROTEIRIZADOR & PEDÁGIOS -->
-  <section id="aba-frete" class="app-section active">
-    <div class="frete-container">
-      <aside id="painelLateral">
+  <!-- APRESENTAÇÃO PÚBLICA / LANDING PAGE -->
+  <main id="publicArea">
+    <section class="hero">
+      <div class="badge-tag">Plataforma Logística e-Frete V8</div>
+      <h1 class="hero-title">Roteirização Inteligente & <span>Emissão de CIOT ANTT</span></h1>
+      <p class="hero-desc">Desambiguação automática de cidades homônimas com base no IBGE, cálculo de pedágios por eixo, piso mínimo regulatório e transmissão de CIOT direto via mTLS.</p>
+      <div class="d-flex gap-3 justify-content-center">
+        <button type="button" class="btn-rino px-4 py-2" id="heroBtnEntrar" onclick="abrirModalLogin()">Entrar no Sistema</button>
+        <a href="#planos" class="btn btn-outline-secondary px-4 py-2" style="border-color: var(--border-rino); color: #cbd5e1;">Ver Tabela de Planos</a>
+      </div>
+    </section>
+
+    <!-- TABELA DE PLANOS E PREÇOS -->
+    <section class="container py-5" id="planos">
+      <div class="text-center mb-5">
+        <h2 class="fw-bold mb-2">Planos dimensionados para sua operação</h2>
+        <p class="text-muted">Sem fidelidade, cancele ou migre quando quiser.</p>
+      </div>
+      <div class="row g-4 justify-content-center">
+        <div class="col-lg-3 col-md-6">
+          <div class="pricing-card h-100">
+            <h5 class="fw-bold text-info">Start</h5>
+            <p class="small text-muted mb-3">Para autônomos e transportadores locais.</p>
+            <div class="price-val">R$ 149<small>/mês</small></div>
+            <ul class="price-features">
+              <li>Até 50 CIOTs / mês</li>
+              <li>Calculadora de Pedágios</li>
+              <li>Desambiguação IBGE</li>
+              <li>Importador XML NF-e</li>
+            </ul>
+            <button type="button" class="btn btn-outline-info w-100 mt-auto py-2" onclick="abrirModalLogin()">Assinar Plano</button>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+          <div class="pricing-card pricing-featured h-100">
+            <span class="badge position-absolute top-0 end-0 m-3" style="background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue));">Mais Escolhido</span>
+            <h5 class="fw-bold text-info">Pro Fleet</h5>
+            <p class="small text-muted mb-3">Para médias transportadoras e operadores.</p>
+            <div class="price-val">R$ 389<small>/mês</small></div>
+            <ul class="price-features">
+              <li>Até 300 CIOTs / mês</li>
+              <li>Mapa Interativo com Divisas</li>
+              <li>Cálculo de Retenções (IR/INSS/SEST)</li>
+              <li>Exportação XML para MDF-e</li>
+            </ul>
+            <button type="button" class="btn-rino w-100 mt-auto py-2" onclick="abrirModalLogin()">Assinar Plano</button>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+          <div class="pricing-card h-100">
+            <h5 class="fw-bold text-info">Enterprise</h5>
+            <p class="small text-muted mb-3">Grandes embarcadores e alta escala.</p>
+            <div class="price-val">R$ 890<small>/mês</small></div>
+            <ul class="price-features">
+              <li>Emissões Ilimitadas</li>
+              <li>Multi-empresas e Filiais</li>
+              <li>Integração API Webhook</li>
+              <li>Gerente de Conta Dedicado</li>
+            </ul>
+            <button type="button" class="btn btn-outline-info w-100 mt-auto py-2" onclick="abrirModalLogin()">Falar com Consultor</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- DASHBOARD OPERACIONAL COMPLETO (PÓS-LOGIN) -->
+  <section id="dashboardArea">
+    
+    <!-- ABA 1: ROTEIRIZADOR, PEDÁGIOS, DIVISAS E CALCULADORA DE FRETE -->
+    <div id="aba-roteirizador" class="app-container">
+      
+      <!-- SIDEBAR LATERAL (440px) -->
+      <div class="sidebar-left">
         
-        <div style="display: flex; gap: 6px;">
-          <input id="cid1" type="text" value="Pereiras" placeholder="Origem" style="width: 45%; background: #140b29; border: 1.5px solid #6b21a8; border-radius: 6px; padding: 6px 8px; color: #fff; font-size: 12px;">
-          <input id="cid2" type="text" value="Petropolis" placeholder="Destino" style="width: 45%; background: #140b29; border: 1.5px solid #6b21a8; border-radius: 6px; padding: 6px 8px; color: #fff; font-size: 12px;">
-          <button id="btnCalcular" onclick="executarPesquisa()" class="btn-calc">Ir</button>
+        <!-- BARRA DE BUSCA -->
+        <div class="search-bar">
+          <input type="text" id="inputOrigem" class="input-dark" placeholder="Origem (Ex: Cascavel)" value="Cascavel">
+          <input type="text" id="inputDestino" class="input-dark" placeholder="Destino (Ex: Rio das Pedras)" value="Rio das Pedras">
+          <button class="btn-go" onclick="calcularRota()">Ir</button>
         </div>
 
-        <div class="status-box">
-          <div style="font-size: 10px; font-weight: 800; color: #c084fc; text-transform: uppercase;">Distância Rodoviária Real</div>
-          <div id="distTxt" style="font-size: 24px; font-weight: 900; color: #ffffff; margin-top: 2px;">-- km</div>
-          <div id="tempoTxt" style="font-size: 11px; color: #d8b4fe;">Aguardando cálculo...</div>
+        <!-- CARD DISTÂNCIA RODOVIÁRIA REAL -->
+        <div class="card-box card-distancia">
+          <div class="title">DISTÂNCIA RODOVIÁRIA REAL</div>
+          <div class="km" id="txtDistanciaKm">-- km</div>
+          <div class="sub" id="txtTempoPedagio">Aguardando cálculo...</div>
         </div>
 
-        <div id="boxPedagios" class="toll-box">
-          <div style="display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 800; color: #fde047;">
-            <span>🪙 Praças de Pedágio Oficiais</span>
-            <span id="qtdPedagios" style="background: #eab308; color: #000; padding: 1px 6px; border-radius: 10px; font-size: 10px;">0</span>
+        <!-- CARDS DE ORIGEM E DESTINO (DIVISA E CEPS) -->
+        <div id="containerCardsDivisas" style="display:none;">
+          <!-- Card Origem -->
+          <div class="card-box card-cidade">
+            <div class="card-cidade-header">
+              <span class="card-cidade-nome" id="cardOriNome">Cascavel/PR</span>
+              <span class="badge-ibge" id="cardOriIbge">IBGE: 4104808</span>
+            </div>
+            <div class="cidade-info">Logradouro: <strong id="cardOriLogra">Rua Itu - Universitário</strong></div>
+            <div class="cidade-info">CEP de Divisa: <span class="cidade-cep" id="cardOriCep">85819-045</span></div>
+            <div class="box-coords">
+              <span id="cardOriLat">Lat: -24.96116</span>
+              <span id="cardOriLon">Lon: -52.407532</span>
+            </div>
           </div>
-          <div style="font-size: 19px; font-weight: 900; color: #fde047;" id="txtTotalPedagio">R$ 0,00</div>
-          <div style="font-size: 10px; color: #fef08a;" id="txtDetalhePedagio">Tarifas Concessionárias</div>
-          <div id="listaPedagios" style="font-size: 10px; color: #fef08a; line-height: 1.4; max-height: 100px; overflow-y: auto; border-top: 1px dashed rgba(234, 179, 8, 0.4); padding-top: 4px;"></div>
-        </div>
 
-        <div class="antt-panel">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 13px; font-weight: 800; color: #38bdf8;">Calculadora de Frete</span>
-            <button onclick="exportarParaCiot()" style="background: #00f0ff; color: #000; border: none; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; cursor: pointer;">
-              🚀 EXPORTAR P/ CIOT
-            </button>
+          <!-- Card Destino -->
+          <div class="card-box card-cidade">
+            <div class="card-cidade-header">
+              <span class="card-cidade-nome" id="cardDestNome">Rio das Pedras/SP</span>
+              <span class="badge-ibge" id="cardDestIbge">IBGE: 3544004</span>
+            </div>
+            <div class="cidade-info">Logradouro: <strong id="cardDestLogra">Rua 4 - Santa Maria III</strong></div>
+            <div class="cidade-info">CEP de Divisa: <span class="cidade-cep" id="cardDestCep">13395-666</span></div>
+            <div class="box-coords">
+              <span id="cardDestLat">Lat: -22.9121</span>
+              <span id="cardDestLon">Lon: -47.7115</span>
+            </div>
           </div>
 
-          <div style="display: flex; flex-direction: column; gap: 3px;">
-            <label style="font-size: 10.5px; color: #d8b4fe; font-weight: 700;">Tipo de Carga</label>
-            <select id="anttTipoCarga" style="background: #120824; border: 1.5px solid #7e22ce; border-radius: 6px; padding: 5px; color: #fff; font-size: 11.5px;">
-              <option value="geral" selected>Carga Geral</option>
-              <option value="granel_solido">Granel Sólido</option>
-              <option value="granel_liquido">Granel Líquido</option>
-              <option value="frigorificada">Frigorificada</option>
-              <option value="perigosa">Carga Perigosa</option>
-              <option value="neogranel">Neogranel</option>
+          <a id="btnGpsGoogle" href="#" target="_blank" class="btn-gps">🚗 ABRIR NO GOOGLE MAPS GPS</a>
+        </div>
+
+        <!-- CALCULADORA DE FRETE COMPLETA -->
+        <div class="card-box">
+          <div class="calc-header">
+            <div class="calc-title">Calculadora de Frete</div>
+            <button class="btn-export-ciot" onclick="exportarParaCiot()">🔗 EXPORTAR P/ CIOT</button>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Tipo de Carga</label>
+            <select id="calcTipoCarga" class="input-dark">
+              <option value="Carga Geral" selected>Carga Geral</option>
+              <option value="Granel solido">Granel sólido</option>
+              <option value="Granel liquido">Granel líquido</option>
+              <option value="Frigorificada">Frigorificada</option>
+              <option value="Conteinerizada">Conteinerizada</option>
             </select>
           </div>
 
-          <div style="display: flex; gap: 8px;">
-            <div style="flex: 1; display: flex; flex-direction: column; gap: 3px;">
-              <label style="font-size: 10.5px; color: #d8b4fe; font-weight: 700;">Número de Eixos*</label>
-              <select id="anttNumEixos" onchange="executarPesquisa()" style="background: #120824; border: 1.5px solid #7e22ce; border-radius: 6px; padding: 5px; color: #fff; font-size: 11.5px;">
+          <div class="row g-2 mb-2">
+            <div class="col-7">
+              <label class="field-label">Número de Eixos*</label>
+              <select id="calcEixos" class="input-dark">
                 <option value="2">2 Eixos</option>
-                <option value="3" selected>3 Eixos</option>
-                <option value="4">4 Eixos</option>
-                <option value="5">5 Eixos</option>
+                <option value="3">3 Eixos</option>
+                <option value="5" selected>5 Eixos</option>
                 <option value="6">6 Eixos</option>
                 <option value="7">7 Eixos</option>
                 <option value="9">9 Eixos</option>
               </select>
             </div>
-            <div style="flex: 1; display: flex; flex-direction: column; gap: 3px;">
-              <label style="font-size: 10.5px; color: #d8b4fe; font-weight: 700;">Distância</label>
-              <input id="anttDistancia" type="text" readonly style="background: #090414; border: 1.5px solid #7e22ce; border-radius: 6px; padding: 5px; color: #a855f7; font-weight: 800; font-size: 11.5px;">
+            <div class="col-5">
+              <label class="field-label">Distância</label>
+              <input type="text" id="calcDistanciaInput" class="input-dark" placeholder="-- km" readonly>
             </div>
           </div>
 
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 10.5px;">Composição veicular?</span>
-            <button id="togComposicao" class="btn-toggle sim" onclick="alternarToggle(this)">Sim</button>
+          <div class="toggle-row">
+            <span>É composição veicular?</span>
+            <button type="button" class="btn-toggle sim" id="tComp" onclick="toggleBtn(this)">Sim</button>
           </div>
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 10.5px;">Alto Desempenho?</span>
-            <button id="togDesempenho" class="btn-toggle" onclick="alternarToggle(this)">Não</button>
+          <div class="toggle-row">
+            <span>É Alto Desempenho?</span>
+            <button type="button" class="btn-toggle nao" id="tAlto" onclick="toggleBtn(this)">Não</button>
           </div>
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 10.5px;">Retorno Vazio?</span>
-            <button id="togRetorno" class="btn-toggle" onclick="alternarToggle(this)">Não</button>
+          <div class="toggle-row">
+            <span>Retorno Vazio?</span>
+            <button type="button" class="btn-toggle nao" id="tVazio" onclick="toggleBtn(this)">Não</button>
           </div>
 
-          <button onclick="calcularFreteOficial()" style="background: #06b6d4; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 800; font-size: 12px; cursor: pointer;">
-            Calcular Piso ANTT
-          </button>
-
-          <div id="resultadoAnttBox" style="display: none; background: #0c051a; border: 1px solid #10b981; border-radius: 8px; padding: 8px;">
-            <div style="font-size: 8.5px; color: #94a3b8; text-align: center; text-transform: uppercase;">RES. ANTT Nº 5.867/2020 (ATUALIZADA 2026)</div>
-            <div id="txtValorAntt" style="font-size: 22px; font-weight: 900; color: #38bdf8; text-align: center; margin: 3px 0;">R$ 0,00</div>
-            <div style="font-size: 9.5px; color: #d8b4fe; border-top: 1px dashed #7e22ce; padding-top: 4px; line-height: 1.4;">
-              <div><strong>Operação:</strong> <span id="txtOperacao"></span></div>
-              <div><strong>Valor de Ida:</strong> <span id="txtValorIda" style="color: #4ade80;"></span></div>
-              <div><strong>Retorno Vazio:</strong> <span id="txtValorRetorno" style="color: #facc15;"></span></div>
-            </div>
+          <button type="button" class="btn-calc-piso" onclick="calcularPisoAnttOficial()">Calcular Piso ANTT</button>
+          <div id="resultadoPisoBox" class="mt-2 text-center" style="display:none;">
+            <small class="text-muted">Piso Regulatório ANTT:</small>
+            <div style="font-size:1.35rem; font-weight:900; color:var(--rino-cyan);" id="txtValorPiso">R$ 0,00</div>
           </div>
         </div>
 
-        <div id="cardC1" class="card-city" style="display: none;">
-          <div style="display: flex; justify-content: space-between;"><strong id="nomeC1" style="color: #fff; font-size: 12px;"></strong><span id="ibgeC1" style="font-size: 9.5px; color: #d8b4fe;"></span></div>
-          <div style="font-size: 10.5px; color: #d8b4fe;">CEP: <span id="cepC1" style="color: #c084fc; font-weight: bold;"></span></div>
-        </div>
-        <div id="cardC2" class="card-city" style="display: none;">
-          <div style="display: flex; justify-content: space-between;"><strong id="nomeC2" style="color: #fff; font-size: 12px;"></strong><span id="ibgeC2" style="font-size: 9.5px; color: #d8b4fe;"></span></div>
-          <div style="font-size: 10.5px; color: #d8b4fe;">CEP: <span id="cepC2" style="color: #c084fc; font-weight: bold;"></span></div>
-        </div>
+      </div>
 
-        <a id="gmapsLink" target="_blank" style="display: none; background: #fff; color: #3b0764; text-align: center; padding: 8px; border-radius: 6px; font-weight: 800; font-size: 11px; text-decoration: none;">
-          🚗 ABRIR NO GOOGLE MAPS GPS
-        </a>
-      </aside>
-
-      <div id="map-wrapper">
-        <div id="map"></div>
+      <!-- MAPA LEAFLET -->
+      <div class="map-container">
+        <div id="mapa"></div>
       </div>
     </div>
+
+    <!-- ABA 2: CONSTRUTOR ERP CIOT V8 E TRANSMISSÃO MTLS COMPLETO -->
+    <div id="aba-ciot">
+      <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom:1px solid var(--border-rino);">
+        <div>
+          <h4 class="m-0 fw-bold" style="color:var(--rino-cyan);">Construtor & Emissor de CIOT (ANTT e-Frete V8)</h4>
+          <small class="text-muted">Preencha os dados operacionais ou importe diretamente o arquivo XML da NF-e.</small>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="small text-muted">Importar XML NF-e:</span>
+          <input type="file" id="cXmlNfe" accept=".xml" class="input-dark" style="max-width:240px; padding:4px;">
+          <button type="button" class="btn btn-sm btn-outline-danger" onclick="limparCamposConstrutor()">🗑️ Limpar</button>
+        </div>
+      </div>
+
+      <!-- 1. IDENTIFICAÇÃO E OPERAÇÃO -->
+      <div class="g-section">
+        <div class="g-title">🏢 1. Configuração do Emissor e Integração</div>
+        <div class="g-grid g-grid-3">
+          <div>
+            <label class="field-label">Hash Integrador A3 Soft:*</label>
+            <input type="text" id="cHashIntegrador" class="input-dark" value="58e47cd2-8b54-4542-ba22-6941810dd7fa" required>
+          </div>
+          <div>
+            <label class="field-label">CNPJ Matriz / Filial:*</label>
+            <input type="text" id="cCnpjMatriz" class="input-dark" placeholder="00000000000000" required>
+          </div>
+          <div>
+            <label class="field-label">ID Operação no ERP:*</label>
+            <input type="text" id="cIdOperacaoCliente" class="input-dark" placeholder="Ex: 560000000001" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. CONTRATANTE E TRANSPORTADOR -->
+      <div class="g-section">
+        <div class="g-title">🤝 2. Contratante e Transportador Contratado</div>
+        <div class="g-grid g-grid-4">
+          <div class="g-subtitle">Contratante (Responsável pelo Pagamento)</div>
+          <div>
+            <label class="field-label">CNPJ/CPF Contratante:*</label>
+            <input type="text" id="cCnpjContratante" class="input-dark" placeholder="00000000000000" required>
+          </div>
+          <div>
+            <label class="field-label">RNTRC Contratante:*</label>
+            <input type="text" id="cRntrcContratante" class="input-dark" placeholder="00000000" required>
+          </div>
+          <div style="grid-column: span 2;">
+            <label class="field-label">Razão Social Contratante:*</label>
+            <input type="text" id="cRazaoContratante" class="input-dark" placeholder="Razão social completa" required>
+          </div>
+          <div>
+            <label class="field-label">CEP Origem (Coleta):*</label>
+            <input type="text" id="cCepOrigem" class="input-dark" placeholder="00000000" required>
+          </div>
+          <div>
+            <label class="field-label">Cód. IBGE Origem (Coleta):*</label>
+            <input type="text" id="cIbgeOrigem" class="input-dark" placeholder="7 dígitos" required>
+          </div>
+          <div>
+            <label class="field-label">Número:*</label>
+            <input type="text" id="cNumContratante" class="input-dark" placeholder="Ex: SN" required>
+          </div>
+          <div>
+            <label class="field-label">Logradouro / Rua Contratante:*</label>
+            <input type="text" id="cRuaContratante" class="input-dark" placeholder="Rua / Rodovia" required>
+          </div>
+
+          <div class="g-subtitle">Transportador Executor (Contratado)</div>
+          <div style="grid-column: span 2;">
+            <label class="field-label">CNPJ/CPF Contratado:*</label>
+            <input type="text" id="cCnpjContratado" class="input-dark" placeholder="00000000000000" required>
+          </div>
+          <div style="grid-column: span 2;">
+            <label class="field-label">RNTRC Contratado:*</label>
+            <input type="text" id="cRntrcContratado" class="input-dark" placeholder="00000000" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. MOTORISTA E VEÍCULOS -->
+      <div class="g-section">
+        <div class="g-title">🚚 3. Motorista Condutor & Frota</div>
+        <div class="g-grid g-grid-4">
+          <div class="g-subtitle">Dados do Motorista</div>
+          <div>
+            <label class="field-label">CPF Motorista (11 dígitos):*</label>
+            <input type="text" id="cCpfMotorista" class="input-dark" placeholder="00000000000" required>
+          </div>
+          <div>
+            <label class="field-label">CNH do Motorista:*</label>
+            <input type="text" id="cCnhMotorista" class="input-dark" placeholder="Número CNH" required>
+          </div>
+          <div>
+            <label class="field-label">DDD:*</label>
+            <input type="text" id="cDddMotorista" class="input-dark" value="19" required>
+          </div>
+          <div>
+            <label class="field-label">Telemóvel:*</label>
+            <input type="text" id="cTelMotorista" class="input-dark" placeholder="Ex: 999999999" required>
+          </div>
+
+          <div class="g-subtitle">Veículos</div>
+          <div>
+            <label class="field-label">Placa Cavalo (Trator):*</label>
+            <input type="text" id="cPlacaCavalo" class="input-dark" placeholder="ABC1D23" required>
+          </div>
+          <div>
+            <label class="field-label">Placa Carreta (Reboque):</label>
+            <input type="text" id="cPlacaCarreta" class="input-dark" placeholder="Opcional">
+          </div>
+          <div style="grid-column: span 2;">
+            <label class="field-label">Composição Veicular:*</label>
+            <select id="cCompVeicular" class="input-dark">
+              <option value="true" selected>Sim (Cavalo + Carreta)</option>
+              <option value="false">Não (Veículo Único)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. ROTA E NOTA FISCAL ORIGINÁRIA -->
+      <div class="g-section">
+        <div class="g-title">📦 4. Viagem, Rota e Nota Fiscal Originária</div>
+        <div class="g-grid g-grid-4">
+          <div>
+            <label class="field-label">Início Previsto Viagem:*</label>
+            <input type="datetime-local" id="cDataInicioViagem" class="input-dark" required>
+          </div>
+          <div>
+            <label class="field-label">Fim Previsto Viagem:*</label>
+            <input type="datetime-local" id="cDataFimViagem" class="input-dark" required>
+          </div>
+          <div>
+            <label class="field-label">Distância (Km):*</label>
+            <input type="number" id="cDistanciaKm" class="input-dark" placeholder="Ex: 45" required>
+          </div>
+          <div>
+            <label class="field-label">Tipo Embalagem:*</label>
+            <select id="cTipoEmbalagem" class="input-dark">
+              <option value="Caixa">Caixa</option>
+              <option value="Palete">Palete</option>
+              <option value="Granel" selected>Granel</option>
+              <option value="Unitario">Unitário</option>
+            </select>
+          </div>
+
+          <div class="g-subtitle">Dados da NF-e Originária</div>
+          <div>
+            <label class="field-label">Número NF-e:*</label>
+            <input type="text" id="cNfeNumero" class="input-dark" placeholder="Número" required>
+          </div>
+          <div>
+            <label class="field-label">Série:*</label>
+            <input type="text" id="cNfeSerie" class="input-dark" value="1" required>
+          </div>
+          <div>
+            <label class="field-label">CNPJ Emissor da NF-e:*</label>
+            <input type="text" id="cNfeCnpjEmissor" class="input-dark" placeholder="00000000000000" required>
+          </div>
+          <div>
+            <label class="field-label">Data Emissão NF-e:*</label>
+            <input type="datetime-local" id="cNfeDataEmissao" class="input-dark" required>
+          </div>
+          <div>
+            <label class="field-label">NCM Predominante:*</label>
+            <input type="text" id="cNcmCarga" class="input-dark" value="2304" required>
+          </div>
+          <div>
+            <label class="field-label">Peso da Carga (Kg):*</label>
+            <input type="number" step="0.001" id="cPesoCarga" class="input-dark" placeholder="Ex: 2625.20" required>
+          </div>
+          <div>
+            <label class="field-label">Valor Total NF-e (R$):*</label>
+            <input type="number" step="0.01" id="cNfeValorTotal" class="input-dark" placeholder="Ex: 154585.18" required>
+          </div>
+          <div>
+            <label class="field-label">Descrição das Mercadorias:*</label>
+            <input type="text" id="cDescMercadoria" class="input-dark" placeholder="Descrição resumida" value="Farelo de Soja" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. DESTINATÁRIO -->
+      <div class="g-section">
+        <div class="g-title">📍 5. Destinatário da Carga (Endereço Completo Obrigatório)</div>
+        <div class="g-grid g-grid-4">
+          <div>
+            <label class="field-label">CNPJ/CPF Destinatário:*</label>
+            <input type="text" id="cDestCnpj" class="input-dark" placeholder="00000000000000" required>
+          </div>
+          <div style="grid-column: span 3;">
+            <label class="field-label">Razão Social Destinatário:*</label>
+            <input type="text" id="cDestRazao" class="input-dark" placeholder="Razão social" required>
+          </div>
+          <div>
+            <label class="field-label">CEP Destino:*</label>
+            <input type="text" id="cCepDestino" class="input-dark" placeholder="00000000" required>
+          </div>
+          <div>
+            <label class="field-label">Cód. IBGE Destino:*</label>
+            <input type="text" id="cIbgeDestino" class="input-dark" placeholder="7 dígitos" required>
+          </div>
+          <div style="grid-column: span 2;">
+            <label class="field-label">Logradouro / Rua Destinatário:*</label>
+            <input type="text" id="cDestRua" class="input-dark" placeholder="Rodovia / Rua" required>
+          </div>
+          <div>
+            <label class="field-label">Número:*</label>
+            <input type="text" id="cDestNumero" class="input-dark" placeholder="SN" value="SN" required>
+          </div>
+          <div>
+            <label class="field-label">Bairro:*</label>
+            <input type="text" id="cDestBairro" class="input-dark" placeholder="Bairro" value="Centro" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. VALORES DO FRETE E RETENÇÕES -->
+      <div class="g-section">
+        <div class="g-title">💰 6. Valores do Frete, Retenções Tributárias e Dados Bancários</div>
+        <div class="g-grid g-grid-5">
+          <div>
+            <label class="field-label">Valor Bruto Frete (R$):*</label>
+            <input type="number" step="0.01" id="cValorFreteBruto" class="input-dark" oninput="calcularLiquidoCiot()" required>
+          </div>
+          <div>
+            <label class="field-label">IRRF Retido (R$):</label>
+            <input type="number" step="0.01" id="cImpostoIrrf" class="input-dark" value="0.00" oninput="calcularLiquidoCiot()">
+          </div>
+          <div>
+            <label class="field-label">INSS Retido (R$):</label>
+            <input type="number" step="0.01" id="cImpostoInss" class="input-dark" value="0.00" oninput="calcularLiquidoCiot()">
+          </div>
+          <div>
+            <label class="field-label">SEST/SENAT (R$):</label>
+            <input type="number" step="0.01" id="cImpostoSest" class="input-dark" value="0.00" oninput="calcularLiquidoCiot()">
+          </div>
+          <div>
+            <label class="field-label" style="color:var(--rino-cyan);">Líquido a Pagar (R$):*</label>
+            <input type="number" step="0.01" id="cValorFreteLiquido" class="input-dark fw-bold" style="color:var(--rino-cyan); background:#060f26;" readonly>
+          </div>
+        </div>
+
+        <div class="g-grid g-grid-4 mt-2">
+          <div>
+            <label class="field-label">Meio de Pagamento:*</label>
+            <select id="cTipoPagamento" class="input-dark">
+              <option value="TransferenciaBancaria" selected>Transferência Bancária</option>
+              <option value="eFRETE">Saldo Conta e-Frete</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Cód. Banco (COMPE):*</label>
+            <input type="text" id="cBancoNum" class="input-dark" value="237" required>
+          </div>
+          <div>
+            <label class="field-label">Agência (com dígito):*</label>
+            <input type="text" id="cBancoAgencia" class="input-dark" placeholder="Ex: 2825" value="2825" required>
+          </div>
+          <div>
+            <label class="field-label">Conta (com dígito):*</label>
+            <input type="text" id="cBancoConta" class="input-dark" placeholder="Ex: 29856-8" value="29856-8" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTÃO DE COMPILAÇÃO XML -->
+      <button type="button" class="btn-rino w-100 py-3 fw-bold text-uppercase shadow-sm mb-3" style="font-size:1rem;" onclick="compilarXmlCiotOficial()">
+        ⚡ COMPILAR XML SOAP V8 E PREPARAR TRANSMISSÃO
+      </button>
+
+      <!-- TRANSMISSÃO COM CERTIFICADO A1 -->
+      <div class="g-section">
+        <div class="g-title">🔐 7. Transmissão com Certificado Digital A1 (.pfx)</div>
+        <div class="row g-2 align-items-center">
+          <div class="col-md-5">
+            <label class="field-label">Arquivo do Certificado (.pfx / .p12):*</label>
+            <input type="file" id="pfxFile" class="input-dark w-100" accept=".pfx,.p12">
+          </div>
+          <div class="col-md-3">
+            <label class="field-label">Senha do Certificado:*</label>
+            <input type="password" id="pfxPassword" class="input-dark w-100" placeholder="••••••••">
+          </div>
+          <div class="col-md-4 d-flex align-items-end">
+            <button type="button" class="btn-rino w-100 py-2 mt-3" onclick="transmitirCiotDireto()">
+              🚀 TRANSMITIR CIOT e-FRETE (V8)
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <label class="field-label">XML SOAP Compilado:</label>
+          <textarea id="envelopeXmlArea" class="input-dark mb-2" style="height:180px; font-family:monospace; font-size:0.78rem; color:#38bdf8;" placeholder="O XML compilado aparecerá aqui..."></textarea>
+
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="small fw-bold text-info">📡 Protocolo e Retorno da ANTT / e-Frete</span>
+            <span class="badge bg-secondary" id="ciotStatusBadge">Aguardando Envio</span>
+          </div>
+          <pre id="ciotResponseArea" style="background:#030712; color:#00ff88; padding:12px; border-radius:8px; font-size:0.8rem; max-height:200px; overflow:auto; margin:0;">// O resultado da autorização e número do CIOT será exibido aqui...</pre>
+        </div>
+      </div>
+    </div>
+
   </section>
 
-  <!-- MODAL DE HOMÓNIMOS -->
-  <div id="modalHomonimos">
-    <div class="modal-card-homonimos">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #6b21a8; padding-bottom: 8px;">
-        <h3 id="modalTitulo" style="font-size: 15px; font-weight: 800; color: #ffffff;">Selecione o Município</h3>
-        <span style="font-size: 10.5px; background: #581c87; padding: 2px 8px; border-radius: 12px; color: #e9d5ff;">Homónimos</span>
-      </div>
-      <p style="font-size: 11.5px; color: #d8b4fe;">Foram encontrados vários municípios. Escolha o estado correto:</p>
-      <div id="modalLista" class="modal-list"></div>
+  <!-- MODAL DE DESAMBIGUAÇÃO DE CIDADES (NATIVO RINO) -->
+  <div id="modalDesambiguacaoCustom" class="ciot-modal-backdrop">
+    <div class="ciot-modal-box">
+      <h5 class="fw-bold text-white mb-2">Selecione o Município Correto</h5>
+      <p class="small text-muted mb-3" id="modalDesambiguacaoSubtitulo">Existem vários municípios com este nome no IBGE. Clique no correto:</p>
+      <div id="listaCidadesHomonimas" style="max-height: 320px; overflow-y: auto;"></div>
     </div>
   </div>
 
-  <!-- ABA 2: TRANSMISSOR JCIOT -->
-  <section id="aba-ciot" class="app-section">
-    <div class="jciot-container">
-      <div class="jciot-content">
-
-        <div class="glass-box" style="display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #00f0ff; padding: 12px 18px;">
-          <div>
-            <h2 style="font-size: 13px; font-family: 'Orbitron', sans-serif; color: #00f0ff;">TRANSMISSOR e-FRETE & CIOT ANTT (V8)</h2>
-            <p style="font-size: 11px; color: #8b949e;">Envio direto mTLS com Certificado Digital A1</p>
-          </div>
-          <div style="display: flex; gap: 8px;">
-            <button onclick="trocarSubAbaCiot('ciot-sub-transmissor')" class="main-tab-btn active" id="btnSubTransmissor">⚡ Transmissor XML</button>
-            <button onclick="trocarSubAbaCiot('ciot-sub-construtor')" class="main-tab-btn" id="btnSubConstrutor">📝 Construtor CIOT</button>
-          </div>
-        </div>
-
-        <div id="ciot-sub-transmissor">
-          <div class="jciot-grid">
-            <div class="glass-box">
-              <h3 style="font-size: 12.5px; color: #00f0ff; margin-bottom: 12px;">1. Autenticação A1 & Endpoint</h3>
-              
-              <div style="margin-bottom: 10px;">
-                <label style="font-size: 10.5px; color: #8b949e; display: block; margin-bottom: 3px;">Ambiente</label>
-                <select id="ciotAmbiente" class="input-cyber">
-                  <option value="PRODUCAO">🟢 PRODUÇÃO (sistema.efrete.com.br)</option>
-                  <option value="HOMOLOGACAO">🟡 HOMOLOGAÇÃO</option>
-                </select>
-              </div>
-
-              <div style="margin-bottom: 10px;">
-                <label style="font-size: 10.5px; color: #8b949e; display: block; margin-bottom: 3px;">Certificado Digital (.PFX A1) *</label>
-                <input type="file" id="ciotPfxInput" class="input-cyber" accept=".pfx,.p12">
-              </div>
-
-              <div style="margin-bottom: 10px;">
-                <label style="font-size: 10.5px; color: #8b949e; display: block; margin-bottom: 3px;">Senha do Certificado *</label>
-                <input type="password" id="ciotPfxPassword" class="input-cyber" placeholder="Senha do arquivo .pfx">
-              </div>
-
-              <div style="margin-bottom: 12px;">
-                <label style="font-size: 10.5px; color: #8b949e; display: block; margin-bottom: 3px;">URL Webservice</label>
-                <input type="text" id="ciotUrl" class="input-cyber" value="https://sistema.efrete.com.br/Services/PefServiceV2.asmx">
-              </div>
-
-              <button onclick="dispararTransmissaoCiot()" class="btn-cyber">TRANSMITIR CIOT e-FRETE</button>
-            </div>
-
-            <div class="glass-box">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <h3 style="font-size: 12.5px; color: #00f0ff;">2. Envelope XML SOAP (Versão 8)</h3>
-                <button onclick="abrirModalImpressaoCiot()" style="background: transparent; border: 1px solid #ffd700; color: #ffd700; padding: 3px 8px; border-radius: 4px; font-size: 10.5px; cursor: pointer;">
-                  🖨️ Imprimir DOT / PDF
-                </button>
-              </div>
-
-              <textarea id="ciotXmlPayload" class="input-cyber code-box" placeholder="Envelope SOAP e-Frete..."></textarea>
-
-              <div style="margin-top: 8px;">
-                <label style="font-size: 10.5px; color: #8b949e; display: block; margin-bottom: 3px;">Retorno Oficial da IPEF:</label>
-                <div id="ciotRetornoArea" style="background: #04070d; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px; font-family: monospace; font-size: 10.5px; color: #38bdf8; min-height: 90px; max-height: 140px; overflow-y: auto; white-space: pre-wrap;">
-                  Aguardando envio...
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="ciot-sub-construtor" style="display: none;">
-          
-      <!-- FORMULÁRIO ERP COMPLETO (GEOLOG CIOT V8) -->
-      
-      <!-- FORMULÁRIO ERP COMPLETO EM GRELHA (GEOLOG CIOT V8) -->
-      <style>
-        .g-section { background: #0b1120; border: 1px solid #1e293b; border-radius: 8px; margin-bottom: 14px; padding: 14px; }
-        .g-title { font-size: 0.85rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-        .g-grid { display: grid; gap: 10px; }
-        .g-grid-2 { grid-template-columns: repeat(2, 1fr); }
-        .g-grid-3 { grid-template-columns: repeat(3, 1fr); }
-        .g-grid-4 { grid-template-columns: repeat(4, 1fr); }
-        .g-grid-6 { grid-template-columns: repeat(6, 1fr); }
-        .g-field { display: flex; flex-direction: column; gap: 3px; }
-        .g-label { font-size: 0.76rem; font-weight: 600; color: #94a3b8; }
-        .g-input { background: #1e293b; border: 1px solid #334155; color: #f8fafc; border-radius: 5px; padding: 5px 8px; font-size: 0.82rem; }
-        .g-input:focus { border-color: #38bdf8; outline: none; }
-        .g-subtitle { font-size: 0.74rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; grid-column: 1 / -1; margin-top: 6px; }
-      </style>
-
-      <div class="card p-3 my-2" style="background:#060a12; border:1px solid #1e293b; border-radius:8px;">
-        
-        <!-- BARRA DE IMPORTAÇÃO E AÇÕES -->
-        <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom:1px solid #1e293b;">
-          <h5 class="m-0 fw-bold" style="color:#00d2ff; font-size:1.05rem;">Construtor Passo a Passo de Operação de Transporte (e-Frete V8)</h5>
-          <div class="d-flex align-items-center gap-2">
-            <span class="small text-muted">Carregar XML NF-e:</span>
-            <input type="file" id="cXmlNfe" accept=".xml" class="g-input" style="max-width:240px; padding:3px 6px;">
-            <button type="button" class="btn btn-sm btn-outline-danger" onclick="limparCamposConstrutor()">🗑️ Limpar</button>
-          </div>
-        </div>
-
-        <!-- 1. CONFIGURAÇÃO EMISSOR -->
-        <div class="g-section">
-          <div class="g-title">🏢 1. Configuração do Emissor e Integração</div>
-          <div class="g-grid g-grid-3">
-            <div class="g-field">
-              <label class="g-label">Hash Integrador:*</label>
-              <input type="text" id="cHashIntegrador" class="g-input" value="58e47cd2-8b54-4542-ba22-6941810dd7fa" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">CNPJ Matriz / Filial:*</label>
-              <input type="text" id="cCnpjMatriz" class="g-input" placeholder="00000000000000" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">ID Operação no ERP:*</label>
-              <input type="text" id="cIdOperacaoCliente" class="g-input" placeholder="Ex: 560000000001" required>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. CONTRATANTE E TRANSPORTADOR -->
-        <div class="g-section">
-          <div class="g-title">🤝 2. Contratante e Transportador Contratado</div>
-          <div class="g-grid g-grid-4">
-            <div class="g-subtitle">Contratante (Responsável pelo Pagamento)</div>
-            <div class="g-field">
-              <label class="g-label">CNPJ/CPF Contratante:*</label>
-              <input type="text" id="cCnpjContratante" class="g-input" placeholder="00000000000000" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">RNTRC Contratante:*</label>
-              <input type="text" id="cRntrcContratante" class="g-input" placeholder="00000000" required>
-            </div>
-            <div class="g-field" style="grid-column: span 2;">
-              <label class="g-label">Razão Social Contratante:*</label>
-              <input type="text" id="cRazaoContratante" class="g-input" placeholder="Nome empresarial" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">CEP:*</label>
-              <input type="text" id="cCepContratante" class="g-input" placeholder="00000000" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Cód. IBGE Município:*</label>
-              <input type="text" id="cMunContratante" class="g-input" placeholder="7 dígitos" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Número:*</label>
-              <input type="text" id="cNumContratante" class="g-input" placeholder="Ex: 100 ou SN" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Logradouro / Rua:*</label>
-              <input type="text" id="cRuaContratante" class="g-input" placeholder="Rua / Rodovia" required>
-            </div>
-
-            <div class="g-subtitle">Transportador Executor (Contratado)</div>
-            <div class="g-field" style="grid-column: span 2;">
-              <label class="g-label">CNPJ/CPF Contratado:*</label>
-              <input type="text" id="cCnpjContratado" class="g-input" placeholder="00000000000000" required>
-            </div>
-            <div class="g-field" style="grid-column: span 2;">
-              <label class="g-label">RNTRC Contratado:*</label>
-              <input type="text" id="cRntrcContratado" class="g-input" placeholder="00000000" required>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. MOTORISTA E VEÍCULOS -->
-        <div class="g-section">
-          <div class="g-title">🚚 3. Motorista Condutor & Frota</div>
-          <div class="g-grid g-grid-4">
-            <div class="g-subtitle">Dados do Motorista</div>
-            <div class="g-field">
-              <label class="g-label">CPF Motorista (11 dígitos):*</label>
-              <input type="text" id="cCpfMotorista" class="g-input" placeholder="00000000000" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">CNH do Motorista:*</label>
-              <input type="text" id="cCnhMotorista" class="g-input" placeholder="Número CNH" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">DDD:*</label>
-              <input type="text" id="cDddMotorista" class="g-input" placeholder="Ex: 11" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Telemóvel:*</label>
-              <input type="text" id="cTelMotorista" class="g-input" placeholder="Ex: 999999999" required>
-            </div>
-
-            <div class="g-subtitle">Veículos</div>
-            <div class="g-field">
-              <label class="g-label">Placa Cavalo (Trator):*</label>
-              <input type="text" id="cPlacaCavalo" class="g-input" placeholder="ABC1D23" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Placa Carreta (Reboque):</label>
-              <input type="text" id="cPlacaCarreta" class="g-input" placeholder="Opcional">
-            </div>
-            <div class="g-field" style="grid-column: span 2;">
-              <label class="g-label">Composição Veicular:*</label>
-              <select id="cCompVeicular" class="g-input">
-                <option value="false">Não (Veículo Único)</option>
-                <option value="true">Sim (Cavalo + Carreta)</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- 4. ROTA E NF-E -->
-        <div class="g-section">
-          <div class="g-title">📦 4. Viagem, Rota e Nota Fiscal Originária</div>
-          <div class="g-grid g-grid-4">
-            <div class="g-field">
-              <label class="g-label">Início Previsto Viagem:*</label>
-              <input type="datetime-local" id="cDataInicioViagem" class="g-input" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Fim Previsto Viagem:*</label>
-              <input type="datetime-local" id="cDataFimViagem" class="g-input" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Distância (Km):*</label>
-              <input type="number" id="cDistanciaKm" class="g-input" placeholder="Ex: 120" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Tipo Embalagem:*</label>
-              <select id="cTipoEmbalagem" class="g-input">
-                <option value="Caixa">Caixa</option>
-                <option value="Palete">Palete</option>
-                <option value="Granel">Granel</option>
-                <option value="Unitario">Unitário</option>
-              </select>
-            </div>
-
-            <div class="g-subtitle">Dados da NF-e</div>
-            <div class="g-field">
-              <label class="g-label">Número NF-e:*</label>
-              <input type="text" id="cNfeNumero" class="g-input" placeholder="Número" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Série:*</label>
-              <input type="text" id="cNfeSerie" class="g-input" placeholder="0" value="0" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">CNPJ Emissor da NF-e:*</label>
-              <input type="text" id="cNfeCnpjEmissor" class="g-input" placeholder="00000000000000" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Data Emissão NF-e:*</label>
-              <input type="datetime-local" id="cNfeDataEmissao" class="g-input" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">NCM Predominante:*</label>
-              <input type="text" id="cNcmCarga" class="g-input" placeholder="4 dígitos" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Peso Carga (Kg):*</label>
-              <input type="number" step="0.001" id="cPesoCarga" class="g-input" placeholder="Ex: 15000" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Valor Total NF-e (R$):*</label>
-              <input type="number" step="0.01" id="cNfeValorTotal" class="g-input" placeholder="Ex: 50000.00" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Descrição das Mercadorias:*</label>
-              <input type="text" id="cDescMercadoria" class="g-input" placeholder="Descrição resumida" required>
-            </div>
-          </div>
-        </div>
-
-        <!-- 5. DESTINATÁRIO -->
-        <div class="g-section">
-          <div class="g-title">📍 5. Destinatário da Carga (Endereço Completo Obrigatório)</div>
-          <div class="g-grid g-grid-4">
-            <div class="g-field">
-              <label class="g-label">CNPJ/CPF Destinatário:*</label>
-              <input type="text" id="cDestCnpj" class="g-input" placeholder="00000000000000" required>
-            </div>
-            <div class="g-field" style="grid-column: span 3;">
-              <label class="g-label">Razão Social Destinatário:*</label>
-              <input type="text" id="cDestRazao" class="g-input" placeholder="Razão social completa" required>
-            </div>
-            <div class="g-field" style="grid-column: span 2;">
-              <label class="g-label">Logradouro / Rua:*</label>
-              <input type="text" id="cDestRua" class="g-input" placeholder="Rua / Avenida / Rodovia" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Número:*</label>
-              <input type="text" id="cDestNumero" class="g-input" placeholder="Ex: 500 ou SN" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Bairro:*</label>
-              <input type="text" id="cDestBairro" class="g-input" placeholder="Bairro" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">CEP Destino:*</label>
-              <input type="text" id="cCepDestino" class="g-input" placeholder="00000000" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Cód. IBGE Destino:*</label>
-              <input type="text" id="cIbgeDestino" class="g-input" placeholder="7 dígitos" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">CEP Origem (Coleta):*</label>
-              <input type="text" id="cCepOrigem" class="g-input" placeholder="00000000" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Cód. IBGE Origem (Coleta):*</label>
-              <input type="text" id="cIbgeOrigem" class="g-input" placeholder="7 dígitos" required>
-            </div>
-          </div>
-        </div>
-
-        <!-- 6. VALORES, RETENÇÕES E PAGAMENTO -->
-        <div class="g-section">
-          <div class="g-title">💰 6. Valores do Frete, Retenções Tributárias e Dados Bancários</div>
-          <div class="g-grid g-grid-5" style="grid-template-columns: repeat(5, 1fr);">
-            <div class="g-field">
-              <label class="g-label">Valor Bruto Frete (R$):*</label>
-              <input type="number" step="0.01" id="cValorFreteBruto" class="g-input" placeholder="0.00" oninput="cCalcularLiquido()" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">IRRF Retido (R$):</label>
-              <input type="number" step="0.01" id="cImpostoIrrf" class="g-input" value="0.00" oninput="cCalcularLiquido()">
-            </div>
-            <div class="g-field">
-              <label class="g-label">INSS Retido (R$):</label>
-              <input type="number" step="0.01" id="cImpostoInss" class="g-input" value="0.00" oninput="cCalcularLiquido()">
-            </div>
-            <div class="g-field">
-              <label class="g-label">SEST/SENAT (R$):</label>
-              <input type="number" step="0.01" id="cImpostoSest" class="g-input" value="0.00" oninput="cCalcularLiquido()">
-            </div>
-            <div class="g-field">
-              <label class="g-label" style="color:#4ade80;">Valor Líquido (R$):*</label>
-              <input type="number" step="0.01" id="cValorFreteLiquido" class="g-input" style="color:#4ade80; font-weight:bold; background:#0f291e;" value="0.00" readonly>
-            </div>
-          </div>
-
-          <div class="g-grid g-grid-4 mt-2">
-            <div class="g-field">
-              <label class="g-label">Meio de Pagamento:*</label>
-              <select id="cTipoPagamento" class="g-input">
-                <option value="TransferenciaBancaria" selected>Transferência Bancária</option>
-                <option value="eFRETE">Saldo Conta e-Frete</option>
-              </select>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Cód. Banco (COMPE):*</label>
-              <input type="text" id="cBancoNum" class="g-input" placeholder="Ex: 237" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Agência (com dígito):*</label>
-              <input type="text" id="cBancoAgencia" class="g-input" placeholder="Ex: 0001-9" required>
-            </div>
-            <div class="g-field">
-              <label class="g-label">Conta (com dígito):*</label>
-              <input type="text" id="cBancoConta" class="g-input" placeholder="Ex: 12345-6" required>
-            </div>
-          </div>
-        </div>
-
-        <button type="button" class="btn btn-info w-100 py-2 fw-bold text-dark text-uppercase shadow-sm" style="background:#00d2ff; border:none; letter-spacing:0.5px;" onclick="compilarEEstruturarXml()">
-          COMPILAR XML E ENVIAR PARA O TRANSMISSOR
-        </button>
+  <!-- MODAL DE LOGIN MASTER (NATIVO RINO) -->
+  <div id="loginModalCustom" class="ciot-modal-backdrop" onclick="fecharModalLogin(event)">
+    <div class="ciot-modal-box" onclick="event.stopPropagation()">
+      <button type="button" class="ciot-modal-close" onclick="fecharModalLoginDirect()">&times;</button>
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span style="font-size: 1.5rem;">🦏</span>
+        <h5 class="fw-bold text-white m-0">Login <span style="color:var(--rino-cyan);">CIOTFY</span></h5>
       </div>
-
-
-        </div>
-
+      <div id="loginAlert" class="alert alert-danger d-none py-2 small"></div>
+      <div class="mb-3">
+        <label class="field-label mb-1">E-mail corporativo:</label>
+        <input type="email" id="loginEmail" class="input-dark" placeholder="seu@email.com">
       </div>
-    </div>
-  </section>
-
-  <!-- MODAL DE IMPRESSÃO -->
-  <div id="ciotPrintModal" class="modal-overlay">
-    <div class="modal-card">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #00f0ff; padding-bottom: 8px; margin-bottom: 12px;">
-        <h2 style="font-size: 12px; font-family: 'Orbitron', sans-serif; color: #00f0ff;">DECLARAÇÃO DE OPERAÇÃO DE TRANSPORTE (CIOT / e-Frete)</h2>
-        <div style="display: flex; gap: 8px;">
-          <button onclick="window.print()" style="background: #ffd700; color: #000; border: none; padding: 4px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">🖨️ IMPRIMIR</button>
-          <button onclick="fecharModalImpressao()" style="background: transparent; border: none; color: #fff; font-size: 15px; cursor: pointer;">✖</button>
-        </div>
+      <div class="mb-3">
+        <label class="field-label mb-1">Senha de acesso:</label>
+        <input type="password" id="loginPass" class="input-dark" placeholder="••••••••">
       </div>
-      <div id="ciotPrintDoc"></div>
+      <button type="button" class="btn-rino w-100 py-2 mt-2" onclick="validarLoginMaster()">Entrar no Sistema</button>
     </div>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <script>
+    const MASTER_USER = "jeanfutart@gmail.com";
+    const MASTER_PASS = "A3soft@";
+
     let map = null;
-    let marker1 = null, marker2 = null, polyLayer1 = null, polyLayer2 = null, rotaPolyline = null;
-    let tollMarkers = [];
-    let kmAtual = 1;
-    let idOrigemAtual = "", idDestinoAtual = "";
-    let valorFreteCalculado = 0;
-    let dadosUltimaRota = {};
+    let routeLayer = null;
+    let markersLayer = null;
+    let polygonsLayer = null;
 
+    let dadosUltimoCalculo = null;
+    let dadosOrigemEscolhida = null;
+    let dadosDestinoEscolhido = null;
+
+    // CONTROLE DE NAVEGAÇÃO ENTRE LANDING PAGE E PAINEL
+    function mostrarTelaInicial() {
+      document.getElementById('publicArea').style.display = 'block';
+      document.getElementById('dashboardArea').style.display = 'none';
+
+      if (sessionStorage.getItem('ciotfy_auth') === 'true') {
+        document.getElementById('btnIrParaPainel').style.display = 'inline-block';
+        document.getElementById('topTabsArea').style.display = 'none';
+      }
+    }
+
+    function mostrarPainelLogado() {
+      document.getElementById('publicArea').style.display = 'none';
+      document.getElementById('dashboardArea').style.display = 'block';
+      document.getElementById('btnIrParaPainel').style.display = 'none';
+      document.getElementById('topTabsArea').style.display = 'flex';
+      setTimeout(() => { if (map) map.invalidateSize(); }, 200);
+    }
+
+    function abrirModalLogin() {
+      if (sessionStorage.getItem('ciotfy_auth') === 'true') {
+        mostrarPainelLogado();
+        return;
+      }
+      const modal = document.getElementById('loginModalCustom');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function fecharModalLoginDirect() {
+      const modal = document.getElementById('loginModalCustom');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function fecharModalLogin(event) {
+      if (event.target.id === 'loginModalCustom') fecharModalLoginDirect();
+    }
+
+    function validarLoginMaster() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPass').value.trim();
+      const alertBox = document.getElementById('loginAlert');
+
+      if (email === MASTER_USER && pass === MASTER_PASS) {
+        fecharModalLoginDirect();
+        sessionStorage.setItem('ciotfy_auth', 'true');
+
+        document.getElementById('navActions').classList.add('d-none');
+        document.getElementById('navUserLogged').classList.remove('d-none');
+        document.getElementById('navUserLogged').classList.add('d-flex');
+        document.getElementById('userEmailSpan').textContent = email;
+
+        mostrarPainelLogado();
+        setTimeout(initMap, 200);
+      } else {
+        alertBox.textContent = 'E-mail ou senha inválidos.';
+        alertBox.classList.remove('d-none');
+      }
+    }
+
+    function fazerLogout() {
+      sessionStorage.removeItem('ciotfy_auth');
+      window.location.reload();
+    }
+
+    // INICIALIZAÇÃO DO MAPA LEAFLET
     function initMap() {
-      if (map !== null) return;
-      const el = document.getElementById('map');
-      if (!el) return;
-
-      map = L.map('map', { preferCanvas: true }).setView([-22.75, -47.60], 10);
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      if (map) {
+        map.invalidateSize();
+        return;
+      }
+      map = L.map('mapa').setView([-23.5, -49.0], 7);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap'
+        attribution: '© OpenStreetMap'
       }).addTo(map);
 
-      setTimeout(() => {
-        map.invalidateSize();
-      }, 250);
+      polygonsLayer = L.layerGroup().addTo(map);
+      markersLayer = L.layerGroup().addTo(map);
     }
 
-    function trocarAbaPrincipal(idAba) {
-      document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.remove('active'));
-      
-      const sec = document.getElementById(idAba);
-      if (sec) sec.classList.add('active');
+    window.onload = function() {
+      if (sessionStorage.getItem('ciotfy_auth') === 'true') {
+        document.getElementById('navActions').classList.add('d-none');
+        document.getElementById('navUserLogged').classList.remove('d-none');
+        document.getElementById('navUserLogged').classList.add('d-flex');
+        document.getElementById('userEmailSpan').textContent = MASTER_USER;
 
-      if (idAba === 'aba-frete') {
-        document.getElementById('btnTabFrete').classList.add('active');
-        if (map) {
-          setTimeout(() => { map.invalidateSize(); }, 200);
-        }
+        mostrarPainelLogado();
+        setTimeout(initMap, 200);
+      }
+    };
+
+    // ALTERNÂNCIA DE ABAS
+    function mudarAbaPrincipal(aba) {
+      document.getElementById('btn-tab-1').classList.remove('active');
+      document.getElementById('btn-tab-2').classList.remove('active');
+
+      if (aba === 'roteirizador') {
+        document.getElementById('btn-tab-1').classList.add('active');
+        document.getElementById('aba-roteirizador').style.display = 'flex';
+        document.getElementById('aba-ciot').style.display = 'none';
+        setTimeout(() => { if (map) map.invalidateSize(); }, 200);
       } else {
-        document.getElementById('btnTabCiot').classList.add('active');
+        document.getElementById('btn-tab-2').classList.add('active');
+        document.getElementById('aba-roteirizador').style.display = 'none';
+        document.getElementById('aba-ciot').style.display = 'block';
       }
     }
 
-    function trocarSubAbaCiot(idSub) {
-      document.getElementById('ciot-sub-transmissor').style.display = (idSub === 'ciot-sub-transmissor') ? 'block' : 'none';
-      document.getElementById('ciot-sub-construtor').style.display = (idSub === 'ciot-sub-construtor') ? 'block' : 'none';
-      document.getElementById('btnSubTransmissor').classList.toggle('active', idSub === 'ciot-sub-transmissor');
-      document.getElementById('btnSubConstrutor').classList.toggle('active', idSub === 'ciot-sub-construtor');
-    }
-
-    function alternarToggle(btn) {
-      if (btn.innerText === 'Não') {
-        btn.innerText = 'Sim';
-        btn.className = 'btn-toggle sim';
+    function toggleBtn(btn) {
+      if (btn.classList.contains('sim')) {
+        btn.classList.remove('sim');
+        btn.classList.add('nao');
+        btn.textContent = 'Não';
       } else {
-        btn.innerText = 'Não';
-        btn.className = 'btn-toggle';
+        btn.classList.remove('nao');
+        btn.classList.add('sim');
+        btn.textContent = 'Sim';
       }
     }
 
-    function abrirModalEscolha(candidatos, titulo) {
+    // DESAMBIGUAÇÃO OFICIAL VIA /api/verificar_cidade
+    async function resolverCidade(termo, labelCampo) {
+      const res = await fetch(`/api/verificar_cidade?nome=${encodeURIComponent(termo)}`);
+      const data = await res.json();
+      const candidatos = data.candidatos || (Array.isArray(data) ? data : []);
+
+      if (!candidatos || candidatos.length === 0) {
+        throw new Error(`Município "${termo}" não foi localizado no IBGE.`);
+      }
+
+      if (candidatos.length === 1) return candidatos[0];
+
       return new Promise((resolve) => {
-        const modal = document.getElementById('modalHomonimos');
-        const lista = document.getElementById('modalLista');
-        document.getElementById('modalTitulo').innerText = titulo;
-        lista.innerHTML = '';
+        const modal = document.getElementById('modalDesambiguacaoCustom');
+        const container = document.getElementById('listaCidadesHomonimas');
+        
+        document.getElementById('modalDesambiguacaoSubtitulo').textContent = 
+          `Foram encontrados ${candidatos.length} municípios chamados "${termo}". Escolha a ${labelCampo}:`;
+        container.innerHTML = '';
 
         candidatos.forEach(c => {
           const btn = document.createElement('button');
-          btn.className = 'btn-option';
+          btn.type = 'button';
+          btn.className = 'city-select-btn';
           btn.innerHTML = `
-            <span>${c.nome} <span class="uf-badge">${c.uf}</span></span>
-            <span style="font-size: 11px; font-family: monospace; color: #d8b4fe;">IBGE: ${c.id}</span>
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <strong style="color:var(--rino-cyan); font-size:1rem;">${c.nome} - ${c.uf}</strong>
+                <div class="small text-muted">Código IBGE: ${c.id}</div>
+              </div>
+              <span class="badge" style="background:linear-gradient(135deg, var(--rino-cyan), var(--rino-blue)); padding: 6px 12px;">Selecionar</span>
+            </div>
           `;
           btn.onclick = () => {
             modal.style.display = 'none';
             resolve(c);
           };
-          lista.appendChild(btn);
+          container.appendChild(btn);
         });
 
         modal.style.display = 'flex';
       });
     }
 
-    async function checarCidade(nome, label) {
-      const res = await fetch('/api/verificar_cidade?nome=' + encodeURIComponent(nome));
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || ('Município ' + nome + ' não encontrado'));
-      
-      if (data.total > 1) {
-        return await abrirModalEscolha(data.candidatos, 'Selecione: ' + label + ' (' + nome + ')');
-      }
-      return data.candidatos[0];
-    }
+    // CÁLCULO DE ROTA, DIVISAS E PINTURA DO POLÍGONO DO MUNICÍPIO
+    async function calcularRota() {
+      const oTxt = document.getElementById('inputOrigem').value.trim();
+      const dTxt = document.getElementById('inputDestino').value.trim();
+      const eixos = document.getElementById('calcEixos').value;
 
-    function renderizarPedagios(dadosPedagio) {
-      if (!map) return;
-      tollMarkers.forEach(m => map.removeLayer(m));
-      tollMarkers = [];
-
-      const box = document.getElementById('boxPedagios');
-      const qtd = document.getElementById('qtdPedagios');
-      const totalTxt = document.getElementById('txtTotalPedagio');
-      const detTxt = document.getElementById('txtDetalhePedagio');
-      const lista = document.getElementById('listaPedagios');
-
-      if (!dadosPedagio || !dadosPedagio.pedagios || dadosPedagio.pedagios.length === 0) {
-        box.style.display = 'none';
+      if (!oTxt || !dTxt) {
+        alert('Preencha a origem e o destino.');
         return;
       }
 
-      box.style.display = 'flex';
-      qtd.innerText = dadosPedagio.quantidade;
-      totalTxt.innerText = 'R$ ' + dadosPedagio.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-      detTxt.innerText = `${dadosPedagio.origem_dados} (${dadosPedagio.quantidade} praças no percurso)`;
-
-      lista.innerHTML = dadosPedagio.pedagios.map((p) => {
-        const valFmt = p.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-        const valTagFmt = p.valorTag.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-        return `• <strong>${p.nome}</strong>: R$ ${valFmt} <span style="color:#34d399;">(TAG: R$ ${valTagFmt})</span>`;
-      }).join('<br>');
-
-      dadosPedagio.pedagios.forEach((p) => {
-        const tollIcon = L.divIcon({
-          className: 'toll-marker',
-          html: '<div style="background:#eab308; border:2px solid #fff; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; font-size:10px; box-shadow:0 0 8px #eab308; cursor:pointer;">🪙</div>',
-          iconSize: [20, 20],
-          iconAnchor: [10, 10]
-        });
-        const m = L.marker([p.lat, p.lon], { icon: tollIcon }).addTo(map)
-          .bindPopup(`<b>🪙 ${p.nome}</b><br>Tarifa: <strong>R$ ${p.valor.toFixed(2)}</strong><br>Com TAG: <strong>R$ ${p.valorTag.toFixed(2)}</strong><br><small style="color:#a855f7;">${p.rodovia}</small>`);
-        tollMarkers.push(m);
-      });
-    }
-
-    async function calcularFreteOficial() {
-      const distCalc = Math.max(1, Math.round(kmAtual));
-      const carga = document.getElementById('anttTipoCarga').value;
-      const eixos = document.getElementById('anttNumEixos').value;
-      const comp = document.getElementById('togComposicao').innerText === 'Sim';
-      const desp = document.getElementById('togDesempenho').innerText === 'Sim';
-      const ret = document.getElementById('togRetorno').innerText === 'Sim';
-
-      const url = `/api/calcular_antt?dist_km=${distCalc}&categoria=${carga}&eixos=${eixos}&composicao=${comp}&alto_desempenho=${desp}&retorno_vazio=${ret}`;
-      const res = await fetch(url);
-      const data = await res.json();
-
-      valorFreteCalculado = data.valor_total;
-      document.getElementById('resultadoAnttBox').style.display = 'block';
-      document.getElementById('txtValorAntt').innerText = 'R$ ' + data.valor_total.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-      document.getElementById('txtOperacao').innerText = data.operacao_transporte;
-      document.getElementById('txtValorIda').innerText = 'R$ ' + data.valor_ida.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-      document.getElementById('txtValorRetorno').innerText = 'R$ ' + data.valor_retorno.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-    }
-
-    async function executarPesquisa() {
-      initMap();
-      const c1_raw = document.getElementById('cid1').value.trim();
-      const c2_raw = document.getElementById('cid2').value.trim();
-      const eixos = parseInt(document.getElementById('anttNumEixos').value) || 3;
-      const btn = document.getElementById('btnCalcular');
-
-      if (!c1_raw || !c2_raw) {
-        alert('Informe Origem e Destino!');
-        return;
-      }
-
-      btn.innerText = '...';
-      btn.disabled = true;
+      document.getElementById('txtDistanciaKm').textContent = 'Calculando...';
 
       try {
-        const m1 = await checarCidade(c1_raw, 'Origem');
-        const m2 = await checarCidade(c2_raw, 'Destino');
+        dadosOrigemEscolhida = await resolverCidade(oTxt, 'Origem');
+        dadosDestinoEscolhido = await resolverCidade(dTxt, 'Destino');
 
-        idOrigemAtual = m1.id;
-        idDestinoAtual = m2.id;
+        const url = `/api/calcular?id_origem=${dadosOrigemEscolhida.id}&id_destino=${dadosDestinoEscolhido.id}&eixos=${eixos}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        dadosUltimoCalculo = data;
 
-        const resCalc = await fetch(`/api/calcular?id_origem=${idOrigemAtual}&id_destino=${idDestinoAtual}&eixos=${eixos}`);
-        const dataCalc = await resCalc.json();
-        dadosUltimaRota = dataCalc;
+        // 1. Extração da Rota e Distância
+        let coords = [];
+        for (const k of Object.keys(data)) {
+          if (Array.isArray(data[k]) && data[k].length > 0 && Array.isArray(data[k][0]) && typeof data[k][0][0] === 'number') {
+            coords = data[k];
+            break;
+          }
+        }
 
-        if (polyLayer1) map.removeLayer(polyLayer1);
-        if (polyLayer2) map.removeLayer(polyLayer2);
-        if (marker1) map.removeLayer(marker1);
-        if (marker2) map.removeLayer(marker2);
-        if (rotaPolyline) map.removeLayer(rotaPolyline);
+        let distKm = data.distancia_km || data.distancia || data.km || 0;
+        if (!distKm && coords.length > 1) {
+          let mTotal = 0;
+          for (let i = 0; i < coords.length - 1; i++) {
+            mTotal += L.latLng(coords[i][0], coords[i][1]).distanceTo(L.latLng(coords[i+1][0], coords[i+1][1]));
+          }
+          distKm = Math.round(mTotal / 1000);
+        }
 
-        kmAtual = Math.max(1.0, dataCalc.distancia_rodoviaria_km);
-        document.getElementById('distTxt').innerText = kmAtual.toFixed(2) + ' km';
-        document.getElementById('tempoTxt').innerText = 'Tempo: ~' + dataCalc.tempo_estimado;
-        document.getElementById('anttDistancia').value = Math.max(1, Math.round(kmAtual));
+        // 2. Pedágios
+        const pedagioTotal = (data.pedagios && data.pedagios.total) ? parseFloat(data.pedagios.total) : 0;
+        const qtdPedagios = (data.pedagios && data.pedagios.quantidade) ? data.pedagios.quantidade : (data.pedagios && data.pedagios.pedagios ? data.pedagios.pedagios.length : 0);
 
-        document.getElementById('cardC1').style.display = 'flex';
-        document.getElementById('nomeC1').innerText = dataCalc.origem.municipio;
-        document.getElementById('ibgeC1').innerText = 'IBGE: ' + dataCalc.origem.ibge;
-        document.getElementById('cepC1').innerText = dataCalc.origem.cep;
+        // 3. Atualização dos Cards Superiores
+        document.getElementById('txtDistanciaKm').textContent = `${distKm} km`;
+        document.getElementById('txtTempoPedagio').textContent = `${Math.floor(distKm/72)}h ${Math.round((distKm%72)*0.8)}m • ${qtdPedagios} Pedágios (R$ ${pedagioTotal.toFixed(2)})`;
+        document.getElementById('calcDistanciaInput').value = `${distKm} km`;
 
-        document.getElementById('cardC2').style.display = 'flex';
-        document.getElementById('nomeC2').innerText = dataCalc.destino.municipio;
-        document.getElementById('ibgeC2').innerText = 'IBGE: ' + dataCalc.destino.ibge;
-        document.getElementById('cepC2').innerText = dataCalc.destino.cep;
+        // 4. Preenchimento dos Cards de Divisas
+        const ori = data.origem || {};
+        const dest = data.destino || {};
 
-        const gmapsBtn = document.getElementById('gmapsLink');
-        gmapsBtn.style.display = 'block';
-        gmapsBtn.href = `https://www.google.com/maps/dir/?api=1&origin=${dataCalc.origem.lat},${dataCalc.origem.lon}&destination=${dataCalc.destino.lat},${dataCalc.destino.lon}&travelmode=driving`;
+        document.getElementById('cardOriNome').textContent = ori.municipio || `${dadosOrigemEscolhida.nome}/${dadosOrigemEscolhida.uf}`;
+        document.getElementById('cardOriIbge').textContent = `IBGE: ${ori.ibge || dadosOrigemEscolhida.id}`;
+        document.getElementById('cardOriLogra').textContent = ori.logradouro || 'Divisa Territorial';
+        document.getElementById('cardOriCep').textContent = ori.cep || 'CEP não detectado';
+        document.getElementById('cardOriLat').textContent = `Lat: ${parseFloat(ori.lat || (coords[0] ? coords[0][0] : 0)).toFixed(5)}`;
+        document.getElementById('cardOriLon').textContent = `Lon: ${parseFloat(ori.lon || (coords[0] ? coords[0][1] : 0)).toFixed(5)}`;
 
-        polyLayer1 = L.geoJSON(dataCalc.origem.geojson, { style: { color: '#c084fc', weight: 2.5, fillOpacity: 0.25, fillColor: '#9333ea' } }).addTo(map);
-        polyLayer2 = L.geoJSON(dataCalc.destino.geojson, { style: { color: '#f3e8ff', weight: 2.5, fillOpacity: 0.2, fillColor: '#7c3aed' } }).addTo(map);
+        document.getElementById('cardDestNome').textContent = dest.municipio || `${dadosDestinoEscolhido.nome}/${dadosDestinoEscolhido.uf}`;
+        document.getElementById('cardDestIbge').textContent = `IBGE: ${dest.ibge || dadosDestinoEscolhido.id}`;
+        document.getElementById('cardDestLogra').textContent = dest.logradouro || 'Divisa Territorial';
+        document.getElementById('cardDestCep').textContent = dest.cep || 'CEP não detectado';
+        document.getElementById('cardDestLat').textContent = `Lat: ${parseFloat(dest.lat || (coords[coords.length-1] ? coords[coords.length-1][0] : 0)).toFixed(5)}`;
+        document.getElementById('cardDestLon').textContent = `Lon: ${parseFloat(dest.lon || (coords[coords.length-1] ? coords[coords.length-1][1] : 0)).toFixed(5)}`;
 
-        marker1 = L.marker([dataCalc.origem.lat, dataCalc.origem.lon], { draggable: true }).addTo(map);
-        marker2 = L.marker([dataCalc.destino.lat, dataCalc.destino.lon], { draggable: true }).addTo(map);
+        document.getElementById('containerCardsDivisas').style.display = 'block';
 
-        rotaPolyline = L.polyline(dataCalc.coords_rota, { color: '#a855f7', weight: 5.5, opacity: 0.95 }).addTo(map);
-        renderizarPedagios(dataCalc.pedagios);
+        // Link GPS Google Maps
+        const latO = ori.lat || (coords[0] ? coords[0][0] : 0);
+        const lonO = ori.lon || (coords[0] ? coords[0][1] : 0);
+        const latD = dest.lat || (coords[coords.length-1] ? coords[coords.length-1][0] : 0);
+        const lonD = dest.lon || (coords[coords.length-1] ? coords[coords.length-1][1] : 0);
+        document.getElementById('btnGpsGoogle').href = `https://www.google.com/maps/dir/?api=1&origin=${latO},${lonO}&destination=${latD},${lonD}&travelmode=driving`;
 
-        map.fitBounds(rotaPolyline.getBounds(), { padding: [40, 40] });
-        calcularFreteOficial();
+        // 5. RENDERIZAÇÃO NO LEAFLET (TRAÇADO + POLÍGONOS DOS MUNICÍPIOS)
+        if (routeLayer) map.removeLayer(routeLayer);
+        markersLayer.clearLayers();
+        polygonsLayer.clearLayers();
+
+        // PINTA AS BORDAS E MALHA DOS MUNICÍPIOS
+        if (ori.geojson) {
+          L.geoJSON(ori.geojson, {
+            style: {
+              color: '#00d2ff',
+              weight: 3,
+              fillColor: '#00d2ff',
+              fillOpacity: 0.18,
+              dashArray: '4, 4'
+            }
+          }).addTo(polygonsLayer).bindPopup(`<b>Borda Territorial:</b> ${ori.municipio || dadosOrigemEscolhida.nome}`);
+        }
+        if (dest.geojson) {
+          L.geoJSON(dest.geojson, {
+            style: {
+              color: '#10b981',
+              weight: 3,
+              fillColor: '#10b981',
+              fillOpacity: 0.18,
+              dashArray: '4, 4'
+            }
+          }).addTo(polygonsLayer).bindPopup(`<b>Borda Territorial:</b> ${dest.municipio || dadosDestinoEscolhido.nome}`);
+        }
+
+        // PINTA A ROTA
+        if (coords.length > 0) {
+          routeLayer = L.polyline(coords, { color: '#00d2ff', weight: 5, opacity: 0.95 }).addTo(map);
+          map.fitBounds(routeLayer.getBounds(), { padding: [40, 40] });
+        }
+
+        // PONTOS DA DIVISA / COORDENADAS
+        L.marker([latO, lonO]).addTo(markersLayer)
+          .bindPopup(`<b>Divisa Origem:</b> ${ori.municipio || dadosOrigemEscolhida.nome}<br>CEP: ${ori.cep || ''}`).openPopup();
+        L.marker([latD, lonD]).addTo(markersLayer)
+          .bindPopup(`<b>Divisa Destino:</b> ${dest.municipio || dadosDestinoEscolhido.nome}<br>CEP: ${dest.cep || ''}`);
+
+        // PRAÇAS DE PEDÁGIO
+        if (data.pedagios && Array.isArray(data.pedagios.pedagios)) {
+          data.pedagios.pedagios.forEach(p => {
+            if (p.lat && p.lon) {
+              const tollIcon = L.divIcon({
+                html: '<div style="background:#fbbf24; color:#000; font-weight:900; font-size:10px; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; border:2px solid #000; box-shadow:0 0 6px rgba(0,0,0,0.6);">P</div>',
+                iconSize: [20, 20]
+              });
+              L.marker([p.lat, p.lon], { icon: tollIcon }).addTo(markersLayer)
+                .bindPopup(`<b>${p.nome}</b><br>R$ ${parseFloat(p.valor).toFixed(2)}`);
+            }
+          });
+        }
 
       } catch (err) {
-        alert('Erro ao calcular rota: ' + err.message);
-      } finally {
-        btn.innerText = 'Ir';
-        btn.disabled = false;
+        alert('Erro ao calcular: ' + err.message);
+        document.getElementById('txtDistanciaKm').textContent = '-- km';
       }
     }
 
-    function exportarParaCiot() {
-      if (!dadosUltimaRota || !dadosUltimaRota.origem) {
-        alert('Calcule uma rota antes de exportar.');
+    // CÁLCULO DE PISO ANTT OFICIAL
+    function calcularPisoAnttOficial() {
+      const distStr = document.getElementById('calcDistanciaInput').value.replace(' km', '').trim();
+      const distKm = parseFloat(distStr) || 0;
+      if (distKm <= 0) {
+        alert('Calcule a rota antes de gerar o piso da ANTT.');
         return;
       }
+      const eixos = parseInt(document.getElementById('calcEixos').value) || 5;
+      const comp = document.getElementById('tComp').textContent === 'Sim';
+      const alto = document.getElementById('tAlto').textContent === 'Sim';
+      const vazio = document.getElementById('tVazio').textContent === 'Sim';
 
-      document.getElementById('f_distancia').value = Math.round(kmAtual);
-      document.getElementById('f_valorFrete').value = valorFreteCalculado > 0 ? valorFreteCalculado.toFixed(2) : "60000.00";
-      document.getElementById('f_ibgeOrigem').value = dadosUltimaRota.origem.ibge;
-      document.getElementById('f_cepOrigem').value = (dadosUltimaRota.origem.cep || '').replace(/\D/g, '');
-      document.getElementById('f_ibgeDestino').value = dadosUltimaRota.destino.ibge;
-      document.getElementById('f_cepDestino').value = (dadosUltimaRota.destino.cep || '').replace(/\D/g, '');
+      let coefDist = 4.85;
+      if (eixos === 2) coefDist = 2.45;
+      if (eixos === 3) coefDist = 3.25;
+      if (eixos === 5) coefDist = 4.95;
+      if (eixos === 6) coefDist = 5.60;
+      if (eixos >= 7) coefDist = 6.40;
 
-      compilarFormularioParaXml();
-      trocarAbaPrincipal('aba-ciot');
-      alert('✅ Dados de rota e frete exportados para o CIOT e-Frete!');
+      let cargaDescarga = 380.00;
+      let totalPiso = (distKm * coefDist) + cargaDescarga;
+      if (comp) totalPiso *= 1.05;
+      if (alto) totalPiso *= 1.10;
+      if (vazio) totalPiso += (distKm * coefDist * 0.4);
+
+      document.getElementById('txtValorPiso').textContent = `R$ ${totalPiso.toFixed(2)}`;
+      document.getElementById('resultadoPisoBox').style.display = 'block';
+      document.getElementById('cValorFreteBruto').value = totalPiso.toFixed(2);
+      calcularLiquidoCiot();
     }
 
-    
-    // Leitura dinamica do PFX
-    async function checarCertificadoDinamico() {
-      const fileInput = document.getElementById('ciotPfxInput');
-      const password = document.getElementById('ciotPfxPassword').value;
-      if (!fileInput.files || fileInput.files.length === 0 || !password) return;
+    // EXPORTAR DADOS DA ROTA PARA O CONSTRUTOR CIOT
+    function exportarParaCiot() {
+      if (!dadosUltimoCalculo) {
+        alert('Calcule uma rota antes de exportar para o CIOT.');
+        return;
+      }
+      const distStr = document.getElementById('calcDistanciaInput').value.replace(' km', '').trim();
+      document.getElementById('cDistanciaKm').value = distStr;
 
-      const formData = new FormData();
-      formData.append('pfxFile', fileInput.files[0]);
-      formData.append('pfxPassword', password);
+      if (dadosUltimoCalculo.origem) {
+        document.getElementById('cCepOrigem').value = (dadosUltimoCalculo.origem.cep || '').replace('-', '');
+        document.getElementById('cIbgeOrigem').value = dadosUltimoCalculo.origem.ibge || '';
+      }
+      if (dadosUltimoCalculo.destino) {
+        document.getElementById('cCepDestino').value = (dadosUltimoCalculo.destino.cep || '').replace('-', '');
+        document.getElementById('cIbgeDestino').value = dadosUltimoCalculo.destino.ibge || '';
+        document.getElementById('cDestRua').value = dadosUltimoCalculo.destino.logradouro || '';
+        document.getElementById('cDestRazao').value = dadosUltimoCalculo.destino.municipio || '';
+      }
 
-      try {
-        const resp = await fetch('/api/inspecionar_pfx', { method: 'POST', body: formData });
-        const data = await resp.json();
-        if (data.sucesso) {
-          const badge = document.getElementById('badgeEmitenteDinamico');
-          if (badge) {
-            badge.innerText = `EMITENTE: ${data.razao_social} (${data.cnpj})`;
-            badge.style.color = '#34d399';
-          }
-          document.getElementById('f_cnpjContratante').value = data.cnpj;
-          compilarFormularioParaXml();
-        }
-      } catch (e) {
-        console.warn('Erro ao inspecionar PFX:', e);
+      calcularPisoAnttOficial();
+      mudarAbaPrincipal('ciot');
+      alert('✅ Dados de Rota, CEPs de Divisa e Piso ANTT transferidos para o Construtor CIOT!');
+    }
+
+    function calcularLiquidoCiot() {
+      const bruto = parseFloat(document.getElementById('cValorFreteBruto').value) || 0;
+      const ir = parseFloat(document.getElementById('cImpostoIrrf').value) || 0;
+      const inss = parseFloat(document.getElementById('cImpostoInss').value) || 0;
+      const sest = parseFloat(document.getElementById('cImpostoSest').value) || 0;
+      document.getElementById('cValorFreteLiquido').value = Math.max(0, bruto - (ir + inss + sest)).toFixed(2);
+    }
+
+    function limparCamposConstrutor() {
+      if (confirm('Limpar todos os campos do formulário CIOT?')) {
+        document.querySelectorAll('#aba-ciot input').forEach(el => {
+          if (el.type !== 'button' && el.type !== 'file' && el.id !== 'cHashIntegrador') el.value = '';
+        });
+        document.getElementById('cValorFreteLiquido').value = '0.00';
       }
     }
 
-    document.getElementById('ciotPfxPassword').addEventListener('blur', checarCertificadoDinamico);
-    document.getElementById('ciotPfxInput').addEventListener('change', checarCertificadoDinamico);
+    // LEITOR DE NF-E XML
+    document.getElementById('cXmlNfe')?.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          const parser = new DOMParser();
+          const xml = parser.parseFromString(evt.target.result, "application/xml");
+          const getVal = (t) => xml.getElementsByTagName(t)[0]?.textContent?.trim() || '';
 
-    function compilarFormularioParaXml() {
-      const d = {
-        cnpjContratante: document.getElementById('f_cnpjContratante').value.replace(/\D/g, ''),
-        cnpjContratado: document.getElementById('f_cnpjContratado').value.replace(/\D/g, ''),
-        rntrc: document.getElementById('f_rntrc').value.replace(/\D/g, ''),
-        idOperacao: document.getElementById('f_idOperacao').value.trim(),
-        valorFrete: parseFloat(document.getElementById('f_valorFrete').value || 0).toFixed(2),
-        distancia: document.getElementById('f_distancia').value,
-        ibgeOrigem: document.getElementById('f_ibgeOrigem').value,
-        cepOrigem: document.getElementById('f_cepOrigem').value,
-        ibgeDestino: document.getElementById('f_ibgeDestino').value,
-        cepDestino: document.getElementById('f_cepDestino').value,
-        placa: document.getElementById('f_placa').value.trim().toUpperCase()
+          if (getVal('nNF')) document.getElementById('cNfeNumero').value = getVal('nNF');
+          if (getVal('serie')) document.getElementById('cNfeSerie').value = getVal('serie');
+          if (getVal('vNF')) document.getElementById('cNfeValorTotal').value = getVal('vNF');
+          if (getVal('pesoB') || getVal('pesoL')) document.getElementById('cPesoCarga').value = getVal('pesoB') || getVal('pesoL');
+          if (getVal('NCM')) document.getElementById('cNcmCarga').value = getVal('NCM').substring(0, 4);
+          if (getVal('xProd')) document.getElementById('cDescMercadoria').value = getVal('xProd');
+
+          const dhEmi = getVal('dhEmi');
+          if (dhEmi && dhEmi.length >= 16) {
+            document.getElementById('cNfeDataEmissao').value = dhEmi.substring(0, 16);
+            document.getElementById('cDataInicioViagem').value = dhEmi.substring(0, 16);
+          }
+
+          const emit = xml.getElementsByTagName('emit')[0];
+          if (emit) {
+            const emitCnpj = emit.getElementsByTagName('CNPJ')[0]?.textContent || '';
+            document.getElementById('cNfeCnpjEmissor').value = emitCnpj;
+            document.getElementById('cCnpjMatriz').value = emitCnpj;
+            document.getElementById('cCnpjContratante').value = emitCnpj;
+            document.getElementById('cRazaoContratante').value = emit.getElementsByTagName('xNome')[0]?.textContent || '';
+            document.getElementById('cCepOrigem').value = emit.getElementsByTagName('CEP')[0]?.textContent || '';
+            document.getElementById('cIbgeOrigem').value = emit.getElementsByTagName('cMun')[0]?.textContent || '';
+            document.getElementById('cRuaContratante').value = emit.getElementsByTagName('xLgr')[0]?.textContent || '';
+            document.getElementById('cNumContratante').value = emit.getElementsByTagName('nro')[0]?.textContent || 'SN';
+          }
+
+          const dest = xml.getElementsByTagName('dest')[0];
+          if (dest) {
+            document.getElementById('cDestCnpj').value = dest.getElementsByTagName('CNPJ')[0]?.textContent || '';
+            document.getElementById('cDestRazao').value = dest.getElementsByTagName('xNome')[0]?.textContent || '';
+            document.getElementById('cDestRua').value = dest.getElementsByTagName('xLgr')[0]?.textContent || '';
+            document.getElementById('cDestNumero').value = dest.getElementsByTagName('nro')[0]?.textContent || 'SN';
+            document.getElementById('cDestBairro').value = dest.getElementsByTagName('xBairro')[0]?.textContent || 'Centro';
+            document.getElementById('cCepDestino').value = dest.getElementsByTagName('CEP')[0]?.textContent || '';
+            document.getElementById('cIbgeDestino').value = dest.getElementsByTagName('cMun')[0]?.textContent || '';
+          }
+
+          calcularLiquidoCiot();
+          alert('✅ NF-e importada com sucesso no CIOTFY!');
+        } catch (err) {
+          alert('Erro ao ler XML: ' + err.message);
+        }
       };
+      reader.readAsText(file);
+    });
 
-      const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
+    // COMPILAÇÃO DO XML OFICIAL V8
+    function compilarXmlCiotOficial() {
+      calcularLiquidoCiot();
+      const peso = parseFloat(document.getElementById('cPesoCarga').value) || 1;
+      const vTotal = parseFloat(document.getElementById('cNfeValorTotal').value) || 1;
+      const vUnit = (vTotal / peso).toFixed(5);
+      const vLiquido = parseFloat(document.getElementById('cValorFreteLiquido').value) || 0;
+      const vBruto = parseFloat(document.getElementById('cValorFreteBruto').value) || 0;
+
+      const dIni = document.getElementById('cDataInicioViagem').value;
+      const dFim = document.getElementById('cDataFimViagem').value;
+      const dNfe = document.getElementById('cNfeDataEmissao').value;
+
+      const placa2 = document.getElementById('cPlacaCarreta').value.trim();
+      const extra = placa2 ? '\n        <Veiculos><Placa xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">' + placa2 + '</Placa></Veiculos>' : '';
+
+      const xmlGerado = `<?xml version="1.0" encoding="utf-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" 
+                   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SOAP-ENV:Body>
     <AdicionarOperacaoTransporte xmlns="http://schemas.ipc.adm.br/efrete/pefV2">
       <AdicionarOperacaoTransporteRequest xmlns="http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte">
+        <Integrador xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cHashIntegrador').value}</Integrador>
         <Versao xmlns="http://schemas.ipc.adm.br/efrete/objects">8</Versao>
-        <Integrador>58e47cd2-8b54-4542-ba22-6941810dd7fa</Integrador>
+        
         <TipoViagem xmlns="http://schemas.ipc.adm.br/efrete/pefV2/objects">Padrao</TipoViagem>
-        <TipoPagamento xmlns="http://schemas.ipc.adm.br/efrete/pefV2/objects">TransferenciaBancaria</TipoPagamento>
-        <MatrizCNPJ>${d.cnpjContratante}</MatrizCNPJ>
-        <FilialCNPJ>${d.cnpjContratante}</FilialCNPJ>
-        <IdOperacaoCliente>${d.idOperacao}</IdOperacaoCliente>
-        <DataInicioViagem>2026-09-24T08:00:00</DataInicioViagem>
-        <DataFimViagem>2026-09-25T18:00:00</DataFimViagem>
-        <CodigoNCMNaturezaCarga>2204</CodigoNCMNaturezaCarga>
-        <PesoCarga>5375.56</PesoCarga>
-        <CodigoTipoCarga>5</CodigoTipoCarga>
+        <TipoPagamento xmlns="http://schemas.ipc.adm.br/efrete/pefV2/objects">${document.getElementById('cTipoPagamento').value}</TipoPagamento>
+
+        <MatrizCNPJ>${document.getElementById('cCnpjMatriz').value}</MatrizCNPJ>
+        <FilialCNPJ>${document.getElementById('cCnpjMatriz').value}</FilialCNPJ>
+        <IdOperacaoCliente>${document.getElementById('cIdOperacaoCliente').value}</IdOperacaoCliente>
+
+        <DataInicioViagem>${dIni}:00.000Z</DataInicioViagem>
+        <DataFimViagem>${dFim}:00.000Z</DataFimViagem>
+        <CodigoNCMNaturezaCarga>${document.getElementById('cNcmCarga').value}</CodigoNCMNaturezaCarga>
+        <PesoCarga>${peso.toFixed(5)}</PesoCarga>
+        <TipoEmbalagem>${document.getElementById('cTipoEmbalagem').value}</TipoEmbalagem>
+        <CodigoTipoCarga>1</CodigoTipoCarga>
         <AltoDesempenho>false</AltoDesempenho>
+
         <Viagens>
-          <DocumentoViagem>${d.idOperacao}</DocumentoViagem>
-          <CodigoMunicipioOrigem>${d.ibgeOrigem}</CodigoMunicipioOrigem>
-          <CodigoMunicipioDestino>${d.ibgeDestino}</CodigoMunicipioDestino>
-          <CepOrigem>${d.cepOrigem}</CepOrigem>
-          <CepDestino>${d.cepDestino}</CepDestino>
-          <DistanciaPercorrida>${d.distancia}</DistanciaPercorrida>
+          <DocumentoViagem>${document.getElementById('cNfeNumero').value}</DocumentoViagem>
+          <CodigoMunicipioOrigem>${document.getElementById('cIbgeOrigem').value}</CodigoMunicipioOrigem>
+          <CodigoMunicipioDestino>${document.getElementById('cIbgeDestino').value}</CodigoMunicipioDestino>
+          <CepOrigem>${document.getElementById('cCepOrigem').value}</CepOrigem>
+          <CepDestino>${document.getElementById('cCepDestino').value}</CepDestino>
+          <DistanciaPercorrida>${document.getElementById('cDistanciaKm').value}</DistanciaPercorrida>
+          
           <Valores xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">
-            <TotalOperacao>${d.valorFrete}</TotalOperacao>
-            <TotalViagem>${d.valorFrete}</TotalViagem>
-            <TotalDeAdiantamento>0.00</TotalDeAdiantamento>
-            <TotalDeQuitacao>${d.valorFrete}</TotalDeQuitacao>
-            <Combustivel>0.00</Combustivel>
-            <Pedagio>0.00</Pedagio>
-            <Seguro>0.00</Seguro>
+            <TotalOperacao>${vBruto.toFixed(5)}</TotalOperacao>
+            <TotalViagem>${vBruto.toFixed(5)}</TotalViagem>
+            <TotalDeAdiantamento>0.00000</TotalDeAdiantamento>
+            <TotalDeQuitacao>${vBruto.toFixed(5)}</TotalDeQuitacao>
+            <Combustivel>0.00000</Combustivel>
+            <Pedagio>0.00000</Pedagio>
+            <OutrosCreditos>0.00000</OutrosCreditos>
+            <JustificativaOutrosCreditos></JustificativaOutrosCreditos>
+            <Seguro>0.00000</Seguro>
+            <OutrosDebitos>0.00000</OutrosDebitos>
+            <JustificativaOutrosDebitos></JustificativaOutrosDebitos>
           </Valores>
-          <TipoPagamento xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">TransferenciaBancaria</TipoPagamento>
-          <InformacoesBancarias xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">
-            <InstituicaoBancaria>237</InstituicaoBancaria>
-            <Agencia>28258</Agencia>
-            <Conta>29856-8</Conta>
-            <TipoConta>ContaCorrente</TipoConta>
-          </InformacoesBancarias>
+          
+          <TipoPagamento xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">${document.getElementById('cTipoPagamento').value}</TipoPagamento>
+          
+          <NotasFiscais>
+            <NotaFiscal>
+              <Numero xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${document.getElementById('cNfeNumero').value}</Numero>
+              <Serie xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${document.getElementById('cNfeSerie').value}</Serie>
+              <Data xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${dNfe}:00.000Z</Data>
+              <ValorTotal xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${vTotal.toFixed(2)}</ValorTotal>
+              <ValorDaMercadoriaPorUnidade xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${vUnit}</ValorDaMercadoriaPorUnidade>
+              <CodigoNCMNaturezaCarga xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${document.getElementById('cNcmCarga').value}</CodigoNCMNaturezaCarga>
+              <DescricaoDaMercadoria xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${document.getElementById('cDescMercadoria').value}</DescricaoDaMercadoria>
+              <UnidadeDeMedidaDaMercadoria xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">Kg</UnidadeDeMedidaDaMercadoria>
+              <TipoDeCalculo xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">SemQuebra</TipoDeCalculo>
+              <ValorDoFretePorUnidadeDeMercadoria xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte" xsi:nil="true"/>
+              <QuantidadeDaMercadoriaNoEmbarque xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${peso.toFixed(3)}</QuantidadeDaMercadoriaNoEmbarque>
+              <ToleranciaDePerdaDeMercadoria xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">
+                <Tipo>Nenhum</Tipo>
+                <Valor>0.00000</Valor>
+              </ToleranciaDePerdaDeMercadoria>
+            </NotaFiscal>
+          </NotasFiscais>
         </Viagens>
+
+        <Impostos xmlns="http://schemas.ipc.adm.br/efrete/pefV2/objects">
+          <IRRF xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">${parseFloat(document.getElementById('cImpostoIrrf').value).toFixed(5)}</IRRF>
+          <SestSenat xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">${parseFloat(document.getElementById('cImpostoSest').value).toFixed(5)}</SestSenat>
+          <INSS xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">${parseFloat(document.getElementById('cImpostoInss').value).toFixed(5)}</INSS>
+          <ISSQN xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">0.00000</ISSQN>
+          <OutrosImpostos xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">0.00000</OutrosImpostos>
+          <DescricaoOutrosImpostos xmlns="http://schemas.ipc.adm.br/efrete/pef/objects"></DescricaoOutrosImpostos>
+        </Impostos>
+
         <Pagamentos>
-          <IdPagamentoCliente>PAG-${d.idOperacao}-1</IdPagamentoCliente>
-          <DataDeLiberacao>2026-09-25T18:00:00</DataDeLiberacao>
-          <Valor>${d.valorFrete}</Valor>
-          <TipoPagamento xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">TransferenciaBancaria</TipoPagamento>
+          <IdPagamentoCliente>PAG-${document.getElementById('cIdOperacaoCliente').value}-1</IdPagamentoCliente>
+          <DataDeLiberacao>${dFim}:00.000Z</DataDeLiberacao>
+          <Valor>${vLiquido.toFixed(5)}</Valor>
+          <TipoPagamento xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">${document.getElementById('cTipoPagamento').value}</TipoPagamento>
           <Categoria xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">Quitacao</Categoria>
+          <Documento>${document.getElementById('cNfeNumero').value}</Documento>
+          <CpfCnpjCreditado>${document.getElementById('cCnpjContratante').value}</CpfCnpjCreditado>
+          <IndicadorPagamento>AVista</IndicadorPagamento>
           <InformacoesBancarias xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">
-            <InstituicaoBancaria>237</InstituicaoBancaria>
-            <Agencia>28258</Agencia>
-            <Conta>29856-8</Conta>
+            <InstituicaoBancaria>${document.getElementById('cBancoNum').value}</InstituicaoBancaria>
+            <Agencia>${document.getElementById('cBancoAgencia').value}</Agencia>
+            <Conta>${document.getElementById('cBancoConta').value}</Conta>
             <TipoConta>ContaCorrente</TipoConta>
           </InformacoesBancarias>
-          <CpfCnpjCreditado>${d.cnpjContratado}</CpfCnpjCreditado>
-          <IndicadorPagamento>AVista</IndicadorPagamento>
-          <NumeroParcela>1</NumeroParcela>
         </Pagamentos>
+
         <Contratado>
-          <CpfOuCnpj>${d.cnpjContratado}</CpfOuCnpj>
-          <RNTRC>${d.rntrc}</RNTRC>
+          <CpfOuCnpj>${document.getElementById('cCnpjContratado').value}</CpfOuCnpj>
+          <RNTRC>${document.getElementById('cRntrcContratado').value}</RNTRC>
         </Contratado>
+
         <Motorista>
-          <CpfOuCnpj>${d.cnpjContratado}</CpfOuCnpj>
-          <Nome>MOTORISTA CONDUTOR</Nome>
+          <CpfOuCnpj>${document.getElementById('cCpfMotorista').value}</CpfOuCnpj>
+          <CNH>${document.getElementById('cCnhMotorista').value}</CNH>
+          <Celular xmlns="http://schemas.ipc.adm.br/efrete/pefV2/objects">
+            <DDD xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cDddMotorista').value}</DDD>
+            <Numero xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cTelMotorista').value}</Numero>
+          </Celular>
         </Motorista>
+
         <Destinatario xmlns="http://schemas.ipc.adm.br/efrete/pefV2/objects">
-          <CpfOuCnpj>${d.cnpjContratado}</CpfOuCnpj>
+          <NomeOuRazaoSocial xmlns="http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte">${document.getElementById('cDestRazao').value}</NomeOuRazaoSocial>
+          <CpfOuCnpj xmlns="http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte">${document.getElementById('cDestCnpj').value}</CpfOuCnpj>
+          <Endereco xmlns="http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte">
+            <Bairro xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cDestBairro').value}</Bairro>
+            <Rua xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cDestRua').value}</Rua>
+            <Numero xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cDestNumero').value}</Numero>
+            <Complemento xmlns="http://schemas.ipc.adm.br/efrete/objects"></Complemento>
+            <CEP xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cCepDestino').value}</CEP>
+            <CodigoMunicipio xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cIbgeDestino').value}</CodigoMunicipio>
+          </Endereco>
+          <EMail xmlns="http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte"></EMail>
+          <ResponsavelPeloPagamento xmlns="http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte">false</ResponsavelPeloPagamento>
         </Destinatario>
+
+        <Contratante xmlns="http://schemas.ipc.adm.br/efrete/pefV2/objects">
+          <NomeOuRazaoSocial xmlns="http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte">${document.getElementById('cRazaoContratante').value}</NomeOuRazaoSocial>
+          <CpfOuCnpj xmlns="http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte">${document.getElementById('cCnpjContratante').value}</CpfOuCnpj>
+          <Endereco xmlns="http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte">
+            <Bairro xmlns="http://schemas.ipc.adm.br/efrete/objects">Centro</Bairro>
+            <Rua xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cRuaContratante').value}</Rua>
+            <Numero xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cNumContratante').value}</Numero>
+            <Complemento xmlns="http://schemas.ipc.adm.br/efrete/objects"></Complemento>
+            <CEP xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cCepContratante').value}</CEP>
+            <CodigoMunicipio xmlns="http://schemas.ipc.adm.br/efrete/objects">${document.getElementById('cIbgeOrigem').value}</CodigoMunicipio>
+          </Endereco>
+          <ResponsavelPeloPagamento xmlns="http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte">true</ResponsavelPeloPagamento>
+          <RNTRC>${document.getElementById('cRntrcContratante').value}</RNTRC>
+        </Contratante>
+
         <Veiculos>
-          <Placa xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${d.placa}</Placa>
-        </Veiculos>
-        <ComposicaoVeicular>false</ComposicaoVeicular>
+          <Placa xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${document.getElementById('cPlacaCavalo').value}</Placa>
+        </Veiculos>${extra}
+
+        <ComposicaoVeicular>${document.getElementById('cCompVeicular').value}</ComposicaoVeicular>
         <RetornoVazio>false</RetornoVazio>
       </AdicionarOperacaoTransporteRequest>
     </AdicionarOperacaoTransporte>
-  </soap:Body>
-</soap:Envelope>`;
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>`;
 
-      document.getElementById('ciotXmlPayload').value = xml.trim();
-      trocarSubAbaCiot('ciot-sub-transmissor');
+      document.getElementById('envelopeXmlArea').value = xmlGerado;
+      alert('⚡ XML V8 compilado com sucesso! Role até a seção 7 para transmitir.');
     }
 
-    async function dispararTransmissaoCiot() {
-      const fileInput = document.getElementById('ciotPfxInput');
-      const password = document.getElementById('ciotPfxPassword').value;
-      const xml = document.getElementById('ciotXmlPayload').value.trim();
-      const retBox = document.getElementById('ciotRetornoArea');
+    // TRANSMISSÃO SOAP MTLS
+    async function transmitirCiotDireto() {
+      const pfx = document.getElementById('pfxFile').files[0];
+      const pass = document.getElementById('pfxPassword').value;
+      let xml = document.getElementById('envelopeXmlArea').value;
 
-      if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Selecione o arquivo .PFX do Certificado Digital.');
-        return;
+      if (!xml || xml.length < 50) {
+        compilarXmlCiotOficial();
+        xml = document.getElementById('envelopeXmlArea').value;
       }
-      if (!password) {
-        alert('Informe a senha do Certificado Digital.');
-        return;
-      }
-      if (!xml) {
-        alert('O XML SOAP está vazio.');
+
+      if (!pfx || !pass) {
+        alert('Selecione o arquivo .pfx e digite a senha do Certificado Digital.');
         return;
       }
 
-      retBox.innerHTML = '<span style="color: #ffd700;">[CONECTANDO] Negociando mTLS com a e-Frete em PRODUÇÃO...\n[TRANSMISSÃO] Enviando envelope SOAP Versão 8...</span>';
+      document.getElementById('ciotStatusBadge').className = 'badge bg-warning text-dark';
+      document.getElementById('ciotStatusBadge').textContent = 'Transmitindo mTLS...';
 
-      const formData = new FormData();
-      formData.append('pfxFile', fileInput.files[0]);
-      formData.append('pfxPassword', password);
-      formData.append('xmlPayload', xml);
-      formData.append('url', document.getElementById('ciotUrl').value.trim());
+      const fd = new FormData();
+      fd.append('pfxFile', pfx);
+      fd.append('pfxPassword', pass);
+      fd.append('xmlPayload', xml);
 
       try {
-        const resp = await fetch('/api/transmitir', { method: 'POST', body: formData });
-        const data = await resp.json();
+        const res = await fetch('/api/transmitir', { method: 'POST', body: fd });
+        const json = await res.json();
+        document.getElementById('ciotResponseArea').textContent = json.response || json.error;
 
-        if (data.sucesso) {
-          retBox.innerHTML = `<span style="color: #34d399; font-weight: bold;">[HTTP ${data.status_code}] RESPOSTA RECEBIDA DA e-FRETE:</span>\n\n` + data.resposta.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          window.lastXmlCiotResponse = data.resposta;
+        if (json.status === 'OK' && json.response.includes('<Sucesso>true</Sucesso>')) {
+          const m = json.response.match(/<CodigoIdentificacaoOperacao>(.*?)<\/CodigoIdentificacaoOperacao>/);
+          document.getElementById('ciotStatusBadge').className = 'badge bg-success';
+          document.getElementById('ciotStatusBadge').textContent = 'CIOT AUTORIZADO: ' + (m ? m[1] : 'OK');
         } else {
-          retBox.innerHTML = `<span style="color: #ef4444; font-weight: bold;">[ERRO]:</span> ` + data.erro;
+          document.getElementById('ciotStatusBadge').className = 'badge bg-danger';
+          document.getElementById('ciotStatusBadge').textContent = 'Rejeição e-Frete';
         }
       } catch (err) {
-        retBox.innerHTML = `<span style="color: #ef4444;">[ERRO]: Falha na requisição local: ${err.message}</span>`;
+        document.getElementById('ciotStatusBadge').className = 'badge bg-danger';
+        document.getElementById('ciotResponseArea').textContent = 'Erro de rede: ' + err.message;
       }
     }
-
-    function abrirModalImpressaoCiot() {
-      let ciot = 'Aguardando Emissão', protocolo = 'Não registrado';
-      if (window.lastXmlCiotResponse) {
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(window.lastXmlCiotResponse, 'text/xml');
-        ciot = xmlDoc.getElementsByTagName('NumeroCIOT')[0]?.textContent || ciot;
-        protocolo = xmlDoc.getElementsByTagName('Protocolo')[0]?.textContent || protocolo;
-      }
-
-      const doc = document.getElementById('ciotPrintDoc');
-      doc.innerHTML = `
-        <div style="text-align: center; margin-bottom: 14px;">
-          <h1 style="font-size: 14px; color: #00f0ff;">DECLARAÇÃO DE OPERAÇÃO DE TRANSPORTE (CIOT / e-Frete)</h1>
-          <p style="font-size: 10px; color: #8b949e;">Conforme Resolução ANTT nº 5.862/2019 e Lei nº 13.703/2018</p>
-        </div>
-        <div class="doc-section">
-          <div class="doc-section-title">Autorização</div>
-          <div class="doc-grid">
-            <div><span>Número CIOT:</span><strong>${ciot}</strong></div>
-            <div><span>Protocolo IPEF:</span><strong>${protocolo}</strong></div>
-            <div><span>Modalidade:</span><strong>Gratuita (Transferência Bancária)</strong></div>
-          </div>
-        </div>
-        <div class="doc-section">
-          <div class="doc-section-title">Operação & Valores</div>
-          <div class="doc-grid">
-            <div><span>Contratante:</span><strong>${document.getElementById('f_cnpjContratante').value}</strong></div>
-            <div><span>Contratado:</span><strong>${document.getElementById('f_cnpjContratado').value}</strong></div>
-            <div><span>RNTRC:</span><strong>${document.getElementById('f_rntrc').value}</strong></div>
-            <div><span>Valor Frete:</span><strong>R$ ${parseFloat(document.getElementById('f_valorFrete').value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong></div>
-            <div><span>Distância:</span><strong>${document.getElementById('f_distancia').value} km</strong></div>
-            <div><span>Veículo:</span><strong>${document.getElementById('f_placa').value}</strong></div>
-          </div>
-        </div>
-      `;
-      document.getElementById('ciotPrintModal').classList.add('active');
-    }
-
-    function fecharModalImpressao() {
-      document.getElementById('ciotPrintModal').classList.remove('active');
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      initMap();
-      compilarFormularioParaXml();
-      executarPesquisa();
-    });
   </script>
 </body>
 </html>
