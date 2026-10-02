@@ -619,9 +619,40 @@
         ⚡ COMPILAR XML SOAP V8 E PREPARAR TRANSMISSÃO
       </button>
 
-      <!-- SEÇÃO 7: TRANSMISSÃO COM CERTIFICADO A1 (.PFX) -->
+      <!-- SEÇÃO 7: TRANSMISSÃO COM CERTIFICADO A1 (.PFX) & INTEGRADORAS -->
       <div class="g-section">
-        <div class="g-title">🔐 7. Transmissão com Certificado Digital A1 (.pfx)</div>
+        <div class="g-title">🔐 7. Transmissão mTLS, Integradora & Endpoints</div>
+        
+        <!-- SELETORES DE INTEGRADORA E AMBIENTE -->
+        <div class="row g-2 mb-3">
+          <div class="col-md-4">
+            <label class="field-label">Provedor / Integradora:*</label>
+            <select id="selIntegradora" class="input-dark" onchange="atualizarUrlEndpoint()">
+              <option value="efrete" selected>e-Frete (IPCadm V8)</option>
+              <option value="antt_direto">ANTT Direto (PEF Webservice)</option>
+              <option value="pamcard">Pamcard / Roadcard</option>
+              <option value="repom">Repom / Edenred</option>
+              <option value="custom">Outro / Customizado</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="field-label">Ambiente:*</label>
+            <select id="selAmbiente" class="input-dark" onchange="atualizarUrlEndpoint()">
+              <option value="homologacao" selected>Homologação / Testes</option>
+              <option value="producao">Produção Oficial</option>
+            </select>
+          </div>
+          <div class="col-md-5">
+            <label class="field-label">SOAPAction Header:*</label>
+            <input type="text" id="cfgSoapAction" class="input-dark" value="http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="field-label">URL SOAP Endpoint (Editável):*</label>
+          <input type="text" id="cfgUrlEndpoint" class="input-dark fw-bold" style="color:var(--rino-cyan); font-family:monospace;" value="https://dev.efrete.com.br/Services/PefServiceV2.asmx">
+        </div>
+
         <div class="row g-2 align-items-center">
           <div class="col-md-5">
             <label class="field-label">Arquivo do Certificado (.pfx / .p12):*</label>
@@ -633,7 +664,7 @@
           </div>
           <div class="col-md-4 d-flex align-items-end">
             <button type="button" class="btn-rino w-100 py-2 mt-3" onclick="transmitirCiotDireto()">
-              🚀 TRANSMITIR CIOT e-FRETE (V8)
+              🚀 TRANSMITIR CIOT (mTLS)
             </button>
           </div>
         </div>
@@ -641,7 +672,10 @@
         <div class="mt-3">
           <div class="d-flex justify-content-between align-items-center mb-1">
             <label class="field-label m-0">XML SOAP Compilado para Envio:</label>
-            <button type="button" class="btn btn-sm btn-outline-info py-0 px-2" onclick="navigator.clipboard.writeText(document.getElementById('envelopeXmlArea').value); alert('XML copiado!');">📋 Copiar XML</button>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-sm btn-info fw-bold py-0 px-2 text-dark" onclick="extrairDadosDoXmlColado()">📥 Carregar Campos do XML</button>
+              <button type="button" class="btn btn-sm btn-outline-info py-0 px-2" onclick="navigator.clipboard.writeText(document.getElementById('envelopeXmlArea').value); alert('XML copiado!');">📋 Copiar XML</button>
+            </div>
           </div>
           <textarea id="envelopeXmlArea" class="input-dark mb-3" style="height:150px; font-family:monospace; font-size:0.75rem; color:#38bdf8;" placeholder="O XML compilado aparecerá aqui..."></textarea>
 
@@ -984,6 +1018,37 @@
       }
     };
 
+    
+    // MAPEAMENTO DINÂMICO DE INTEGRADORAS E ENDPOINTS
+    function atualizarUrlEndpoint() {
+      const prov = document.getElementById('selIntegradora').value;
+      const amb = document.getElementById('selAmbiente').value;
+      const urlInput = document.getElementById('cfgUrlEndpoint');
+      const actionInput = document.getElementById('cfgSoapAction');
+
+      if (prov === 'efrete') {
+        actionInput.value = 'http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte';
+        if (amb === 'producao') {
+          urlInput.value = 'https://sistema.efrete.com.br/Services/PefServiceV2.asmx';
+        } else {
+          urlInput.value = 'https://dev.efrete.com.br/Services/PefServiceV2.asmx';
+        }
+      } else if (prov === 'antt_direto') {
+        actionInput.value = 'http://www.antt.gov.br/pef/AdicionarOperacaoTransporte';
+        if (amb === 'producao') {
+          urlInput.value = 'https://pef.antt.gov.br/pefws/adicionaroperacaotransporte.asmx';
+        } else {
+          urlInput.value = 'https://pefhomologacao.antt.gov.br/pefws/adicionaroperacaotransporte.asmx';
+        }
+      } else if (prov === 'pamcard') {
+        actionInput.value = 'http://schemas.roadcard.com.br/pamcard/AdicionarOperacaoTransporte';
+        urlInput.value = amb === 'producao' ? 'https://pamcard.roadcard.com.br/webservices/pef.asmx' : 'https://homologacao.roadcard.com.br/webservices/pef.asmx';
+      } else if (prov === 'repom') {
+        actionInput.value = 'http://schemas.repom.com.br/pef/AdicionarOperacaoTransporte';
+        urlInput.value = amb === 'producao' ? 'https://repom.com.br/webservices/pef.asmx' : 'https://homologacao.repom.com.br/webservices/pef.asmx';
+      }
+    }
+
     function mudarAbaPrincipal(aba) {
       document.getElementById('btn-tab-1').classList.remove('active');
       document.getElementById('btn-tab-2').classList.remove('active');
@@ -1304,6 +1369,143 @@
       reader.readAsText(file);
     });
 
+    
+    // LEITOR REVERSO: EXTRAI DADOS DE UM XML SOAP CIOT V8 E PREENCHE OS CAMPOS
+    function extrairDadosDoXmlColado() {
+      const xmlRaw = document.getElementById('envelopeXmlArea').value.trim();
+      if (!xmlRaw || xmlRaw.length < 30) {
+        alert('Cole um XML válido no campo antes de carregar.');
+        return;
+      }
+
+      try {
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(xmlRaw, "application/xml");
+
+        // Tratamento de erro de sintaxe do XML
+        const parseError = xml.getElementsByTagName("parsererror");
+        if (parseError.length > 0) {
+          alert('Erro de formatação no XML colado: ' + parseError[0].textContent);
+          return;
+        }
+
+        // Função auxiliar para buscar valor por tag local (independente de namespace)
+        const getV = (tagName) => {
+          const els = xml.getElementsByTagName(tagName);
+          if (els && els.length > 0) return els[0].textContent.trim();
+          // Fallback buscando por localName
+          const all = xml.querySelectorAll('*');
+          for (let el of all) {
+            if (el.localName === tagName) return el.textContent.trim();
+          }
+          return '';
+        };
+
+        let preenchidos = 0;
+        const setIf = (id, val) => {
+          if (val && document.getElementById(id)) {
+            document.getElementById(id).value = val;
+            preenchidos++;
+          }
+        };
+
+        // 1. Identificação e Configuração
+        setIf('cHashIntegrador', getV('Integrador'));
+        setIf('cCnpjMatriz', getV('MatrizCNPJ'));
+        setIf('cIdOperacaoCliente', getV('IdOperacaoCliente'));
+
+        // 2. Viagem e Carga
+        setIf('cDistanciaKm', getV('DistanciaPercorrida'));
+        setIf('cNcmCarga', getV('CodigoNCMNaturezaCarga'));
+        setIf('cPesoCarga', getV('PesoCarga') || getV('QuantidadeDaMercadoriaNoEmbarque'));
+        setIf('cTipoEmbalagem', getV('TipoEmbalagem'));
+        setIf('cDescMercadoria', getV('DescricaoDaMercadoria'));
+
+        // Formatação de Datas (ISO -> Datetime-local)
+        const dIni = getV('DataInicioViagem');
+        if (dIni && dIni.length >= 16) setIf('cDataInicioViagem', dIni.substring(0, 16));
+        const dFim = getV('DataFimViagem');
+        if (dFim && dFim.length >= 16) setIf('cDataFimViagem', dFim.substring(0, 16));
+
+        // 3. CEPs e IBGE
+        setIf('cCepOrigem', getV('CepOrigem'));
+        setIf('cCepDestino', getV('CepDestino'));
+        setIf('cIbgeOrigem', getV('CodigoMunicipioOrigem'));
+        setIf('cIbgeDestino', getV('CodigoMunicipioDestino'));
+
+        // 4. NF-e
+        setIf('cNfeNumero', getV('DocumentoViagem') || getV('Numero'));
+        setIf('cNfeSerie', getV('Serie'));
+        setIf('cNfeValorTotal', getV('ValorTotal'));
+        const dNfe = getV('Data');
+        if (dNfe && dNfe.length >= 16) setIf('cNfeDataEmissao', dNfe.substring(0, 16));
+
+        // 5. Partes: Contratante, Contratado, Destinatário
+        const contratanteEl = xml.getElementsByTagName('Contratante')[0];
+        if (contratanteEl) {
+          const getSub = (tag) => contratanteEl.getElementsByTagName(tag)[0]?.textContent?.trim() || '';
+          setIf('cRazaoContratante', getSub('NomeOuRazaoSocial'));
+          setIf('cCnpjContratante', getSub('CpfOuCnpj'));
+          setIf('cRntrcContratante', getSub('RNTRC'));
+          setIf('cRuaContratante', getSub('Rua'));
+          setIf('cNumContratante', getSub('Numero'));
+        }
+
+        const contratadoEl = xml.getElementsByTagName('Contratado')[0];
+        if (contratadoEl) {
+          const getSub = (tag) => contratadoEl.getElementsByTagName(tag)[0]?.textContent?.trim() || '';
+          setIf('cCnpjContratado', getSub('CpfOuCnpj'));
+          setIf('cRntrcContratado', getSub('RNTRC'));
+        }
+
+        const destEl = xml.getElementsByTagName('Destinatario')[0];
+        if (destEl) {
+          const getSub = (tag) => destEl.getElementsByTagName(tag)[0]?.textContent?.trim() || '';
+          setIf('cDestRazao', getSub('NomeOuRazaoSocial'));
+          setIf('cDestCnpj', getSub('CpfOuCnpj'));
+          setIf('cDestRua', getSub('Rua'));
+          setIf('cDestNumero', getSub('Numero'));
+          setIf('cDestBairro', getSub('Bairro'));
+        }
+
+        // 6. Motorista e Veículos
+        const motEl = xml.getElementsByTagName('Motorista')[0];
+        if (motEl) {
+          const getSub = (tag) => motEl.getElementsByTagName(tag)[0]?.textContent?.trim() || '';
+          setIf('cCpfMotorista', getSub('CpfOuCnpj'));
+          setIf('cCnhMotorista', getSub('CNH'));
+          setIf('cDddMotorista', getSub('DDD'));
+          setIf('cTelMotorista', getSub('Numero'));
+        }
+
+        // Placas
+        const placas = xml.getElementsByTagName('Placa');
+        if (placas.length > 0) setIf('cPlacaCavalo', placas[0].textContent.trim());
+        if (placas.length > 1) setIf('cPlacaCarreta', placas[1].textContent.trim());
+
+        const comp = getV('ComposicaoVeicular');
+        if (comp) setIf('cCompVeicular', comp);
+
+        // 7. Valores e Impostos
+        setIf('cValorFreteBruto', getV('TotalOperacao') || getV('TotalViagem'));
+        setIf('cValorFreteLiquido', getV('Valor'));
+        setIf('cImpostoIrrf', getV('IRRF'));
+        setIf('cImpostoSest', getV('SestSenat'));
+        setIf('cImpostoInss', getV('INSS'));
+
+        // 8. Informações Bancárias
+        setIf('cBancoNum', getV('InstituicaoBancaria'));
+        setIf('cBancoAgencia', getV('Agencia'));
+        setIf('cBancoConta', getV('Conta'));
+        setIf('cTipoPagamento', getV('TipoPagamento'));
+
+        calcularLiquidoCiot();
+        alert(`✅ Sucesso: ${preenchidos} campos foram identificados e preenchidos a partir do XML!`);
+      } catch (err) {
+        alert('Erro ao interpretar XML: ' + err.message);
+      }
+    }
+
     function compilarXmlCiotOficial() {
       calcularLiquidoCiot();
       const peso = parseFloat(document.getElementById('cPesoCarga').value) || 1;
@@ -1515,10 +1717,15 @@
       addLog('INFO', `Iniciando conexão mTLS segura com e-Frete V8... Certificado: ${pfx.name}`);
       respBox.textContent = 'Aguardando processamento e retorno do servidor...';
 
+      const urlDest = document.getElementById('cfgUrlEndpoint').value.trim();
+      const sAction = document.getElementById('cfgSoapAction').value.trim();
+
       const fd = new FormData();
       fd.append('pfxFile', pfx);
       fd.append('pfxPassword', pass);
       fd.append('xmlPayload', xml);
+      fd.append('urlEndpoint', urlDest);
+      fd.append('soapAction', sAction);
 
       try {
         addLog('INFO', 'Enviando requisição POST para endpoint /api/transmitir...');
