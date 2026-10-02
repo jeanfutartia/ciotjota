@@ -677,7 +677,7 @@
               <button type="button" class="btn btn-sm btn-outline-info py-0 px-2" onclick="navigator.clipboard.writeText(document.getElementById('envelopeXmlArea').value); alert('XML copiado!');">📋 Copiar XML</button>
             </div>
           </div>
-          <textarea id="envelopeXmlArea" class="input-dark mb-3" style="height:150px; font-family:monospace; font-size:0.75rem; color:#38bdf8;" placeholder="O XML compilado aparecerá aqui..."></textarea>
+          <textarea id="envelopeXmlArea" oninput="detectarEPreencherXmlAutomatico()" onpaste="setTimeout(detectarEPreencherXmlAutomatico, 100)" class="input-dark mb-3" style="height:150px; font-family:monospace; font-size:0.75rem; color:#38bdf8;" placeholder="O XML compilado aparecerá aqui..."></textarea>
 
           <!-- CONSOLE DE LOG EMBUTIDO EM TEMPO REAL -->
           <div style="background:#020617; border: 1px solid var(--border-rino); border-radius: 10px; overflow: hidden;">
@@ -1371,10 +1371,19 @@
 
     
     // LEITOR REVERSO: EXTRAI DADOS DE UM XML SOAP CIOT V8 E PREENCHE OS CAMPOS
-    function extrairDadosDoXmlColado() {
+    // DETECÇÃO AUTOMÁTICA AO COLAR NO TEXTAREA
+    function detectarEPreencherXmlAutomatico() {
+      const txt = document.getElementById('envelopeXmlArea').value.trim();
+      if (txt.startsWith('<') && (txt.includes('AdicionarOperacaoTransporte') || txt.includes('Envelope') || txt.includes('Integrador'))) {
+        extrairDadosDoXmlColado(true);
+      }
+    }
+
+    // LEITOR REVERSO COMPLETO E AUTOMÁTICO
+    function extrairDadosDoXmlColado(silencioso = false) {
       const xmlRaw = document.getElementById('envelopeXmlArea').value.trim();
       if (!xmlRaw || xmlRaw.length < 30) {
-        alert('Cole um XML válido no campo antes de carregar.');
+        if (!silencioso) alert('Cole um XML válido no campo antes de carregar.');
         return;
       }
 
@@ -1382,18 +1391,15 @@
         const parser = new DOMParser();
         const xml = parser.parseFromString(xmlRaw, "application/xml");
 
-        // Tratamento de erro de sintaxe do XML
         const parseError = xml.getElementsByTagName("parsererror");
         if (parseError.length > 0) {
-          alert('Erro de formatação no XML colado: ' + parseError[0].textContent);
+          if (!silencioso) alert('Erro de sintaxe no XML colado.');
           return;
         }
 
-        // Função auxiliar para buscar valor por tag local (independente de namespace)
         const getV = (tagName) => {
           const els = xml.getElementsByTagName(tagName);
           if (els && els.length > 0) return els[0].textContent.trim();
-          // Fallback buscando por localName
           const all = xml.querySelectorAll('*');
           for (let el of all) {
             if (el.localName === tagName) return el.textContent.trim();
@@ -1402,107 +1408,134 @@
         };
 
         let preenchidos = 0;
-        const setIf = (id, val) => {
-          if (val && document.getElementById(id)) {
-            document.getElementById(id).value = val;
-            preenchidos++;
+        const setVal = (id, val) => {
+          if (val !== undefined && val !== null && val !== '') {
+            const el = document.getElementById(id);
+            if (el) {
+              el.value = val;
+              preenchidos++;
+            }
           }
         };
 
         // 1. Identificação e Configuração
-        setIf('cHashIntegrador', getV('Integrador'));
-        setIf('cCnpjMatriz', getV('MatrizCNPJ'));
-        setIf('cIdOperacaoCliente', getV('IdOperacaoCliente'));
+        setVal('cHashIntegrador', getV('Integrador'));
+        setVal('cCnpjMatriz', getV('MatrizCNPJ') || getV('FilialCNPJ'));
+        setVal('cIdOperacaoCliente', getV('IdOperacaoCliente'));
 
         // 2. Viagem e Carga
-        setIf('cDistanciaKm', getV('DistanciaPercorrida'));
-        setIf('cNcmCarga', getV('CodigoNCMNaturezaCarga'));
-        setIf('cPesoCarga', getV('PesoCarga') || getV('QuantidadeDaMercadoriaNoEmbarque'));
-        setIf('cTipoEmbalagem', getV('TipoEmbalagem'));
-        setIf('cDescMercadoria', getV('DescricaoDaMercadoria'));
+        setVal('cDistanciaKm', getV('DistanciaPercorrida'));
+        setVal('cNcmCarga', getV('CodigoNCMNaturezaCarga'));
+        setVal('cPesoCarga', getV('PesoCarga') || getV('QuantidadeDaMercadoriaNoEmbarque'));
+        setVal('cTipoEmbalagem', getV('TipoEmbalagem') || 'Granel');
+        setVal('cDescMercadoria', getV('DescricaoDaMercadoria'));
 
-        // Formatação de Datas (ISO -> Datetime-local)
+        // Formatação de Datas
         const dIni = getV('DataInicioViagem');
-        if (dIni && dIni.length >= 16) setIf('cDataInicioViagem', dIni.substring(0, 16));
+        if (dIni && dIni.length >= 16) setVal('cDataInicioViagem', dIni.substring(0, 16));
         const dFim = getV('DataFimViagem');
-        if (dFim && dFim.length >= 16) setIf('cDataFimViagem', dFim.substring(0, 16));
+        if (dFim && dFim.length >= 16) setVal('cDataFimViagem', dFim.substring(0, 16));
 
         // 3. CEPs e IBGE
-        setIf('cCepOrigem', getV('CepOrigem'));
-        setIf('cCepDestino', getV('CepDestino'));
-        setIf('cIbgeOrigem', getV('CodigoMunicipioOrigem'));
-        setIf('cIbgeDestino', getV('CodigoMunicipioDestino'));
+        setVal('cCepOrigem', getV('CepOrigem'));
+        setVal('cCepDestino', getV('CepDestino'));
+        setVal('cIbgeOrigem', getV('CodigoMunicipioOrigem'));
+        setVal('cIbgeDestino', getV('CodigoMunicipioDestino'));
 
         // 4. NF-e
-        setIf('cNfeNumero', getV('DocumentoViagem') || getV('Numero'));
-        setIf('cNfeSerie', getV('Serie'));
-        setIf('cNfeValorTotal', getV('ValorTotal'));
+        setVal('cNfeNumero', getV('DocumentoViagem') || getV('Numero'));
+        setVal('cNfeSerie', getV('Serie'));
+        setVal('cNfeValorTotal', getV('ValorTotal'));
         const dNfe = getV('Data');
-        if (dNfe && dNfe.length >= 16) setIf('cNfeDataEmissao', dNfe.substring(0, 16));
+        if (dNfe && dNfe.length >= 16) setVal('cNfeDataEmissao', dNfe.substring(0, 16));
 
-        // 5. Partes: Contratante, Contratado, Destinatário
+        // 5. Contratante
         const contratanteEl = xml.getElementsByTagName('Contratante')[0];
         if (contratanteEl) {
-          const getSub = (tag) => contratanteEl.getElementsByTagName(tag)[0]?.textContent?.trim() || '';
-          setIf('cRazaoContratante', getSub('NomeOuRazaoSocial'));
-          setIf('cCnpjContratante', getSub('CpfOuCnpj'));
-          setIf('cRntrcContratante', getSub('RNTRC'));
-          setIf('cRuaContratante', getSub('Rua'));
-          setIf('cNumContratante', getSub('Numero'));
+          const getSub = (tag) => {
+            const el = contratanteEl.getElementsByTagName(tag)[0];
+            return el ? el.textContent.trim() : '';
+          };
+          setVal('cRazaoContratante', getSub('NomeOuRazaoSocial'));
+          setVal('cCnpjContratante', getSub('CpfOuCnpj'));
+          setVal('cRntrcContratante', getSub('RNTRC'));
+          setVal('cRuaContratante', getSub('Rua'));
+          setVal('cNumContratante', getSub('Numero'));
         }
 
+        // 6. Contratado
         const contratadoEl = xml.getElementsByTagName('Contratado')[0];
         if (contratadoEl) {
-          const getSub = (tag) => contratadoEl.getElementsByTagName(tag)[0]?.textContent?.trim() || '';
-          setIf('cCnpjContratado', getSub('CpfOuCnpj'));
-          setIf('cRntrcContratado', getSub('RNTRC'));
+          const getSub = (tag) => {
+            const el = contratadoEl.getElementsByTagName(tag)[0];
+            return el ? el.textContent.trim() : '';
+          };
+          setVal('cCnpjContratado', getSub('CpfOuCnpj'));
+          setVal('cRntrcContratado', getSub('RNTRC'));
         }
 
+        // 7. Destinatário
         const destEl = xml.getElementsByTagName('Destinatario')[0];
         if (destEl) {
-          const getSub = (tag) => destEl.getElementsByTagName(tag)[0]?.textContent?.trim() || '';
-          setIf('cDestRazao', getSub('NomeOuRazaoSocial'));
-          setIf('cDestCnpj', getSub('CpfOuCnpj'));
-          setIf('cDestRua', getSub('Rua'));
-          setIf('cDestNumero', getSub('Numero'));
-          setIf('cDestBairro', getSub('Bairro'));
+          const getSub = (tag) => {
+            const el = destEl.getElementsByTagName(tag)[0];
+            return el ? el.textContent.trim() : '';
+          };
+          setVal('cDestRazao', getSub('NomeOuRazaoSocial'));
+          setVal('cDestCnpj', getSub('CpfOuCnpj'));
+          setVal('cDestRua', getSub('Rua'));
+          setVal('cDestNumero', getSub('Numero'));
+          setVal('cDestBairro', getSub('Bairro'));
         }
 
-        // 6. Motorista e Veículos
+        // 8. Motorista e Veículos
         const motEl = xml.getElementsByTagName('Motorista')[0];
         if (motEl) {
-          const getSub = (tag) => motEl.getElementsByTagName(tag)[0]?.textContent?.trim() || '';
-          setIf('cCpfMotorista', getSub('CpfOuCnpj'));
-          setIf('cCnhMotorista', getSub('CNH'));
-          setIf('cDddMotorista', getSub('DDD'));
-          setIf('cTelMotorista', getSub('Numero'));
+          const getSub = (tag) => {
+            const el = motEl.getElementsByTagName(tag)[0];
+            return el ? el.textContent.trim() : '';
+          };
+          setVal('cCpfMotorista', getSub('CpfOuCnpj'));
+          setVal('cCnhMotorista', getSub('CNH'));
+          setVal('cDddMotorista', getSub('DDD'));
+          setVal('cTelMotorista', getSub('Numero'));
         }
 
         // Placas
         const placas = xml.getElementsByTagName('Placa');
-        if (placas.length > 0) setIf('cPlacaCavalo', placas[0].textContent.trim());
-        if (placas.length > 1) setIf('cPlacaCarreta', placas[1].textContent.trim());
+        if (placas.length > 0) setVal('cPlacaCavalo', placas[0].textContent.trim());
+        if (placas.length > 1) setVal('cPlacaCarreta', placas[1].textContent.trim());
 
         const comp = getV('ComposicaoVeicular');
-        if (comp) setIf('cCompVeicular', comp);
+        if (comp) setVal('cCompVeicular', comp);
 
-        // 7. Valores e Impostos
-        setIf('cValorFreteBruto', getV('TotalOperacao') || getV('TotalViagem'));
-        setIf('cValorFreteLiquido', getV('Valor'));
-        setIf('cImpostoIrrf', getV('IRRF'));
-        setIf('cImpostoSest', getV('SestSenat'));
-        setIf('cImpostoInss', getV('INSS'));
+        // 9. Valores e Impostos
+        setVal('cValorFreteBruto', getV('TotalOperacao') || getV('TotalViagem'));
+        setVal('cValorFreteLiquido', getV('Valor'));
+        setVal('cImpostoIrrf', getV('IRRF') || '0.00');
+        setVal('cImpostoSest', getV('SestSenat') || '0.00');
+        setVal('cImpostoInss', getV('INSS') || '0.00');
 
-        // 8. Informações Bancárias
-        setIf('cBancoNum', getV('InstituicaoBancaria'));
-        setIf('cBancoAgencia', getV('Agencia'));
-        setIf('cBancoConta', getV('Conta'));
-        setIf('cTipoPagamento', getV('TipoPagamento'));
+        // 10. Informações Bancárias
+        setVal('cBancoNum', getV('InstituicaoBancaria') || '237');
+        setVal('cBancoAgencia', getV('Agencia'));
+        setVal('cBancoConta', getV('Conta'));
+        setVal('cTipoPagamento', getV('TipoPagamento') || 'TransferenciaBancaria');
 
         calcularLiquidoCiot();
-        alert(`✅ Sucesso: ${preenchidos} campos foram identificados e preenchidos a partir do XML!`);
+
+        const term = document.getElementById('ciotLogTerminal');
+        if (term) {
+          const d = new Date().toLocaleTimeString('pt-BR');
+          term.innerHTML += `<div style="color:#38bdf8;">[${d}] [AUTO-PARSE] ${preenchidos} campos do formulário foram preenchidos a partir do XML colado!</div>`;
+          term.scrollTop = term.scrollHeight;
+        }
+
+        if (!silencioso) {
+          alert(`✅ ${preenchidos} campos preenchidos com sucesso a partir do XML!`);
+        }
       } catch (err) {
-        alert('Erro ao interpretar XML: ' + err.message);
+        if (!silencioso) alert('Erro ao processar XML: ' + err.message);
       }
     }
 
@@ -1805,7 +1838,8 @@
           badge.textContent = 'Rejeição e-Frete';
 
           let motivoErro = 'Erro desconhecido retornado pela SEFAZ / e-Frete.';
-          const matchMsg = corpoResposta.match(/<Mensagem>(.*?)<\/Mensagem>/);
+          const matchMsg = corpoResposta.match(/<Mensagem>([\s\S]*?)<\/Mensagem>/);
+          const matchExc = corpoResposta.match(/<Excecao[^>]*>([\s\S]*?)<\/Excecao>/);
           const matchDesc = corpoResposta.match(/<Descricao>(.*?)<\/Descricao>/);
           const matchFault = corpoResposta.match(/<faultstring>(.*?)<\/faultstring>/);
 

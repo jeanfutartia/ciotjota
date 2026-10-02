@@ -564,38 +564,45 @@ async def api_inspecionar_pfx(
 def transmitir_ciot(
     pfxFile: UploadFile = File(...),
     pfxPassword: str = Form(...),
-    xmlPayload: str = Form(...)
+    xmlPayload: str = Form(...),
+    urlEndpoint: str = Form("https://dev.efrete.com.br/Services/PefServiceV2.asmx"),
+    soapAction: str = Form("http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte")
 ):
     try:
         pfx_bytes = pfxFile.file.read()
         
-        url_efrete = "https://hpef.ipcadm.com.br/pefws/adicionaroperacaotransporte.asmx"
+        # Se porventura ainda vier com o host antigo desativado, força o redirecionamento correto
+        url_final = urlEndpoint.strip()
+        if "hpef.ipcadm.com.br" in url_final:
+            url_final = "https://dev.efrete.com.br/Services/PefServiceV2.asmx"
+        
         headers = {
             "Content-Type": "text/xml; charset=utf-8",
-            "SOAPAction": "http://schemas.ipc.adm.br/efrete/pefV2/AdicionarOperacaoTransporte"
+            "SOAPAction": soapAction.strip()
         }
 
-        # Execução síncrona com timeout estrito de 20s
         res = pkcs12_post(
-            url_efrete,
+            url_final,
             data=xmlPayload.encode("utf-8"),
             headers=headers,
             pkcs12_data=pfx_bytes,
             pkcs12_password=pfxPassword,
-            timeout=20
+            timeout=30
         )
 
         return {
             "status": "OK" if res.status_code == 200 else "ERRO_HTTP",
             "http_code": res.status_code,
-            "response": res.text
+            "response": res.text,
+            "url_utilizada": url_final
         }
     except Exception as e:
         import traceback
         return {
             "status": "EXCECAO",
             "error": str(e),
-            "traceback": traceback.format_exc()
+            "traceback": traceback.format_exc(),
+            "url_utilizada": urlEndpoint
         }
 
 
