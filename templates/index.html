@@ -400,7 +400,7 @@
         </div>
         <div class="d-flex align-items-center gap-2">
           <span class="small text-muted">Importar XML NF-e:</span>
-          <input type="file" id="cXmlNfe" accept=".xml" class="input-dark" style="max-width:240px; padding:4px;">
+          <input type="file" id="cXmlNfe" accept=".xml" multiple class="input-dark" style="max-width:240px; padding:4px;">
           <button type="button" class="btn btn-sm btn-outline-danger" onclick="limparCamposConstrutor()">🗑️ Limpar</button>
         </div>
       </div>
@@ -511,10 +511,10 @@
         </div>
       </div>
 
-      <!-- 4. ROTA E NOTA FISCAL ORIGINÁRIA -->
+      <!-- 4. ROTA E NOTAS FISCAIS ORIGINÁRIAS (MULTI-NF) -->
       <div class="g-section">
-        <div class="g-title">📦 4. Viagem, Rota e Nota Fiscal Originária</div>
-        <div class="g-grid g-grid-4">
+        <div class="g-title">📦 4. Viagem, Rota e Notas Fiscais Originárias</div>
+        <div class="g-grid g-grid-4 mb-3">
           <div>
             <label class="field-label">Início Previsto Viagem:*</label>
             <input type="datetime-local" id="cDataInicioViagem" class="input-dark" required>
@@ -536,40 +536,22 @@
               <option value="Unitario">Unitário</option>
             </select>
           </div>
+        </div>
 
-          <div class="g-subtitle">Dados da NF-e Originária</div>
-          <div>
-            <label class="field-label">Número NF-e:*</label>
-            <input type="text" id="cNfeNumero" class="input-dark" placeholder="Número" required>
-          </div>
-          <div>
-            <label class="field-label">Série:*</label>
-            <input type="text" id="cNfeSerie" class="input-dark" value="1" required>
-          </div>
-          <div>
-            <label class="field-label">CNPJ Emissor da NF-e:*</label>
-            <input type="text" id="cNfeCnpjEmissor" class="input-dark" placeholder="00000000000000" required>
-          </div>
-          <div>
-            <label class="field-label">Data Emissão NF-e:*</label>
-            <input type="datetime-local" id="cNfeDataEmissao" class="input-dark" required>
-          </div>
-          <div>
-            <label class="field-label">NCM Predominante:*</label>
-            <input type="text" id="cNcmCarga" class="input-dark" value="2304" required>
-          </div>
-          <div>
-            <label class="field-label">Peso da Carga (Kg):*</label>
-            <input type="number" step="0.001" id="cPesoCarga" class="input-dark" placeholder="Ex: 2625.20" required>
-          </div>
-          <div>
-            <label class="field-label">Valor Total NF-e (R$):*</label>
-            <input type="number" step="0.01" id="cNfeValorTotal" class="input-dark" placeholder="Ex: 154585.18" required>
-          </div>
-          <div>
-            <label class="field-label">Descrição das Mercadorias:*</label>
-            <input type="text" id="cDescMercadoria" class="input-dark" placeholder="Descrição resumida" value="Farelo de Soja" required>
-          </div>
+        <!-- LISTA DINÂMICA DE NOTAS FISCAIS -->
+        <div class="d-flex justify-content-between align-items-center mb-2 pb-1" style="border-bottom: 1px dashed var(--border-rino);">
+          <span class="small fw-bold text-info text-uppercase">Notas Fiscais Vinculadas à Operação</span>
+          <button type="button" class="btn btn-sm btn-outline-info py-0 px-2 fw-bold" onclick="adicionarLinhaNfe()">➕ Adicionar Outra NF-e</button>
+        </div>
+
+        <div id="containerMultiNfes" class="d-flex flex-column gap-2 mb-2">
+          <!-- As linhas de NF-e serão inseridas aqui dinamicamente -->
+        </div>
+
+        <div class="d-flex justify-content-end gap-3 p-2 rounded" style="background: rgba(0, 210, 255, 0.05); border: 1px solid var(--border-rino);">
+          <span class="small text-muted">Total de Notas: <strong class="text-white" id="lblTotalQtdNfe">1</strong></span>
+          <span class="small text-muted">Peso Total: <strong class="text-info" id="lblTotalPesoNfe">0.00 Kg</strong></span>
+          <span class="small text-muted">Valor Total da Carga: <strong class="text-success" id="lblTotalValorNfe">R$ 0,00</strong></span>
         </div>
       </div>
 
@@ -1007,6 +989,7 @@
 
         mostrarPainelLogado();
         setTimeout(initMap, 200);
+        if (document.querySelectorAll('#containerMultiNfes > div').length === 0) adicionarLinhaNfe();
       } else {
         alertBox.textContent = 'E-mail ou senha inválidos.';
         alertBox.classList.remove('d-none');
@@ -1058,6 +1041,7 @@
         document.getElementById('userEmailSpan').textContent = MASTER_USER;
         mostrarPainelLogado();
         setTimeout(initMap, 200);
+        if (document.querySelectorAll('#containerMultiNfes > div').length === 0) adicionarLinhaNfe();
       }
     };
 
@@ -1485,12 +1469,31 @@
         setVal('cIbgeOrigem', getV('CodigoMunicipioOrigem'));
         setVal('cIbgeDestino', getV('CodigoMunicipioDestino'));
 
-        // 4. NF-e
-        setVal('cNfeNumero', getV('DocumentoViagem') || getV('Numero'));
-        setVal('cNfeSerie', getV('Serie'));
-        setVal('cNfeValorTotal', getV('ValorTotal'));
-        const dNfe = getV('Data');
-        if (dNfe && dNfe.length >= 16) setVal('cNfeDataEmissao', dNfe.substring(0, 16));
+        // 4. MULTI-NF: Extrai todas as tags <NotaFiscal>
+        const containerNfe = document.getElementById('containerMultiNfes');
+        const notasXml = xml.getElementsByTagName('NotaFiscal');
+        if (notasXml.length > 0 && containerNfe) {
+          containerNfe.innerHTML = '';
+          for (let nfNode of notasXml) {
+            const getSubNf = (t) => nfNode.getElementsByTagName(t)[0]?.textContent?.trim() || '';
+            let dN = getSubNf('Data');
+            if (dN && dN.length >= 16) dN = dN.substring(0, 16);
+            else dN = new Date().toISOString().substring(0, 16);
+
+            contadorNfeId++;
+            adicionarLinhaNfe({
+              uid: contadorNfeId,
+              numero: getSubNf('Numero'),
+              serie: getSubNf('Serie') || '1',
+              dataEmissao: dN,
+              valorTotal: getSubNf('ValorTotal') || '0.00',
+              ncm: getSubNf('CodigoNCMNaturezaCarga') || '2304',
+              peso: getSubNf('QuantidadeDaMercadoriaNoEmbarque') || '0.000',
+              descricao: getSubNf('DescricaoDaMercadoria') || 'Mercadorias'
+            });
+          }
+          atualizarTotaisNfes();
+        }
 
         // 5. Contratante
         const contratanteEl = xml.getElementsByTagName('Contratante')[0];
@@ -1582,17 +1585,247 @@
       }
     }
 
+    
+    // GESTÃO DINÂMICA DE MÚLTIPLAS NOTAS FISCAIS
+    let contadorNfeId = 0;
+
+    function criarObjetoNfeVazio() {
+      contadorNfeId++;
+      return {
+        uid: contadorNfeId,
+        numero: '',
+        serie: '1',
+        dataEmissao: new Date().toISOString().substring(0, 16),
+        valorTotal: '0.00',
+        ncm: '2304',
+        peso: '0.000',
+        descricao: 'Mercadorias em Geral'
+      };
+    }
+
+    function renderizarLinhaNfe(nf) {
+      const div = document.createElement('div');
+      div.className = 'p-2 rounded';
+      div.id = `linhaNfe_${nf.uid}`;
+      div.style.background = '#060d21';
+      div.style.border = '1px solid var(--border-rino)';
+
+      div.innerHTML = `
+        <div class="row g-2 align-items-center">
+          <div class="col-md-2 col-6">
+            <label class="field-label" style="font-size:0.7rem;">Número NF-e:*</label>
+            <input type="text" class="input-dark nfe-num" value="${nf.numero}" placeholder="Ex: 12345" oninput="atualizarTotaisNfes()" required>
+          </div>
+          <div class="col-md-1 col-6">
+            <label class="field-label" style="font-size:0.7rem;">Série:*</label>
+            <input type="text" class="input-dark nfe-serie" value="${nf.serie || '1'}" required>
+          </div>
+          <div class="col-md-2 col-6">
+            <label class="field-label" style="font-size:0.7rem;">Data Emissão:*</label>
+            <input type="datetime-local" class="input-dark nfe-data" value="${nf.dataEmissao}" required>
+          </div>
+          <div class="col-md-2 col-6">
+            <label class="field-label" style="font-size:0.7rem;">NCM:*</label>
+            <input type="text" class="input-dark nfe-ncm" value="${nf.ncm || '2304'}" required>
+          </div>
+          <div class="col-md-2 col-6">
+            <label class="field-label" style="font-size:0.7rem;">Peso (Kg):*</label>
+            <input type="number" step="0.001" class="input-dark nfe-peso" value="${nf.peso}" placeholder="0.000" oninput="atualizarTotaisNfes()" required>
+          </div>
+          <div class="col-md-2 col-6">
+            <label class="field-label" style="font-size:0.7rem;">Valor Total (R$):*</label>
+            <input type="number" step="0.01" class="input-dark nfe-valor" value="${nf.valorTotal}" placeholder="0.00" oninput="atualizarTotaisNfes()" required>
+          </div>
+          <div class="col-md-1 col-12 d-flex align-items-end justify-content-end">
+            <button type="button" class="btn btn-sm btn-outline-danger w-100 py-1" title="Remover Nota" onclick="removerLinhaNfe(${nf.uid})">🗑️</button>
+          </div>
+          <div class="col-12 mt-1">
+            <input type="text" class="input-dark nfe-desc" value="${nf.descricao || 'Mercadorias'}" placeholder="Descrição das Mercadorias" style="font-size:0.75rem; padding:4px 8px;">
+          </div>
+        </div>
+      `;
+      return div;
+    }
+
+    function adicionarLinhaNfe(dados = null) {
+      const container = document.getElementById('containerMultiNfes');
+      if (!container) return;
+      const nfObj = dados || criarObjetoNfeVazio();
+      container.appendChild(renderizarLinhaNfe(nfObj));
+      atualizarTotaisNfes();
+    }
+
+    function removerLinhaNfe(uid) {
+      const el = document.getElementById(`linhaNfe_${uid}`);
+      const container = document.getElementById('containerMultiNfes');
+      if (container && container.children.length <= 1) {
+        alert('A operação de transporte deve conter ao menos 1 Nota Fiscal vinculada.');
+        return;
+      }
+      if (el) el.remove();
+      atualizarTotaisNfes();
+    }
+
+    function atualizarTotaisNfes() {
+      const linhas = document.querySelectorAll('#containerMultiNfes > div');
+      let totalPeso = 0;
+      let totalValor = 0;
+
+      linhas.forEach(linha => {
+        const peso = parseFloat(linha.querySelector('.nfe-peso')?.value) || 0;
+        const valor = parseFloat(linha.querySelector('.nfe-valor')?.value) || 0;
+        totalPeso += peso;
+        totalValor += valor;
+      });
+
+      const lblQtd = document.getElementById('lblTotalQtdNfe');
+      const lblPeso = document.getElementById('lblTotalPesoNfe');
+      const lblVal = document.getElementById('lblTotalValorNfe');
+
+      if (lblQtd) lblQtd.textContent = linhas.length;
+      if (lblPeso) lblPeso.textContent = totalPeso.toFixed(3) + ' Kg';
+      if (lblVal) lblVal.textContent = 'R$ ' + totalValor.toFixed(2);
+    }
+
+    function coletarNfesDaTela() {
+      const lista = [];
+      const linhas = document.querySelectorAll('#containerMultiNfes > div');
+      linhas.forEach(l => {
+        lista.push({
+          numero: l.querySelector('.nfe-num')?.value.trim() || '12345',
+          serie: l.querySelector('.nfe-serie')?.value.trim() || '1',
+          dataEmissao: l.querySelector('.nfe-data')?.value || new Date().toISOString().substring(0, 16),
+          ncm: l.querySelector('.nfe-ncm')?.value.trim() || '2304',
+          peso: parseFloat(l.querySelector('.nfe-peso')?.value) || 1,
+          valorTotal: parseFloat(l.querySelector('.nfe-valor')?.value) || 1,
+          descricao: l.querySelector('.nfe-desc')?.value.trim() || 'Mercadorias'
+        });
+      });
+      return lista.length > 0 ? lista : [criarObjetoNfeVazio()];
+    }
+
+
+
+    // IMPORTAÇÃO DE MÚLTIPLOS XMLs DE NF-e
+    document.getElementById('cXmlNfe')?.addEventListener('change', async function(e) {
+      const files = Array.from(e.target.files);
+      if (files.length === 0) return;
+
+      const container = document.getElementById('containerMultiNfes');
+      if (container) container.innerHTML = '';
+
+      let primeiro = true;
+
+      for (const file of files) {
+        try {
+          const texto = await file.text();
+          const parser = new DOMParser();
+          const xml = parser.parseFromString(texto, "application/xml");
+          const getVal = (t) => xml.getElementsByTagName(t)[0]?.textContent?.trim() || '';
+
+          const nNF = getVal('nNF') || '12345';
+          const serie = getVal('serie') || '1';
+          const vNF = getVal('vNF') || '0.00';
+          const peso = getVal('pesoB') || getVal('pesoL') || '0.000';
+          const ncm = (getVal('NCM') || '2304').substring(0, 4);
+          const desc = getVal('xProd') || 'Mercadorias';
+          let dhEmi = getVal('dhEmi');
+          if (dhEmi && dhEmi.length >= 16) dhEmi = dhEmi.substring(0, 16);
+          else dhEmi = new Date().toISOString().substring(0, 16);
+
+          contadorNfeId++;
+          adicionarLinhaNfe({
+            uid: contadorNfeId,
+            numero: nNF,
+            serie: serie,
+            dataEmissao: dhEmi,
+            valorTotal: vNF,
+            ncm: ncm,
+            peso: peso,
+            descricao: desc
+          });
+
+          // Pega emitente e destinatário a partir do primeiro XML lido
+          if (primeiro) {
+            primeiro = false;
+            document.getElementById('cDataInicioViagem').value = dhEmi;
+
+            const emit = xml.getElementsByTagName('emit')[0];
+            if (emit) {
+              const emitCnpj = emit.getElementsByTagName('CNPJ')[0]?.textContent || '';
+              document.getElementById('cCnpjMatriz').value = emitCnpj;
+              document.getElementById('cCnpjContratante').value = emitCnpj;
+              document.getElementById('cRazaoContratante').value = emit.getElementsByTagName('xNome')[0]?.textContent || '';
+              document.getElementById('cCepOrigem').value = emit.getElementsByTagName('CEP')[0]?.textContent || '';
+              document.getElementById('cIbgeOrigem').value = emit.getElementsByTagName('cMun')[0]?.textContent || '';
+              document.getElementById('cRuaContratante').value = emit.getElementsByTagName('xLgr')[0]?.textContent || '';
+              document.getElementById('cNumContratante').value = emit.getElementsByTagName('nro')[0]?.textContent || 'SN';
+            }
+
+            const dest = xml.getElementsByTagName('dest')[0];
+            if (dest) {
+              document.getElementById('cDestCnpj').value = dest.getElementsByTagName('CNPJ')[0]?.textContent || '';
+              document.getElementById('cDestRazao').value = dest.getElementsByTagName('xNome')[0]?.textContent || '';
+              document.getElementById('cDestRua').value = dest.getElementsByTagName('xLgr')[0]?.textContent || '';
+              document.getElementById('cDestNumero').value = dest.getElementsByTagName('nro')[0]?.textContent || 'SN';
+              document.getElementById('cDestBairro').value = dest.getElementsByTagName('xBairro')[0]?.textContent || 'Centro';
+              document.getElementById('cCepDestino').value = dest.getElementsByTagName('CEP')[0]?.textContent || '';
+              document.getElementById('cIbgeDestino').value = dest.getElementsByTagName('cMun')[0]?.textContent || '';
+            }
+          }
+
+        } catch (err) {
+          console.error("Erro lendo XML " + file.name, err);
+        }
+      }
+
+      atualizarTotaisNfes();
+      calcularLiquidoCiot();
+      alert(`✅ ${files.length} arquivo(s) XML de NF-e carregado(s) com sucesso!`);
+    });
+
+
     function compilarXmlCiotOficial() {
       calcularLiquidoCiot();
-      const peso = parseFloat(document.getElementById('cPesoCarga').value) || 1;
-      const vTotal = parseFloat(document.getElementById('cNfeValorTotal').value) || 1;
-      const vUnit = (vTotal / peso).toFixed(5);
+      const nfes = coletarNfesDaTela();
+      
+      let somaPeso = 0;
+      let somaValorMercadorias = 0;
+      let xmlNotasFiscais = '';
+      const docViagemPrincipal = nfes[0].numero;
+      const ncmPrincipal = nfes[0].ncm;
+
+      nfes.forEach(nf => {
+        const p = parseFloat(nf.peso) || 1;
+        const v = parseFloat(nf.valorTotal) || 1;
+        somaPeso += p;
+        somaValorMercadorias += v;
+        const vUnit = (v / p).toFixed(5);
+
+        xmlNotasFiscais += `
+            <NotaFiscal>
+              <Numero xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${nf.numero}</Numero>
+              <Serie xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${nf.serie}</Serie>
+              <Data xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${nf.dataEmissao}:00.000Z</Data>
+              <ValorTotal xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${v.toFixed(2)}</ValorTotal>
+              <ValorDaMercadoriaPorUnidade xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${vUnit}</ValorDaMercadoriaPorUnidade>
+              <CodigoNCMNaturezaCarga xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${nf.ncm}</CodigoNCMNaturezaCarga>
+              <DescricaoDaMercadoria xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${nf.descricao}</DescricaoDaMercadoria>
+              <UnidadeDeMedidaDaMercadoria xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">Kg</UnidadeDeMedidaDaMercadoria>
+              <TipoDeCalculo xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">SemQuebra</TipoDeCalculo>
+              <ValorDoFretePorUnidadeDeMercadoria xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte" xsi:nil="true"/>
+              <QuantidadeDaMercadoriaNoEmbarque xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${p.toFixed(3)}</QuantidadeDaMercadoriaNoEmbarque>
+              <ToleranciaDePerdaDeMercadoria xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">
+                <Tipo>Nenhum</Tipo>
+                <Valor>0.00000</Valor>
+              </ToleranciaDePerdaDeMercadoria>
+            </NotaFiscal>`;
+      });
+
       const vLiquido = parseFloat(document.getElementById('cValorFreteLiquido').value) || 0;
       const vBruto = parseFloat(document.getElementById('cValorFreteBruto').value) || 0;
-
       const dIni = document.getElementById('cDataInicioViagem').value;
       const dFim = document.getElementById('cDataFimViagem').value;
-      const dNfe = document.getElementById('cNfeDataEmissao').value;
 
       const placa2 = document.getElementById('cPlacaCarreta').value.trim();
       const extra = placa2 ? '\n        <Veiculos><Placa xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">' + placa2 + '</Placa></Veiculos>' : '';
@@ -1616,14 +1849,14 @@
 
         <DataInicioViagem>${dIni}:00.000Z</DataInicioViagem>
         <DataFimViagem>${dFim}:00.000Z</DataFimViagem>
-        <CodigoNCMNaturezaCarga>${document.getElementById('cNcmCarga').value}</CodigoNCMNaturezaCarga>
-        <PesoCarga>${peso.toFixed(5)}</PesoCarga>
+        <CodigoNCMNaturezaCarga>${ncmPrincipal}</CodigoNCMNaturezaCarga>
+        <PesoCarga>${somaPeso.toFixed(5)}</PesoCarga>
         <TipoEmbalagem>${document.getElementById('cTipoEmbalagem').value}</TipoEmbalagem>
         <CodigoTipoCarga>1</CodigoTipoCarga>
         <AltoDesempenho>false</AltoDesempenho>
 
         <Viagens>
-          <DocumentoViagem>${document.getElementById('cNfeNumero').value}</DocumentoViagem>
+          <DocumentoViagem>${docViagemPrincipal}</DocumentoViagem>
           <CodigoMunicipioOrigem>${document.getElementById('cIbgeOrigem').value}</CodigoMunicipioOrigem>
           <CodigoMunicipioDestino>${document.getElementById('cIbgeDestino').value}</CodigoMunicipioDestino>
           <CepOrigem>${document.getElementById('cCepOrigem').value}</CepOrigem>
@@ -1646,24 +1879,7 @@
           
           <TipoPagamento xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">${document.getElementById('cTipoPagamento').value}</TipoPagamento>
           
-          <NotasFiscais>
-            <NotaFiscal>
-              <Numero xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${document.getElementById('cNfeNumero').value}</Numero>
-              <Serie xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${document.getElementById('cNfeSerie').value}</Serie>
-              <Data xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${dNfe}:00.000Z</Data>
-              <ValorTotal xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${vTotal.toFixed(2)}</ValorTotal>
-              <ValorDaMercadoriaPorUnidade xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${vUnit}</ValorDaMercadoriaPorUnidade>
-              <CodigoNCMNaturezaCarga xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${document.getElementById('cNcmCarga').value}</CodigoNCMNaturezaCarga>
-              <DescricaoDaMercadoria xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${document.getElementById('cDescMercadoria').value}</DescricaoDaMercadoria>
-              <UnidadeDeMedidaDaMercadoria xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">Kg</UnidadeDeMedidaDaMercadoria>
-              <TipoDeCalculo xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">SemQuebra</TipoDeCalculo>
-              <ValorDoFretePorUnidadeDeMercadoria xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte" xsi:nil="true"/>
-              <QuantidadeDaMercadoriaNoEmbarque xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">${peso.toFixed(3)}</QuantidadeDaMercadoriaNoEmbarque>
-              <ToleranciaDePerdaDeMercadoria xmlns="http://schemas.ipc.adm.br/efrete/pef/AdicionarOperacaoTransporte">
-                <Tipo>Nenhum</Tipo>
-                <Valor>0.00000</Valor>
-              </ToleranciaDePerdaDeMercadoria>
-            </NotaFiscal>
+          <NotasFiscais>${xmlNotasFiscais}
           </NotasFiscais>
         </Viagens>
 
@@ -1682,7 +1898,7 @@
           <Valor>${vLiquido.toFixed(5)}</Valor>
           <TipoPagamento xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">${document.getElementById('cTipoPagamento').value}</TipoPagamento>
           <Categoria xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">Quitacao</Categoria>
-          <Documento>${document.getElementById('cNfeNumero').value}</Documento>
+          <Documento>${docViagemPrincipal}</Documento>
           <CpfCnpjCreditado>${document.getElementById('cCnpjContratante').value}</CpfCnpjCreditado>
           <IndicadorPagamento>AVista</IndicadorPagamento>
           <InformacoesBancarias xmlns="http://schemas.ipc.adm.br/efrete/pef/objects">
