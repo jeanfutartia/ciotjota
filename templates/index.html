@@ -136,13 +136,13 @@
 
     <!-- BOTÕES PÚBLICOS -->
     <div class="d-flex align-items-center gap-3" id="navActions">
-      <a href="#planos" class="text-decoration-none text-light small fw-bold me-2">Planos e Preços</a>
+      <a href="#funcionalidades" class="text-decoration-none text-light small fw-bold me-2">Funcionalidades</a>
       <button type="button" class="btn-rino" onclick="abrirModalLogin()">Acessar Plataforma</button>
     </div>
 
     <!-- BOTÕES DO MODO LOGADO -->
     <div class="d-none align-items-center gap-3" id="navUserLogged">
-      <button type="button" class="btn btn-sm btn-outline-info me-2" onclick="mostrarTelaInicial()">🏠 Início / Planos</button>
+      <button type="button" class="btn btn-sm btn-outline-info me-2" onclick="mostrarTelaInicial()">🏠 Início</button>
       <button type="button" class="btn btn-sm btn-info fw-bold me-3 text-dark" id="btnIrParaPainel" onclick="mostrarPainelLogado()" style="display:none;">🚚 Ir ao Painel</button>
       
       <div class="nav-tabs-top me-3" id="topTabsArea">
@@ -164,70 +164,113 @@
       <p class="hero-desc">Desambiguação automática de cidades homônimas com base no IBGE, cálculo de pedágios por eixo, piso mínimo regulatório e transmissão de CIOT direto via mTLS.</p>
       <div class="d-flex gap-3 justify-content-center">
         <button type="button" class="btn-rino px-4 py-2" onclick="abrirModalLogin()">Entrar no Sistema</button>
-        <a href="#planos" class="btn btn-outline-secondary px-4 py-2" style="border-color: var(--border-rino); color: #cbd5e1;">Ver Tabela de Planos</a>
+        <a href="#funcionalidades" class="btn btn-outline-secondary px-4 py-2" style="border-color: var(--border-rino); color: #cbd5e1;">Ver Funcionalidades</a>
       </div>
     </section>
 
     <!-- TABELA DE PLANOS E PREÇOS -->
-    <section class="container py-5" id="planos">
+        <!-- SEÇÃO DE RECURSOS E FUNCIONALIDADES DA PLATAFORMA -->
+    <section class="container py-5" id="funcionalidades">
       <div class="text-center mb-5">
-        <div class="badge-tag" style="margin-bottom: 10px;">Preço Justo & Sob Demanda</div>
-        <h2 class="fw-bold mb-2">Planos acessíveis feitos para quem roda no trecho</h2>
-        <p class="text-muted" style="max-width: 600px; margin: 0 auto;">Sem taxas ocultas ou mensalidades pesadas. Ative a plataforma e pague centavos por documento emitido.</p>
+        <div class="badge-tag" style="margin-bottom: 10px;">Recursos Operacionais</div>
+        <h2 class="fw-bold mb-2">Tudo o que sua operação logística precisa em um só lugar</h2>
+        <p class="text-muted" style="max-width: 650px; margin: 0 auto;">Fluxo integrado desde o traçado do trecho rodoviário até a transmissão e homologação do CIOT na ANTT.</p>
       </div>
-      <div class="row g-4 justify-content-center">
+      
+      <div class="row g-4">
+        <!-- CARD 1 -->
         <div class="col-lg-4 col-md-6">
-          <div class="pricing-card pricing-featured h-100">
-            <span class="badge position-absolute top-0 end-0 m-3" style="background: linear-gradient(135deg, var(--rino-cyan), var(--rino-blue));">Mais Popular</span>
-            <h5 class="fw-bold text-info">Acesso Essencial</h5>
-            <p class="small text-muted mb-3">Ideal para autônomos, pequenos frotistas e operadores sob demanda.</p>
-            <div class="price-val">R$ 39,90<small>/mês</small></div>
-            <div class="small fw-bold text-info mb-3">+ R$ 0,80 por documento emitido</div>
-            <ul class="price-features">
-              <li>Acesso completo à plataforma</li>
-              <li>Roteirizador & Divisas com CEP exato</li>
-              <li>Cálculo de Pedágios por Eixo</li>
-              <li>Piso Mínimo Regulatório ANTT</li>
-              <li>Transmissão e-Frete V8 via mTLS</li>
-              <li>Importador XML NF-e ilimitado</li>
+          <div class="pricing-card h-100">
+            <div style="font-size: 2rem; margin-bottom: 15px;">🗺️</div>
+            <h5 class="fw-bold text-info">Roteirizador & Divisas Exatas</h5>
+            <p class="small text-muted mb-3">Traçado rodoviário com inteligência geográfica de divisa entre municípios.</p>
+            <ul class="price-features m-0">
+              <li>Desambiguação automática de cidades homônimas via IBGE</li>
+              <li>Geolocalização exata da borda territorial da origem e destino</li>
+              <li>Identificação automática do CEP da divisa para conformidade ANTT</li>
+              <li>Integração direta com rota de navegação GPS Google Maps</li>
             </ul>
-            <button type="button" class="btn-rino w-100 mt-auto py-2" onclick="abrirModalLogin()">Ativar por R$ 39,90</button>
           </div>
         </div>
 
+        <!-- CARD 2 -->
         <div class="col-lg-4 col-md-6">
           <div class="pricing-card h-100">
-            <h5 class="fw-bold text-info">Pro Fleet</h5>
-            <p class="small text-muted mb-3">Para pequenas transportadoras com emissões regulares.</p>
-            <div class="price-val">R$ 79,90<small>/mês</small></div>
-            <div class="small fw-bold text-success mb-3">Inclui 50 docs (R$ 0,60 excedente)</div>
-            <ul class="price-features">
-              <li>Tudo do Plano Essencial</li>
-              <li>50 documentos/CIOTs inclusos</li>
-              <li>R$ 0,60 por documento extra</li>
-              <li>Módulo de retenções (IR/INSS/SEST)</li>
-              <li>Recibo oficial para impressão em PDF</li>
+            <div style="font-size: 2rem; margin-bottom: 15px;">⚖️</div>
+            <h5 class="fw-bold text-info">Piso Mínimo & Pedágios</h5>
+            <p class="small text-muted mb-3">Cálculo de frete em conformidade com as resoluções vigentes da ANTT.</p>
+            <ul class="price-features m-0">
+              <li>Configuração por número de eixos (2 a 9 eixos)</li>
+              <li>Suporte a tipos de carga (Geral, Granel, Frigorificada, etc.)</li>
+              <li>Parâmetros para Composição Veicular, Alto Desempenho e Retorno Vazio</li>
+              <li>Estimativa de praças e cálculo consolidado de pedágios</li>
             </ul>
-            <button type="button" class="btn btn-outline-info w-100 mt-auto py-2" onclick="abrirModalLogin()">Escolher Pro Fleet</button>
           </div>
         </div>
 
+        <!-- CARD 3 -->
         <div class="col-lg-4 col-md-6">
           <div class="pricing-card h-100">
-            <h5 class="fw-bold text-info">Transportador Top</h5>
-            <p class="small text-muted mb-3">Para médias e grandes transportadoras com alta demanda.</p>
-            <div class="price-val">R$ 149,90<small>/mês</small></div>
-            <div class="small fw-bold text-warning mb-3">Emissões Ilimitadas (Zero por doc)</div>
-            <ul class="price-features">
-              <li>Emissões CIOT 100% ilimitadas</li>
-              <li>Sem custo adicional por documento</li>
-              <li>Multi-usuários e filiais</li>
-              <li>Histórico gerencial completo</li>
-              <li>Suporte prioritário via WhatsApp</li>
+            <div style="font-size: 2rem; margin-bottom: 15px;">⚡</div>
+            <h5 class="fw-bold text-info">Emissor CIOT Multiprovedor</h5>
+            <p class="small text-muted mb-3">Transmissão segura de contratos e operações de transporte regulamentadas.</p>
+            <ul class="price-features m-0">
+              <li>Conexão direta mTLS com Certificado Digital A1 (.pfx)</li>
+              <li>Compatível com e-Frete (IPCadm V8), ANTT Direto e integradoras parceiras</li>
+              <li>Ambientes de Homologação/Testes e Produção Oficial com URLs editáveis</li>
+              <li>Terminal de diagnósticos com logs e retorno bruto em tempo real</li>
             </ul>
-            <button type="button" class="btn btn-outline-info w-100 mt-auto py-2" onclick="abrirModalLogin()">Escolher Ilimitado</button>
           </div>
         </div>
+
+        <!-- CARD 4 -->
+        <div class="col-lg-4 col-md-6">
+          <div class="pricing-card h-100">
+            <div style="font-size: 2rem; margin-bottom: 15px;">🔄</div>
+            <h5 class="fw-bold text-info">Importador & Automação XML</h5>
+            <p class="small text-muted mb-3">Elimina digitação manual integrando com seus documentos fiscais.</p>
+            <ul class="price-features m-0">
+              <li>Importação de arquivo XML de NF-e com preenchimento instantâneo</li>
+              <li>Parse reverso inteligente ao colar XML SOAP bruto no editor</li>
+              <li>Reversibilidade total: preencha os campos para gerar XML ou cole o XML para preencher campos</li>
+              <li>Cálculo automático de deduções fiscais (IRRF, INSS, SEST/SENAT)</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- CARD 5 -->
+        <div class="col-lg-4 col-md-6">
+          <div class="pricing-card h-100">
+            <div style="font-size: 2rem; margin-bottom: 15px;">📋</div>
+            <h5 class="fw-bold text-info">Painel de Gestão & Histórico</h5>
+            <p class="small text-muted mb-3">Controle total dos documentos autorizados para auditoria e prestação de contas.</p>
+            <ul class="price-features m-0">
+              <li>Tabela consolidada com pesquisa por CIOT, Empresa Contratante ou Placa</li>
+              <li>Métricas em tempo real de documentos, volume em fretes e pedágios</li>
+              <li>Rastreabilidade de protocolos ANTT e status de aprovação</li>
+              <li>Armazenamento local seguro acessível a qualquer momento</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- CARD 6 -->
+        <div class="col-lg-4 col-md-6">
+          <div class="pricing-card h-100">
+            <div style="font-size: 2rem; margin-bottom: 15px;">📄</div>
+            <h5 class="fw-bold text-info">Recibo Oficial em PDF</h5>
+            <p class="small text-muted mb-3">Comprovante regulamentar pronto para entrega ao condutor e fiscalização.</p>
+            <ul class="price-features m-0">
+              <li>Layout formatado conforme as exigências da Resolução ANTT</li>
+              <li>Discriminação clara de contratante, contratado, motorista e veículo</li>
+              <li>Composição detalhada de valores: frete bruto, pedágios, retenções e líquido</li>
+              <li>Impressão ou download em PDF padrão folha A4 com 1 clique</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-5">
+        <button type="button" class="btn-rino px-4 py-3 fw-bold" onclick="abrirModalLogin()">Acessar Plataforma Completa</button>
       </div>
     </section>
   </main>
